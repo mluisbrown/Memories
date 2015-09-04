@@ -8,6 +8,7 @@
 
 import UIKit
 import Photos
+import Cartography
 
 extension NSIndexSet {
     func indexPathsFromIndexesInSection(section : Int) -> [NSIndexPath] {
@@ -41,28 +42,72 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
     var imageManager : PHCachingImageManager!
     var previousPreheatRect : CGRect = CGRectZero
     var cellSize : CGSize = CGSizeZero
+    var photosAllowed = false
+    
+    let noPhotosLabel : UILabel
+    
+    var topPullView : PullView? = nil
+    var bottomPullView : PullView? = nil
+    var shouldReload = false
+    var reloadNext = false
 
+    let RELEASE_THRESHOLD : CGFloat = 100.0
+    let dateFormatter = NSDateFormatter()
+    
+    required init?(coder aDecoder: NSCoder) {
+        noPhotosLabel = UILabel()
+        noPhotosLabel.backgroundColor = UIColor.clearColor()
+        noPhotosLabel.font = UIFont.systemFontOfSize(16)
+        noPhotosLabel.textColor = UIColor.whiteColor()
+        noPhotosLabel.text = NSLocalizedString("Sorry, no photos for this date :(", comment: "")
+        
+        super.init(coder: aDecoder)
+    }
+    
     deinit {
         PHPhotoLibrary.sharedPhotoLibrary().unregisterChangeObserver(self)
     }
     
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        imageManager = PHCachingImageManager()
-        
-#if (arch(i386) || arch(x86_64)) && os(iOS)
-        model = GridViewModel(/*date: NSDate()*/)
-#else
-        model = GridViewModel(date: NSDate())
-#endif
-    
-        
-        resetCachedAssets()
-        PHPhotoLibrary.sharedPhotoLibrary().registerChangeObserver(self);
-    }
+    // MARK: UIView
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        model = GridViewModel()
+        dateFormatter.dateFormat = "MMMM dd"
+        
+        checkPhotosPermission {
+            self.photosAllowed = true
+            self.imageManager = PHCachingImageManager()
+
+            
+#if (arch(i386) || arch(x86_64)) && os(iOS)
+            let comps = NSDateComponents()
+            comps.day = 8
+            comps.month = 8
+            comps.year = 2012
+            let testDate = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!.dateFromComponents(comps)
+            self.model = GridViewModel(date: testDate)
+#else
+//            let comps = NSDateComponents()
+//            comps.day = 17
+//            comps.month = 8
+//            comps.year = 2015
+//            let testDate = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!.dateFromComponents(comps)
+            self.model = GridViewModel(date: NSDate())
+#endif
+            
+            self.resetCachedAssets()
+            PHPhotoLibrary.sharedPhotoLibrary().registerChangeObserver(self);
+            
+            self.collectionView?.reloadData()
+            self.showHideNoPhotosLabel()
+            self.createPullViews()
+            
+            if let date = self.model.date {
+                self.title = self.dateFormatter.stringFromDate(date).uppercaseString
+            }
+        }
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -73,6 +118,7 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
         updateCachedAssets()
+        showHideNoPhotosLabel()
     }
     
     override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
@@ -83,7 +129,9 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
         
         coordinator.animateAlongsideTransition({ (context : UIViewControllerTransitionCoordinatorContext) -> Void in
             self.collectionView?.performBatchUpdates(nil, completion: nil)
-        }, completion: nil)
+            }, completion: {(context : UIViewControllerTransitionCoordinatorContext) -> Void in
+                self.adjustPullViewPositions()
+            })
     }
     
     override func didReceiveMemoryWarning() {
@@ -125,6 +173,7 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
             imageManager.requestImageForAsset(asset, targetSize: gridThumbnailSize, contentMode: .AspectFill, options: nil) { (result : UIImage?, info : [NSObject : AnyObject]?) -> Void in
                 // Only update the thumbnail if the cell tag hasn't changed. Otherwise, the cell has been re-used.
                 if cell.tag == currentTag {
+                    print("thumbSize: \(result?.size.width),\(result?.size.height)")
                     cell.thumbnailImage = result
                 }
             }
@@ -151,6 +200,91 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
     // MARK: UIScrollViewDelegate
     override func scrollViewDidScroll(scrollView: UIScrollView) {
         updateCachedAssets()
+        adjustPullViewPositions()
+    }
+    
+    override func scrollViewDidEndDragging(scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        guard let tpv = topPullView, bpv = bottomPullView where decelerate && model.date != nil else {
+            return
+        }
+        
+        shouldReload = false
+        
+        if tpv.willRelease {
+            shouldReload = true
+            reloadNext = false
+        }
+        if bpv.willRelease {
+            shouldReload = true
+            reloadNext = true
+        }
+    }
+    
+    override func scrollViewDidEndDecelerating(scrollView: UIScrollView) {
+        if shouldReload {
+            if reloadNext {
+                model.goToNextDay()
+            } else {
+                model.goToPreviousDay()
+            }
+            
+            resetCachedAssets()
+            collectionView!.reloadData()
+            collectionView!.setContentOffset(CGPointMake(0, -collectionView!.contentInset.top), animated: false)
+            showHideNoPhotosLabel()
+
+            topPullView?.date = model.previousDay()
+            bottomPullView?.date = model.nextDay()
+            title = dateFormatter.stringFromDate(model.date!).uppercaseString
+        }
+    }
+    
+    // MARK: Scroll to Change Date
+    
+    func createPullViews() {
+        topPullView = PullView(frame: CGRectMake(0, 0, collectionView!.frame.width, 0), date: model.previousDay())
+        bottomPullView = PullView(frame: CGRectMake(0, 0, collectionView!.frame.width, 0), date: model.nextDay())
+        
+        collectionView!.addSubview(topPullView!)
+        collectionView!.addSubview(bottomPullView!)
+    }
+    
+    func adjustPullViewPositions() {
+        guard let tpv = topPullView, bpv = bottomPullView else {
+            return
+        }
+        
+        let topOffset = topLayoutGuide.length
+        
+        let resizeView = {(view: PullView, yPosition: CGFloat, viewHeight: CGFloat) -> Void in
+            view.frame = CGRectMake(0, yPosition, self.collectionView!.frame.width, viewHeight)
+            view.alpha = pow(fabs(viewHeight), 2) / pow(self.RELEASE_THRESHOLD, 2)
+            view.willRelease = fabs(viewHeight) >= self.RELEASE_THRESHOLD
+        }
+        
+        // handle top pull view
+        if collectionView!.contentOffset.y <= -topOffset {
+            let viewHeight = topOffset + collectionView!.contentOffset.y
+            resizeView(tpv, 0, viewHeight)
+        } else if tpv.frame.height > 0 {
+            tpv.frame = CGRectMake(0, 0, collectionView!.frame.width, 0)
+        }
+
+        // handle bottom pull view
+        let offset = collectionView!.contentOffset.y
+        let boundsHeight = collectionView!.bounds.height
+        let sizeHeight = collectionView!.contentSize.height
+        let bottomOfView = max(sizeHeight, boundsHeight - topOffset)
+        let y = offset + boundsHeight;
+        
+        if y >= bottomOfView {
+            let viewHeight = y - bottomOfView
+            let yPosition = bottomOfView
+
+            resizeView(bpv, yPosition, viewHeight)
+        } else if bpv.frame.height > 0 {
+            bpv.frame = CGRectMake(0, 0, collectionView!.frame.width, 0)
+        }
     }
     
     // MARK: PHPhotoLibraryChangeObserver
@@ -204,7 +338,7 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
     }
 
     func updateCachedAssets() {
-        guard self.isViewLoaded() && self.view.window != nil else {
+        guard isViewLoaded() && view.window != nil && imageManager != nil else {
             return
         }
         
@@ -284,5 +418,68 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
         
         let scale = UIScreen.mainScreen().scale
         gridThumbnailSize = CGSizeMake(cellSize.width * scale, cellSize.height * scale)
+        print("gridThumbnailSize: \(gridThumbnailSize)")
+    }
+    
+    func showHideNoPhotosLabel() {
+        // make sure views have been layed out properly
+        guard topLayoutGuide.length != 0 else {
+            return
+        }
+        
+        if model.sectionCount == 0 && noPhotosLabel.superview == nil {
+            collectionView?.addSubview(noPhotosLabel)
+            
+            layout(noPhotosLabel, collectionView!) { noPhotosLabel, collectionView in
+                noPhotosLabel.centerX == collectionView.centerX
+                noPhotosLabel.centerY == collectionView.centerY - topLayoutGuide.length
+            }
+        }
+        
+        if model.sectionCount > 0 && noPhotosLabel.superview != nil {
+            noPhotosLabel.removeFromSuperview()
+        }
+    }
+    
+    func checkPhotosPermission(handler : () -> ()) {
+        let authStatus = PHPhotoLibrary.authorizationStatus();
+        
+        if authStatus == .Authorized {
+            handler()
+        }
+
+        if authStatus == .NotDetermined {
+            let alert = UIAlertController(title: NSLocalizedString("Let Memories access Photos?", comment: ""), message: NSLocalizedString("Memories can only work if it has access to your photos. If you tap 'Allow' iOS will ask your permission.", comment: ""), preferredStyle: .Alert)
+            let allow = UIAlertAction(title: NSLocalizedString("Allow", comment: ""), style: .Default, handler: { (action) -> Void in
+                PHPhotoLibrary.requestAuthorization({ (status) -> Void in
+                    dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                        handler()
+                    })
+                })
+            })
+            let deny = UIAlertAction(title: NSLocalizedString("Not Now", comment: ""), style: .Cancel, handler: { (action) -> Void in
+                
+            })
+            alert.addAction(deny)
+            alert.addAction(allow)
+            
+            UIApplication.sharedApplication().keyWindow?.rootViewController?.presentViewController(alert, animated: true, completion: nil)
+            return
+        }
+        
+        if authStatus == .Denied {
+            let alert = UIAlertController(title: NSLocalizedString("No Access to Photos", comment: ""), message: NSLocalizedString("You have Denied access to Photos for Memories. In order for Memories to work you must enable this access in Settings. Would you like to do this now?", comment: ""), preferredStyle: .Alert)
+            let settings = UIAlertAction(title: NSLocalizedString("Settings", comment: ""), style: .Default, handler: { (action) -> Void in
+                let url = NSURL(string: UIApplicationOpenSettingsURLString)
+                UIApplication.sharedApplication().openURL(url!);
+            })
+            let nothanks = UIAlertAction(title: NSLocalizedString("No thanks", comment: ""), style: .Cancel, handler: { (action) -> Void in
+                
+            })
+            alert.addAction(nothanks)
+            alert.addAction(settings)
+            
+            UIApplication.sharedApplication().keyWindow?.rootViewController?.presentViewController(alert, animated: true, completion: nil)
+        }
     }
 }

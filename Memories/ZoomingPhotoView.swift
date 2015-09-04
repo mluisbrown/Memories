@@ -16,6 +16,8 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
     var imageRequestId : PHImageRequestID?
     var imageView : UIImageView!
     var progressView : DACircularProgressView!
+    var errorIndicator : UILabel!
+    
     var displayLink : CADisplayLink!
     var bounceScale : CGFloat = 0.0
     
@@ -31,6 +33,10 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
         super.init(frame: frame)
         self.delegate = self
 
+        self.showsHorizontalScrollIndicator = false
+        self.showsVerticalScrollIndicator = false
+        self.bounces = false
+        
         imageView = UIImageView()
         imageView.userInteractionEnabled = true
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -70,8 +76,28 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
             progressView.top == view.top
             progressView.left == view.left
         }
+        
+        errorIndicator = UILabel()
+        errorIndicator.text = "!"
+        errorIndicator.textAlignment = .Center
+        errorIndicator.font = UIFont.boldSystemFontOfSize(14)
+        errorIndicator.textColor = UIColor.whiteColor()
+        errorIndicator.backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.1)
+        errorIndicator.hidden = true
+        progressView.addSubview(errorIndicator)
+        
+        constrain(errorIndicator, progressView) {errorView, progressView in
+            align(top: errorView, progressView)
+            align(bottom: errorView, progressView)
+            align(left: errorView, progressView)
+            align(right: errorView, progressView)
+        }
     }
 
+    deinit {
+        displayLink.invalidate()
+    }
+    
     required init?(coder aDecoder: NSCoder) {
         super.init(frame: CGRectZero)
     }
@@ -84,37 +110,55 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
         }
     }
     
+    var fullImageUnavailable : Bool = false {
+        didSet {
+            if self.fullImageUnavailable {
+                errorIndicator.hidden = false
+                progressView.hidden = false
+                progressView.setProgress(0.0, animated: false)
+            }
+        }
+    }
+    
+    var imageIsDegraded : Bool = true {
+        didSet {
+            progressView.hidden = !self.imageIsDegraded
+        }
+    }
     
     // MARK: Implementation
+    
     func displayLinkTick() {
-        let zoomedLayer =  imageView.layer.presentationLayer()!
-        bounceScale = zoomedLayer.transform.m11
-        
-        if bounceScale < minimumZoomScale {
-            updateConstraints()
+        if let zoomedLayer = imageView.layer.presentationLayer() {
+            bounceScale = zoomedLayer.transform.m11
+            
+            if bounceScale < minimumZoomScale {
+                updateConstraints()
+            }
         }
     }
     
     func updateProgress(progress: Double) {
-        progressView.hidden = (progress <= 0.0 || progress >= 1.0)
+        progressView.hidden = progress >= 1.0
         progressView.setProgress(CGFloat(progress), animated: true)
     }
     
     func adjustZoomScale() {
         // adjust sizes as necessary
         if let image = self.image {
-            var minZoom = min(bounds.size.width / image.size.width,
-                bounds.size.height / image.size.height) + 0.001;
+            let minZoom = min(bounds.size.width / image.size.width,
+                bounds.size.height / image.size.height);
             
             minimumZoomScale = minZoom
-            maximumZoomScale = minZoom * 2
+            maximumZoomScale = minZoom < 1 ? minZoom * 3 : minZoom
             bounceScale = minimumZoomScale
-            
-            // Force scrollViewDidZoom fire if zoom did not change
-            if minZoom == lastZoomScale { minZoom += 0.000001 }
             
             zoomScale = minZoom
             lastZoomScale = minZoom
+            
+            // only allow scrolling if the image has been zoomed
+            // larger than the window
+            scrollEnabled = minZoom < 1 || zoomScale <= minZoom
         }
     }
     
@@ -149,12 +193,12 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
                 progressView.top == view.top + vPadding + (scale * imageHeight) - 25
                 progressView.left == view.left + hPadding + (scale * imageWidth) - 25
             }
-            
-//            print("imageWidth: \(imageWidth), imageHeight: \(imageHeight), hPadding: \(hPadding), vPadding: \(vPadding), bounceScale: \(bounceScale), zoomScale: \(zoomScale)")
         }
 
         super.updateConstraints()
     }
+    
+    // MARK: UIScrollViewDelegate
     
     func scrollViewDidZoom(scrollView: UIScrollView) {
         if zoomScale < minimumZoomScale {
@@ -162,6 +206,9 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
         } else if !zoomBouncing {
             bounceScale = minimumZoomScale
         }
+        
+        scrollEnabled = minimumZoomScale < 1 || zoomScale <= minimumZoomScale
+        
         updateConstraints()
     }
     

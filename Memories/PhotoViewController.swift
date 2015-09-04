@@ -18,6 +18,13 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate {
     var initialPage : Int!
     var model : PhotoViewModel!
     var pageViews: [ZoomingPhotoView?] = []
+    let imageManager : PHCachingImageManager
+    var cacheSize : CGSize = CGSizeZero
+    
+    required init?(coder aDecoder: NSCoder) {
+        self.imageManager = PHCachingImageManager()
+        super.init(coder: aDecoder)
+    }
     
     // MARK: UIViewController
     
@@ -25,6 +32,10 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate {
         super.viewDidLoad()
 
         initialPage = model.selectedAsset
+        // TODO: find out optimum size to use
+        cacheSize = CGSizeMake(256, 256)
+        print("cacheSize: \(cacheSize)")
+        imageManager.startCachingImagesForAssets(model.assets, targetSize: cacheSize, contentMode: .AspectFill, options: nil)
         
         let pageCount = model.assets.count
         for _ in 0..<pageCount {
@@ -39,18 +50,13 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate {
         scrollView.contentSize = CGSize(width: pagesScrollViewSize.width * CGFloat(pageCount),
             height: pagesScrollViewSize.height)
         
-        loadVisiblePages(false)
+        self.loadVisiblePages()
     }
     
     override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransitionToSize(size, withTransitionCoordinator: coordinator)
         self.initialPage = self.model.selectedAsset
         self.initialOffsetSet = false
-        
-        coordinator.animateAlongsideTransition({ (context : UIViewControllerTransitionCoordinatorContext) -> Void in
-            self.loadVisiblePages(true)
-        }) { (context: UIViewControllerTransitionCoordinatorContext) -> Void in
-        }
     }
     
     override func prefersStatusBarHidden() -> Bool {
@@ -62,8 +68,13 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate {
         // Dispose of any resources that can be recreated.
     }
 
+    // MARK: Actions
+    @IBAction func sharePhoto() {
+        
+    }
+    
     // MARK: Internal implementation
-    func loadPage(page: Int) {
+    func loadPage(page: Int, requestFullImage: Bool) {
         guard page >= 0 && page < model.assets.count else {
             return
         }
@@ -75,54 +86,75 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate {
         frame.origin.x = bounds.size.width * CGFloat(page) + PADDING
         frame.origin.y = 0.0
 
-        // if we already have a view, make sure it's layed out correctly
+        // if we already have a view with a full image or
+        // if we don't need the full image
+        // make sure it's layed out correctly
         if let pageView = pageViews[page] {
-            pageView.frame = frame;
-            pageView.adjustZoomScale();
-
-            return
-        }
-        
-        let newPageView = ZoomingPhotoView()
-        newPageView.frame = frame
-        scrollView.addSubview(newPageView)
-
-        let asset = model.assets[page]
-        
-        let targetSize = CGSizeMake(CGFloat(asset.pixelWidth / 2), CGFloat(asset.pixelHeight / 2))
-        
-        let options = PHImageRequestOptions()
-        options.networkAccessAllowed = true
-        options.deliveryMode = .Opportunistic
-        options.synchronous = false
-        options.progressHandler = {(progress : Double, error: NSError?, stop: UnsafeMutablePointer<ObjCBool>, userInfo: [NSObject : AnyObject]?) -> Void in
-            NSLog("Progress: %f", progress);
-            dispatch_async(dispatch_get_main_queue()) {
-                newPageView.updateProgress(progress)
-            }
-        }
-        
-        let requestId = PHImageManager.defaultManager().requestImageForAsset(asset, targetSize: targetSize, contentMode: .AspectFit, options: options) { (result, userInfo) -> Void in
-            guard let image = result else {
+            if !requestFullImage || !pageView.imageIsDegraded {
+                pageView.frame = frame;
+                pageView.adjustZoomScale();
                 return
             }
+        }
+
+        let pageView : ZoomingPhotoView!
+        
+        if pageViews[page] != nil {
+            pageView = pageViews[page]
+        } else {
+            pageView = ZoomingPhotoView()
+            scrollView.addSubview(pageView)
+            pageViews[page] = pageView
+        }
+        pageView.frame = frame
+
+        let asset = model.assets[page]
+
+        // always get a thumbnail first
+        imageManager.requestImageForAsset(asset, targetSize: cacheSize, contentMode: .AspectFill, options: nil, resultHandler: { (result, userInfo) -> Void in
+            if let image = result {
+                NSLog("Cache Result with image for page \(page) requestFullImage: \(requestFullImage) iamgeSize: \(image.size.width), \(image.size.height)");
+                pageView.image = result
+                pageView.imageIsDegraded = true
+            }
+        })
+        
+        
+        if requestFullImage {
+            let targetSize = CGSizeMake(CGFloat(asset.pixelWidth / 2), CGFloat(asset.pixelHeight / 2))
+            let options = PHImageRequestOptions()
             
-            if let info = userInfo {
-                let degraded = info[PHImageResultIsDegradedKey] as! NSNumber
-                if degraded == true {
-                    dispatch_async(dispatch_get_main_queue()) {
-                        // make sure progress is not 0 so it's displayed
-                        newPageView.updateProgress(0.01)
+            options.progressHandler  = {(progress : Double, error: NSError?, stop: UnsafeMutablePointer<ObjCBool>, userInfo: [NSObject : AnyObject]?) -> Void in
+                NSLog("Progress: %f", progress);
+                dispatch_async(dispatch_get_main_queue()) {
+                    pageView.updateProgress(progress)
+                    
+                    if error != nil {
+                        pageView.fullImageUnavailable = true
                     }
                 }
             }
             
-            NSLog("Result with image");
-            newPageView.image = image
+            options.networkAccessAllowed = true
+            options.deliveryMode = .HighQualityFormat
+            options.synchronous = false
+            options.resizeMode = .Fast
+
+            let requestId = PHImageManager.defaultManager().requestImageForAsset(asset, targetSize: targetSize, contentMode: .AspectFit, options: options) { (result, userInfo) -> Void in
+                if let image = result {
+                    NSLog("Result with image for page \(page) requestFullImage: \(requestFullImage) iamgeSize: \(image.size.width), \(image.size.height)");
+                    pageView.image = image
+                    pageView.imageIsDegraded = false
+                }
+                
+                if let error = userInfo?[PHImageErrorKey] as? NSError {
+                    pageView.fullImageUnavailable = true
+                    NSLog("Error: \(error.localizedDescription)")
+                }
+            }
+            
+            pageView.imageRequestId = requestId
         }
-        
-        newPageView.imageRequestId = requestId
-        pageViews[page] = newPageView
     }
     
     func purgePage(page: Int) {
@@ -141,7 +173,9 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate {
         }
     }
     
-    func loadVisiblePages(force : Bool) {
+    func loadVisiblePages() {
+        let initialLoad = !initialOffsetSet
+        
         if (!initialOffsetSet) {
             scrollView.contentOffset = contentOffsetForPageAtIndex(initialPage)
             initialOffsetSet = true
@@ -152,11 +186,9 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate {
         let fractionalPage = scrollView.contentOffset.x / pageWidth;
         let page = lround(Double(fractionalPage))
         
-        if !force &&
-            page == model.selectedAsset &&
-            page < pageViews.count &&
-            pageViews[page] != nil {
-            return;
+        if !initialLoad &&
+            page == model.selectedAsset {
+            return
         }
         
         NSLog("Visible page: %d", page);
@@ -172,7 +204,7 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate {
         
         // Load pages in our range
         for index in firstPage...lastPage {
-            loadPage(index)
+            loadPage(index, requestFullImage: index == page)
         }
         
         // Purge anything after the last page
@@ -199,7 +231,7 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate {
     
     func scrollViewDidScroll(scrollView: UIScrollView) {
         if scrollView == self.scrollView {
-            loadVisiblePages(false)
+            loadVisiblePages()
         }
     }
 }
