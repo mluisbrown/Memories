@@ -1,0 +1,23 @@
+PODS:
+  - Cartography (0.5.0)
+  - DACircularProgress (2.3.1)
+
+DEPENDENCIES:
+  - Cartography (from `https://github.com/robb/Cartography`, branch `swift-2.0`)
+  - DACircularProgress (~> 2.3.1)
+
+EXTERNAL SOURCES:
+  Cartography:
+    :branch: swift-2.0
+    :git: https://github.com/robb/Cartography
+
+CHECKOUT OPTIONS:
+  Cartography:
+    :commit: 36eeb22dbf7db7eff066389e9dc19e47a7266071
+    :git: https://github.com/robb/Cartography
+
+SPEC CHECKSUMS:
+  Cartography: 314f5ed1495995760487161eeb7a8a0940d88ad3
+  DACircularProgress: 4dd437c0fc3da5161cb289e07ac449493d41db71
+
+COCOAPODS: 0.38.2

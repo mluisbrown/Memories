@@ -7,12 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4C2DFCAA1B9E21BC00AD6E16 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C2DFCA91B9E21BC00AD6E16 /* NotificationManager.swift */; };
 		4C3334531B65712D00D907C8 /* PhotoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3334521B65712D00D907C8 /* PhotoViewModel.swift */; };
 		4C3334551B659DAA00D907C8 /* ZoomingPhotoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3334541B659DAA00D907C8 /* ZoomingPhotoView.swift */; };
 		4C5B90281B5D9C590014A87C /* GridHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C5B90271B5D9C590014A87C /* GridHeaderView.swift */; };
 		4C6299AD1B4CB0AD00B8795E /* PhotoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6299AC1B4CB0AD00B8795E /* PhotoViewController.swift */; };
 		4C6F48EF1B69850F00CF7E67 /* DismissSegue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6F48EE1B69850F00CF7E67 /* DismissSegue.swift */; };
+		4C91432C1BA958CC001B30A9 /* notification.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 4C91432B1BA958CC001B30A9 /* notification.mp3 */; settings = {ASSET_TAGS = (); }; };
+		4C989BDF1BA7806E00D4C13F /* Dynamic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C989BDE1BA7806E00D4C13F /* Dynamic.swift */; settings = {ASSET_TAGS = (); }; };
+		4C989BE11BA780BB00D4C13F /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C989BE01BA780BB00D4C13F /* SettingsViewModel.swift */; settings = {ASSET_TAGS = (); }; };
 		4CAAF0751B827EAD00AE47C3 /* PullView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CAAF0741B827EAD00AE47C3 /* PullView.swift */; };
+		4CB674B51BA1EBC7001F401A /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB674B41BA1EBC7001F401A /* SettingsViewController.swift */; };
 		4CEAA8EE1B3340C600774FE8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CEAA8ED1B3340C600774FE8 /* AppDelegate.swift */; };
 		4CEAA8F31B3340C600774FE8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4CEAA8F11B3340C600774FE8 /* Main.storyboard */; };
 		4CEAA8F51B3340C600774FE8 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4CEAA8F41B3340C600774FE8 /* Images.xcassets */; };
@@ -23,12 +28,17 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4C2DFCA91B9E21BC00AD6E16 /* NotificationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
 		4C3334521B65712D00D907C8 /* PhotoViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoViewModel.swift; sourceTree = "<group>"; };
 		4C3334541B659DAA00D907C8 /* ZoomingPhotoView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZoomingPhotoView.swift; sourceTree = "<group>"; };
 		4C5B90271B5D9C590014A87C /* GridHeaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridHeaderView.swift; sourceTree = "<group>"; };
 		4C6299AC1B4CB0AD00B8795E /* PhotoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoViewController.swift; sourceTree = "<group>"; };
 		4C6F48EE1B69850F00CF7E67 /* DismissSegue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DismissSegue.swift; sourceTree = "<group>"; };
+		4C91432B1BA958CC001B30A9 /* notification.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = notification.mp3; sourceTree = "<group>"; };
+		4C989BDE1BA7806E00D4C13F /* Dynamic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Dynamic.swift; sourceTree = "<group>"; };
+		4C989BE01BA780BB00D4C13F /* SettingsViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
 		4CAAF0741B827EAD00AE47C3 /* PullView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PullView.swift; sourceTree = "<group>"; };
+		4CB674B41BA1EBC7001F401A /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		4CEAA8E81B3340C600774FE8 /* Memories.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Memories.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4CEAA8EC1B3340C600774FE8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4CEAA8ED1B3340C600774FE8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -79,6 +89,7 @@
 			isa = PBXGroup;
 			children = (
 				4CEAA8ED1B3340C600774FE8 /* AppDelegate.swift */,
+				4C2DFCA91B9E21BC00AD6E16 /* NotificationManager.swift */,
 				4C6F48EE1B69850F00CF7E67 /* DismissSegue.swift */,
 				4CF5FEEE1B58212700F8517D /* GridViewModel.swift */,
 				4CEAA90D1B3343F700774FE8 /* GridViewController.swift */,
@@ -88,7 +99,10 @@
 				4C6299AC1B4CB0AD00B8795E /* PhotoViewController.swift */,
 				4C3334541B659DAA00D907C8 /* ZoomingPhotoView.swift */,
 				4CAAF0741B827EAD00AE47C3 /* PullView.swift */,
+				4CB674B41BA1EBC7001F401A /* SettingsViewController.swift */,
+				4C989BE01BA780BB00D4C13F /* SettingsViewModel.swift */,
 				4CEAA8F11B3340C600774FE8 /* Main.storyboard */,
+				4C989BDE1BA7806E00D4C13F /* Dynamic.swift */,
 				4CEAA8F41B3340C600774FE8 /* Images.xcassets */,
 				4CEAA8EB1B3340C600774FE8 /* Supporting Files */,
 			);
@@ -98,6 +112,7 @@
 		4CEAA8EB1B3340C600774FE8 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				4C91432B1BA958CC001B30A9 /* notification.mp3 */,
 				4CEAA8EC1B3340C600774FE8 /* Info.plist */,
 			);
 			name = "Supporting Files";
@@ -201,6 +216,7 @@
 			files = (
 				4CEAA8F31B3340C600774FE8 /* Main.storyboard in Resources */,
 				4CEAA8F51B3340C600774FE8 /* Images.xcassets in Resources */,
+				4C91432C1BA958CC001B30A9 /* notification.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -259,16 +275,20 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4C989BDF1BA7806E00D4C13F /* Dynamic.swift in Sources */,
 				4CEAA8EE1B3340C600774FE8 /* AppDelegate.swift in Sources */,
 				4C3334551B659DAA00D907C8 /* ZoomingPhotoView.swift in Sources */,
 				4C5B90281B5D9C590014A87C /* GridHeaderView.swift in Sources */,
 				4C3334531B65712D00D907C8 /* PhotoViewModel.swift in Sources */,
+				4C2DFCAA1B9E21BC00AD6E16 /* NotificationManager.swift in Sources */,
 				4CF5FEEF1B58212700F8517D /* GridViewModel.swift in Sources */,
 				4CAAF0751B827EAD00AE47C3 /* PullView.swift in Sources */,
 				4CEAA9101B33462600774FE8 /* GridViewCell.swift in Sources */,
 				4CEAA90E1B3343F700774FE8 /* GridViewController.swift in Sources */,
 				4C6F48EF1B69850F00CF7E67 /* DismissSegue.swift in Sources */,
 				4C6299AD1B4CB0AD00B8795E /* PhotoViewController.swift in Sources */,
+				4CB674B51BA1EBC7001F401A /* SettingsViewController.swift in Sources */,
+				4C989BE11BA780BB00D4C13F /* SettingsViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

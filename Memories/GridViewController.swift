@@ -79,7 +79,6 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
         checkPhotosPermission {
             self.photosAllowed = true
             self.imageManager = PHCachingImageManager()
-
             
 #if (arch(i386) || arch(x86_64)) && os(iOS)
             let comps = NSDateComponents()
@@ -89,11 +88,6 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
             let testDate = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!.dateFromComponents(comps)
             self.model = GridViewModel(date: testDate)
 #else
-//            let comps = NSDateComponents()
-//            comps.day = 17
-//            comps.month = 8
-//            comps.year = 2015
-//            let testDate = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!.dateFromComponents(comps)
             self.model = GridViewModel(date: NSDate())
 #endif
             
@@ -232,7 +226,7 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
             collectionView!.reloadData()
             collectionView!.setContentOffset(CGPointMake(0, -collectionView!.contentInset.top), animated: false)
             showHideNoPhotosLabel()
-
+            
             topPullView?.date = model.previousDay()
             bottomPullView?.date = model.nextDay()
             title = dateFormatter.stringFromDate(model.date!).uppercaseString

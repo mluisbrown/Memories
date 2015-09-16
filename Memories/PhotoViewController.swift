@@ -11,6 +11,7 @@ import Photos
 
 class PhotoViewController: UIViewController, UIScrollViewDelegate {
     @IBOutlet var scrollView: UIScrollView!
+    @IBOutlet weak var shareButton: UIButton!
 
     let PADDING : CGFloat = 10.0;
     
@@ -69,8 +70,19 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate {
     }
 
     // MARK: Actions
-    @IBAction func sharePhoto() {
+    @IBAction func sharePhoto(sender: UIButton) {
+        let page = model.selectedAsset
         
+        if let pageView = pageViews[page] where !pageView.imageIsDegraded {
+            let avc = UIActivityViewController(activityItems: [pageView.image!], applicationActivities: nil)
+            if let popover = avc.popoverPresentationController {
+                popover.sourceView = sender
+                popover.sourceRect = sender.bounds
+                popover.permittedArrowDirections = .Down
+            }
+            
+            presentViewController(avc, animated: true, completion: nil)
+        }
     }
     
     // MARK: Internal implementation
@@ -93,6 +105,9 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate {
             if !requestFullImage || !pageView.imageIsDegraded {
                 pageView.frame = frame;
                 pageView.adjustZoomScale();
+                if requestFullImage {
+                    shareButton.enabled = true
+                }
                 return
             }
         }
@@ -116,12 +131,14 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate {
                 NSLog("Cache Result with image for page \(page) requestFullImage: \(requestFullImage) iamgeSize: \(image.size.width), \(image.size.height)");
                 pageView.image = result
                 pageView.imageIsDegraded = true
+                if page == self.model.selectedAsset {
+                    self.shareButton.enabled = false
+                }
             }
         })
         
-        
+        // then get the full size image if required
         if requestFullImage {
-            let targetSize = CGSizeMake(CGFloat(asset.pixelWidth / 2), CGFloat(asset.pixelHeight / 2))
             let options = PHImageRequestOptions()
             
             options.progressHandler  = {(progress : Double, error: NSError?, stop: UnsafeMutablePointer<ObjCBool>, userInfo: [NSObject : AnyObject]?) -> Void in
@@ -138,13 +155,15 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate {
             options.networkAccessAllowed = true
             options.deliveryMode = .HighQualityFormat
             options.synchronous = false
-            options.resizeMode = .Fast
 
-            let requestId = PHImageManager.defaultManager().requestImageForAsset(asset, targetSize: targetSize, contentMode: .AspectFit, options: options) { (result, userInfo) -> Void in
+            let requestId = PHImageManager.defaultManager().requestImageForAsset(asset, targetSize: PHImageManagerMaximumSize, contentMode: .AspectFit, options: options) { (result, userInfo) -> Void in
                 if let image = result {
                     NSLog("Result with image for page \(page) requestFullImage: \(requestFullImage) iamgeSize: \(image.size.width), \(image.size.height)");
                     pageView.image = image
                     pageView.imageIsDegraded = false
+                    if page == self.model.selectedAsset {
+                        self.shareButton.enabled = true
+                    }
                 }
                 
                 if let error = userInfo?[PHImageErrorKey] as? NSError {
@@ -192,6 +211,7 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate {
         }
         
         NSLog("Visible page: %d", page);
+        model.selectedAsset = page
         
         // Work out which pages you want to load
         let firstPage = page - 1
@@ -211,8 +231,6 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate {
         for var index = lastPage+1; index < model.assets.count; ++index {
             purgePage(index)
         }
-
-        model.selectedAsset = page
     }
     
     func purgeAllViews() {

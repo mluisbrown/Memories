@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="8173.3" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="Qt4-xf-ejy">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="8191" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="Qt4-xf-ejy">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="8142"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="8154"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
@@ -62,7 +62,7 @@
                                 <size key="customSize" width="80" height="80"/>
                                 <connections>
                                     <outlet property="imageView" destination="s3v-El-2E9" id="69f-FY-dM6"/>
-                                    <segue destination="IGe-pw-kxC" kind="presentation" identifier="photos" id="e6e-DJ-OPT"/>
+                                    <segue destination="IGe-pw-kxC" kind="presentation" identifier="photos" modalTransitionStyle="crossDissolve" id="e6e-DJ-OPT"/>
                                 </connections>
                             </collectionViewCell>
                         </cells>
@@ -107,12 +107,123 @@
                             <outlet property="delegate" destination="SPm-tZ-YkU" id="dIZ-Sb-8mu"/>
                         </connections>
                     </collectionView>
-                    <navigationItem key="navigationItem" title="Memories" id="087-HO-mPV"/>
+                    <navigationItem key="navigationItem" title="Memories" id="087-HO-mPV">
+                        <barButtonItem key="leftBarButtonItem" image="settings" id="BFe-Hn-3uP">
+                            <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <connections>
+                                <segue destination="5dC-Oh-Cmg" kind="presentation" id="r7q-AV-GaJ"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="PPn-ft-2I8" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="358" y="160"/>
+        </scene>
+        <!--Settings-->
+        <scene sceneID="gEb-d9-yL7">
+            <objects>
+                <tableViewController title="Settings" id="lrk-w0-uZT" customClass="SettingsViewController" customModule="Memories" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" id="W7G-HB-e37">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        <sections>
+                            <tableViewSection headerTitle="Notifications" footerTitle="Memories will notify you at this time each day if you have photo memories" id="y81-dl-kMT">
+                                <cells>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="dAA-Ng-USI">
+                                        <rect key="frame" x="0.0" y="114" width="600" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="dAA-Ng-USI" id="mrU-li-9js">
+                                            <rect key="frame" x="0.0" y="0.0" width="600" height="43"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enable notifications" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="92a-Ni-bzC">
+                                                    <rect key="frame" x="16" y="11" width="150" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Oq2-Sx-NS7">
+                                                    <rect key="frame" x="535" y="6" width="51" height="31"/>
+                                                    <connections>
+                                                        <action selector="notificationSwitchValueChanged:" destination="lrk-w0-uZT" eventType="valueChanged" id="mb9-IT-eqJ"/>
+                                                    </connections>
+                                                </switch>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="92a-Ni-bzC" firstAttribute="leading" secondItem="mrU-li-9js" secondAttribute="leadingMargin" constant="8" id="IQT-4P-wGy"/>
+                                                <constraint firstItem="92a-Ni-bzC" firstAttribute="centerY" secondItem="mrU-li-9js" secondAttribute="centerY" id="fD7-ny-Xie"/>
+                                                <constraint firstItem="Oq2-Sx-NS7" firstAttribute="trailing" secondItem="mrU-li-9js" secondAttribute="trailingMargin" constant="-8" id="lIV-RW-FaL"/>
+                                                <constraint firstItem="Oq2-Sx-NS7" firstAttribute="centerY" secondItem="mrU-li-9js" secondAttribute="centerY" id="osT-5x-SXg"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="216" id="XQT-GT-P3z">
+                                        <rect key="frame" x="0.0" y="158" width="600" height="216"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="XQT-GT-P3z" id="GdD-5v-PcF">
+                                            <rect key="frame" x="0.0" y="0.0" width="600" height="215"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <datePicker contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="time" minuteInterval="1" translatesAutoresizingMaskIntoConstraints="NO" id="hy5-2I-bQz">
+                                                    <rect key="frame" x="140" y="-1" width="320" height="216"/>
+                                                    <date key="date" timeIntervalSinceReferenceDate="463532359.76187199">
+                                                        <!--2015-09-09 22:59:19 +0000-->
+                                                    </date>
+                                                    <connections>
+                                                        <action selector="timePickerValueChanged:" destination="lrk-w0-uZT" eventType="valueChanged" id="eLG-bu-tGp"/>
+                                                    </connections>
+                                                </datePicker>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="hy5-2I-bQz" firstAttribute="centerY" secondItem="GdD-5v-PcF" secondAttribute="centerY" id="VFK-uB-Soq"/>
+                                                <constraint firstItem="hy5-2I-bQz" firstAttribute="centerX" secondItem="GdD-5v-PcF" secondAttribute="centerX" id="gVb-eq-HdA"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </cells>
+                            </tableViewSection>
+                        </sections>
+                        <connections>
+                            <outlet property="dataSource" destination="lrk-w0-uZT" id="Oyc-hK-Xu3"/>
+                            <outlet property="delegate" destination="lrk-w0-uZT" id="6EY-oO-D1c"/>
+                        </connections>
+                    </tableView>
+                    <toolbarItems/>
+                    <navigationItem key="navigationItem" title="Memories" id="rvz-AU-x9E">
+                        <barButtonItem key="rightBarButtonItem" systemItem="done" id="ovy-Nq-AIt">
+                            <connections>
+                                <segue destination="SPm-tZ-YkU" kind="custom" customClass="DismissSegue" customModule="Memories" id="hon-NQ-Umc"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
+                    <connections>
+                        <outlet property="notificationsSwitch" destination="Oq2-Sx-NS7" id="MqG-Ma-749"/>
+                        <outlet property="timePicker" destination="hy5-2I-bQz" id="aDd-Wc-zLo"/>
+                    </connections>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="KXD-G1-sp6" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="422" y="902"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="ubV-Vw-YMI">
+            <objects>
+                <navigationController id="5dC-Oh-Cmg" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="ZUD-mZ-bdg">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="lrk-w0-uZT" kind="relationship" relationship="rootViewController" id="zg2-6Q-DFr"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="A3Q-Pd-VUq" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-398" y="902"/>
         </scene>
         <!--Photo View Controller-->
         <scene sceneID="fhF-ht-CYQ">
@@ -141,7 +252,7 @@
                                 <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <state key="normal" image="share"/>
                                 <connections>
-                                    <action selector="sharePhoto" destination="IGe-pw-kxC" eventType="touchUpInside" id="hW5-oQ-hLj"/>
+                                    <action selector="sharePhoto:" destination="IGe-pw-kxC" eventType="touchUpInside" id="XVR-f7-LSR"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aka-lC-37E" userLabel="Close Button">
@@ -172,6 +283,7 @@
                     <nil key="simulatedStatusBarMetrics"/>
                     <connections>
                         <outlet property="scrollView" destination="BOF-fB-WYF" id="uvf-cr-JyI"/>
+                        <outlet property="shareButton" destination="Jpu-wC-w7H" id="H0r-ws-LSU"/>
                         <outlet property="view" destination="ngb-Kf-4Io" id="s2D-L4-ZJj"/>
                     </connections>
                 </viewController>
@@ -182,9 +294,10 @@
     </scenes>
     <resources>
         <image name="close" width="25" height="25"/>
+        <image name="settings" width="25" height="25"/>
         <image name="share" width="25" height="25"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="xja-hh-pIl"/>
+        <segue reference="hon-NQ-Umc"/>
     </inferredMetricsTieBreakers>
 </document>

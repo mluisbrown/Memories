@@ -12,7 +12,8 @@ import Photos
 struct GridViewModel {
     let gregorian = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
     var assetFetchResults = [PHFetchResult]()
-
+    let earliestAssetYear : Int
+    
     var date : NSDate? {
         didSet {
             buildFetchResultsForDate(date)
@@ -26,14 +27,16 @@ struct GridViewModel {
     }
     
     init() {
+        self.earliestAssetYear = 0
     }
     
     init(date: NSDate?) {
         self.date = date
+        self.earliestAssetYear = GridViewModel.calculateEarliestAssetYear()
         self.buildFetchResultsForDate(date)
     }
 
-    private func earliestAssetYear() -> Int {
+    static private func calculateEarliestAssetYear() -> Int {
         // default to 2000
         var year = 2000
         let options = PHFetchOptions()
@@ -42,13 +45,14 @@ struct GridViewModel {
         let fetchResult = PHAsset.fetchAssetsWithMediaType(.Image, options: options)
         if let firstAsset = fetchResult.firstObject as? PHAsset {
             if let firstDate = firstAsset.creationDate {
+                let gregorian = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
                 year = gregorian.component(.Year, fromDate: firstDate)
             }
         }
         
         return year
     }
-    
+
     private mutating func buildFetchResultsForDate(date : NSDate?) {
         // clean out previous fetch results
         assetFetchResults = [PHFetchResult]()
@@ -56,7 +60,7 @@ struct GridViewModel {
         let options = PHFetchOptions()
         options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
         
-        let startAndEndDates = startAndEndDatesForDate(date, fromYear: earliestAssetYear(), toYear: gregorian.component(.Year, fromDate: NSDate()))
+        let startAndEndDates = startAndEndDatesForDate(date, fromYear: earliestAssetYear, toYear: gregorian.component(.Year, fromDate: NSDate()))
         
         assetFetchResults = startAndEndDates.map {
             NSPredicate(format: "creationDate >= %@ && creationDate <= %@", argumentArray: [$0.startDate, $0.endDate])
