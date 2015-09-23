@@ -88,7 +88,7 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
             let testDate = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!.dateFromComponents(comps)
             self.model = GridViewModel(date: testDate)
 #else
-            self.model = GridViewModel(date: NSDate())
+            self.model = GridViewModel(date: NotificationManager.launchDate())
 #endif
             
             self.resetCachedAssets()
@@ -424,7 +424,7 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
         if model.sectionCount == 0 && noPhotosLabel.superview == nil {
             collectionView?.addSubview(noPhotosLabel)
             
-            layout(noPhotosLabel, collectionView!) { noPhotosLabel, collectionView in
+            constrain(noPhotosLabel, collectionView!) { noPhotosLabel, collectionView in
                 noPhotosLabel.centerX == collectionView.centerX
                 noPhotosLabel.centerY == collectionView.centerY - topLayoutGuide.length
             }

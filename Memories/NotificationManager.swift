@@ -11,12 +11,10 @@ import UIKit
 import Photos
 
 class NotificationManager {
-    /// key for whether the user has been prompted with the system "Allow Notifications" prompt
     static let HAS_PROMPTED_KEY = "HasPromptedForUserNotifications"
-    /// key time of day when notifications should appear
     static let NOTIFICATION_TIME_KEY = "NotificationTime"
-    /// key for to check if notifications are enabled
     static let NOTIFICATIONS_ENABLED_KEY = "NotificationsEnabled"
+    static let NOTIFICATION_LANUCH_DATE_KEY = "NotificationLaunchDate"
     
     /// registers the notification types the app would like. If the user has allowed 
     /// notifications this will result in scheduleNotifications() being called from 
@@ -35,6 +33,26 @@ class NotificationManager {
         }
         
         return false
+    }
+    
+    static func launchDate() -> NSDate? {
+        if let date = NSUserDefaults.standardUserDefaults().objectForKey(NOTIFICATION_LANUCH_DATE_KEY) as? NSDate {
+            // clear the date as soon as it's read
+            setLaunchDate(nil)
+            return date
+        }
+        
+        return NSDate()
+    }
+    
+    static func setLaunchDate(launchDate: NSDate?) {
+        if let date = launchDate {
+            NSUserDefaults.standardUserDefaults().setObject(date, forKey: NOTIFICATION_LANUCH_DATE_KEY)
+        } else {
+            NSUserDefaults.standardUserDefaults().removeObjectForKey(NOTIFICATION_LANUCH_DATE_KEY)
+        }
+        
+        NSUserDefaults.standardUserDefaults().synchronize()
     }
     
     /// returns whether the user has been prompted with the system "Allow Notifications" prompt
@@ -157,13 +175,13 @@ class NotificationManager {
         let bodyFormatString = NSLocalizedString("You have %lu photo memories for today", comment: "")
         let titleFormatString = NSLocalizedString("%lu Photo Memories", comment: "")
         
-        let notifications : [UILocalNotification] = datesMap.map() {
+        let notifications : [UILocalNotification] = datesMap.map {
             // transform into array of date, count tuples
             (date: $0.0, count: $0.1)
-        }.sort() {
+        }.sort {
             // sort in ascending order of date
             $0.date.compare($1.date) == .OrderedAscending
-        }.prefix(64).map() {
+        }.prefix(64).map {
             // get first 64 items and transform to array of UILocalNotification
             let notification = UILocalNotification()
             notification.fireDate = $0.date

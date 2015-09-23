@@ -40,7 +40,7 @@ class PullView: UIView {
         
         // center the label in the pull view
         addSubview(label)
-        layout(label) { label in
+        constrain(label) { label in
             label.center == label.superview!.center
         }
     }

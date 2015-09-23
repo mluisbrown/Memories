@@ -23,6 +23,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             NotificationManager.HAS_PROMPTED_KEY : false,
             NotificationManager.NOTIFICATIONS_ENABLED_KEY: false])
 
+        // store the date of the notification that launched the app (if any)
+        // so that we start the view controller with that date
+        if let notification = launchOptions?[UIApplicationLaunchOptionsLocalNotificationKey] as? UILocalNotification {
+            NotificationManager.setLaunchDate(notification.fireDate)
+        }
+        
         // this will schedule notifications if they are allowed and enabled
         NotificationManager.scheduleNotifications()
         
