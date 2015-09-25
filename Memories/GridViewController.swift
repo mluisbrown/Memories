@@ -85,7 +85,7 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
             comps.day = 8
             comps.month = 8
             comps.year = 2012
-            let testDate = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!.dateFromComponents(comps)
+            let testDate = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!.dateFromComponents(comps)!
             self.model = GridViewModel(date: testDate)
 #else
             self.model = GridViewModel(date: NotificationManager.launchDate())
@@ -98,9 +98,7 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
             self.showHideNoPhotosLabel()
             self.createPullViews()
             
-            if let date = self.model.date {
-                self.title = self.dateFormatter.stringFromDate(date).uppercaseString
-            }
+            self.title = self.dateFormatter.stringFromDate(self.model.date).uppercaseString
         }
     }
     
@@ -198,7 +196,7 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
     }
     
     override func scrollViewDidEndDragging(scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-        guard let tpv = topPullView, bpv = bottomPullView where decelerate && model.date != nil else {
+        guard let tpv = topPullView, bpv = bottomPullView where decelerate else {
             return
         }
         
@@ -229,7 +227,7 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
             
             topPullView?.date = model.previousDay()
             bottomPullView?.date = model.nextDay()
-            title = dateFormatter.stringFromDate(model.date!).uppercaseString
+            title = dateFormatter.stringFromDate(model.date).uppercaseString
         }
     }
     
@@ -446,9 +444,11 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
             let alert = UIAlertController(title: NSLocalizedString("Let Memories access Photos?", comment: ""), message: NSLocalizedString("Memories can only work if it has access to your photos. If you tap 'Allow' iOS will ask your permission.", comment: ""), preferredStyle: .Alert)
             let allow = UIAlertAction(title: NSLocalizedString("Allow", comment: ""), style: .Default, handler: { (action) -> Void in
                 PHPhotoLibrary.requestAuthorization({ (status) -> Void in
-                    dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                        handler()
-                    })
+                    if status == .Authorized {
+                        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                            handler()
+                        })
+                    }
                 })
             })
             let deny = UIAlertAction(title: NSLocalizedString("Not Now", comment: ""), style: .Cancel, handler: { (action) -> Void in

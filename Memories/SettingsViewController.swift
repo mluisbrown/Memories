@@ -13,7 +13,7 @@ class SettingsViewController: UITableViewController {
     @IBOutlet weak var notificationsSwitch: UISwitch!
     @IBOutlet weak var timePicker: UIDatePicker!
     
-    var viewModel : SettingsViewModel {
+    var viewModel : SettingsViewModel! {
         didSet {
             viewModel.notificationsEnabled.bindAndFire {
                 [unowned self] in
@@ -43,11 +43,6 @@ class SettingsViewController: UITableViewController {
                 self.timePicker.date = self.timePicker.calendar.dateWithEra(1, year: 1970, month: 1, day: 1, hour: hour, minute: minute, second: 0, nanosecond: 0)!
             }
         }
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        self.viewModel = SettingsViewModel(notificationsEnabled: false, notificationHour: 10, notificationMinute: 0)
-        super.init(coder: aDecoder)
     }
     
     override func viewDidLoad() {

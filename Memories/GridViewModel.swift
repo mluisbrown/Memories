@@ -10,11 +10,21 @@ import Foundation
 import Photos
 
 struct GridViewModel {
+    static var earliestYear : Int?
+    
     let gregorian = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
     var assetFetchResults = [PHFetchResult]()
-    let earliestAssetYear : Int
+    var earliestAssetYear : Int {
+        get {
+            if let year = GridViewModel.earliestYear {
+                return year
+            }
+            
+            return GridViewModel.calculateEarliestAssetYear()
+        }
+    }
     
-    var date : NSDate? {
+    var date : NSDate {
         didSet {
             buildFetchResultsForDate(date)
         }
@@ -27,12 +37,11 @@ struct GridViewModel {
     }
     
     init() {
-        self.earliestAssetYear = 0
+        self.date = NSDate()
     }
     
-    init(date: NSDate?) {
+    init(date: NSDate) {
         self.date = date
-        self.earliestAssetYear = GridViewModel.calculateEarliestAssetYear()
         self.buildFetchResultsForDate(date)
     }
 
@@ -50,10 +59,11 @@ struct GridViewModel {
             }
         }
         
+        earliestYear = year
         return year
     }
 
-    private mutating func buildFetchResultsForDate(date : NSDate?) {
+    private mutating func buildFetchResultsForDate(date : NSDate) {
         // clean out previous fetch results
         assetFetchResults = [PHFetchResult]()
         
@@ -72,21 +82,10 @@ struct GridViewModel {
         }
     }
     
-    private func startAndEndDatesForDate(date: NSDate?, fromYear : Int, toYear : Int) -> [(startDate: NSDate, endDate: NSDate)] {
-        let startComps : NSDateComponents
-        let endComps : NSDateComponents
-        if date != nil {
-            startComps = gregorian.components([.Month, .Day] , fromDate: date!)
-            endComps = gregorian.components([.Month, .Day] , fromDate: date!)
-        } else {
-            startComps = NSDateComponents()
-            startComps.day = 1
-            startComps.month = 1
-            endComps = NSDateComponents()
-            endComps.day = 31
-            endComps.month = 12
-        }
-        
+    private func startAndEndDatesForDate(date: NSDate, fromYear : Int, toYear : Int) -> [(startDate: NSDate, endDate: NSDate)] {
+        let startComps = gregorian.components([.Month, .Day] , fromDate: date)
+        let endComps = gregorian.components([.Month, .Day] , fromDate: date)
+
         startComps.hour = 0
         startComps.minute = 0
         startComps.second = 0
@@ -102,20 +101,16 @@ struct GridViewModel {
         }
     }
     
-    func addDaysToDate(date: NSDate?, days : Int) -> NSDate? {
-        guard date != nil else {
-            return nil
-        }
-        
-        return gregorian.dateByAddingUnit(.Day, value: days, toDate: date!, options: NSCalendarOptions(rawValue: 0))
+    func addDaysToDate(date: NSDate, days : Int) -> NSDate {
+        return gregorian.dateByAddingUnit(.Day, value: days, toDate: date, options: NSCalendarOptions(rawValue: 0))!
     }
     
     // MARK: API
-    func nextDay() -> NSDate? {
+    func nextDay() -> NSDate {
         return addDaysToDate(date, days: 1)
     }
 
-    func previousDay() -> NSDate? {
+    func previousDay() -> NSDate {
         return addDaysToDate(date, days: -1)
     }    
     
