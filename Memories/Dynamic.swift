@@ -9,6 +9,7 @@
 class Dynamic<T> {
     typealias Listener = T -> Void
     var listener: Listener?
+    var autoListener: Listener?
     
     func bind(listener: Listener?) {
         self.listener = listener
@@ -21,11 +22,17 @@ class Dynamic<T> {
     
     var value: T {
         didSet {
+            autoListener?(value)
             listener?(value)
         }
     }
     
     init(_ v: T) {
         value = v
+    }
+    
+    init(_ v: T, autoListener: Listener?) {
+        self.value = v
+        self.autoListener = autoListener
     }
 }

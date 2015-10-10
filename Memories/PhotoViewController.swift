@@ -15,6 +15,7 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate {
 
     let PADDING : CGFloat = 10.0;
     
+    var upgradePromptShown = false
     var initialOffsetSet = false
     var initialPage : Int!
     var model : PhotoViewModel!
@@ -66,7 +67,6 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate {
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
 
     // MARK: Actions
@@ -126,11 +126,11 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate {
         let asset = model.assets[page]
 
         // always get a thumbnail first
+        pageView.imageIsDegraded = true
         imageManager.requestImageForAsset(asset, targetSize: cacheSize, contentMode: .AspectFill, options: nil, resultHandler: { (result, userInfo) -> Void in
             if let image = result {
                 NSLog("Cache Result with image for page \(page) requestFullImage: \(requestFullImage) iamgeSize: \(image.size.width), \(image.size.height)");
                 pageView.image = result
-                pageView.imageIsDegraded = true
                 if page == self.model.selectedAsset {
                     self.shareButton.enabled = false
                 }
@@ -139,41 +139,64 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate {
         
         // then get the full size image if required
         if requestFullImage {
-            let options = PHImageRequestOptions()
-            
-            options.progressHandler  = {(progress : Double, error: NSError?, stop: UnsafeMutablePointer<ObjCBool>, userInfo: [NSObject : AnyObject]?) -> Void in
-                NSLog("Progress: %f", progress);
-                dispatch_async(dispatch_get_main_queue()) {
-                    pageView.updateProgress(progress)
-                    
-                    if error != nil {
-                        pageView.fullImageUnavailable = true
-                    }
+            if !UpgradeManager.highQualityViewAllowed() {
+                guard !UpgradeManager.upgradePromptShown else {
+                    pageView.hideProgressView(true)
+                    return
                 }
-            }
-            
-            options.networkAccessAllowed = true
-            options.deliveryMode = .HighQualityFormat
-            options.synchronous = false
-
-            let requestId = PHImageManager.defaultManager().requestImageForAsset(asset, targetSize: PHImageManagerMaximumSize, contentMode: .AspectFit, options: options) { (result, userInfo) -> Void in
-                if let image = result {
-                    NSLog("Result with image for page \(page) requestFullImage: \(requestFullImage) iamgeSize: \(image.size.width), \(image.size.height)");
-                    pageView.image = image
-                    pageView.imageIsDegraded = false
-                    if page == self.model.selectedAsset {
-                        self.shareButton.enabled = true
+                
+                UpgradeManager.promptForUpgradeInViewController(self) {
+                    if !$0 {
+                        pageView.hideProgressView(true)
+                    } else {
+                        self.loadHighQualityImageForAsset(asset, page: page)
                     }
                 }
                 
-                if let error = userInfo?[PHImageErrorKey] as? NSError {
+                return
+            }
+            
+            loadHighQualityImageForAsset(asset, page: page)
+        }
+    }
+    
+    func loadHighQualityImageForAsset(asset: PHAsset, page: Int) {
+        let options = PHImageRequestOptions()
+        let pageView = pageViews[page]!
+        
+        options.progressHandler  = {(progress : Double, error: NSError?, stop: UnsafeMutablePointer<ObjCBool>, userInfo: [NSObject : AnyObject]?) -> Void in
+            NSLog("Progress: %f", progress);
+            dispatch_async(dispatch_get_main_queue()) {
+                pageView.updateProgress(progress)
+                
+                if error != nil {
                     pageView.fullImageUnavailable = true
-                    NSLog("Error: \(error.localizedDescription)")
+                }
+            }
+        }
+        
+        options.networkAccessAllowed = true
+        options.deliveryMode = .HighQualityFormat
+        options.synchronous = false
+        
+        let requestId = PHImageManager.defaultManager().requestImageForAsset(asset, targetSize: PHImageManagerMaximumSize, contentMode: .AspectFit, options: options) { (result, userInfo) -> Void in
+            if let image = result {
+                NSLog("Result with image for page \(page) requestFullImage: true iamgeSize: \(image.size.width), \(image.size.height)");
+                UpgradeManager.highQualityViewCount++
+                pageView.image = image
+                pageView.imageIsDegraded = false
+                if page == self.model.selectedAsset {
+                    self.shareButton.enabled = true
                 }
             }
             
-            pageView.imageRequestId = requestId
+            if let error = userInfo?[PHImageErrorKey] as? NSError {
+                pageView.fullImageUnavailable = true
+                NSLog("Error: \(error.localizedDescription)")
+            }
         }
+        
+        pageView.imageRequestId = requestId
     }
     
     func purgePage(page: Int) {

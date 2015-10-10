@@ -37,7 +37,20 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
     let headerIdentifier = "YearHeader"
     var gridThumbnailSize : CGSize = CGSizeZero
     
-    var model : GridViewModel!
+    var model : GridViewModel! {
+        didSet {
+            model.date.bind { [unowned self] (date) -> Void in
+                self.resetCachedAssets()
+                self.collectionView?.reloadData()
+                self.collectionView!.setContentOffset(CGPointMake(0, -self.collectionView!.contentInset.top), animated: false)
+                self.showHideNoPhotosLabel()
+                
+                self.createOrUpdatePullViews(date)
+                self.title = self.dateFormatter.stringFromDate(date).uppercaseString
+                self.showHideBlur(false)
+            }
+        }
+    }
 
     var imageManager : PHCachingImageManager!
     var previousPreheatRect : CGRect = CGRectZero
@@ -45,6 +58,7 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
     var photosAllowed = false
     
     let noPhotosLabel : UILabel
+    let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .Dark))
     
     var topPullView : PullView? = nil
     var bottomPullView : PullView? = nil
@@ -66,6 +80,7 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
     
     deinit {
         PHPhotoLibrary.sharedPhotoLibrary().unregisterChangeObserver(self)
+        NSNotificationCenter.defaultCenter().removeObserver(self)
     }
     
     // MARK: UIView
@@ -80,25 +95,32 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
             self.photosAllowed = true
             self.imageManager = PHCachingImageManager()
             
+            let startDate: NSDate
 #if (arch(i386) || arch(x86_64)) && os(iOS)
             let comps = NSDateComponents()
             comps.day = 8
             comps.month = 8
             comps.year = 2012
             let testDate = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!.dateFromComponents(comps)!
-            self.model = GridViewModel(date: testDate)
+            startDate = testDate
 #else
-            self.model = GridViewModel(date: NotificationManager.launchDate())
+            startDate = NSDate()
 #endif
+            if let date = NotificationManager.launchDate() {
+                self.model.date.value = date
+            } else {
+                self.model.date.value = startDate
+            }
             
-            self.resetCachedAssets()
             PHPhotoLibrary.sharedPhotoLibrary().registerChangeObserver(self);
-            
-            self.collectionView?.reloadData()
-            self.showHideNoPhotosLabel()
-            self.createPullViews()
-            
-            self.title = self.dateFormatter.stringFromDate(self.model.date).uppercaseString
+            NSNotificationCenter.defaultCenter().addObserver(self, selector:"appDidBecomeActive", name:
+                UIApplicationDidBecomeActiveNotification, object: nil)
+        }
+    }
+    
+    func appDidBecomeActive() {
+        if let date = NotificationManager.launchDate() where self.photosAllowed {
+            self.model.date.value = date
         }
     }
     
@@ -189,6 +211,7 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
             return cellSize
     }
     
+    
     // MARK: UIScrollViewDelegate
     override func scrollViewDidScroll(scrollView: UIScrollView) {
         updateCachedAssets()
@@ -210,6 +233,10 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
             shouldReload = true
             reloadNext = true
         }
+        
+        if shouldReload {
+            showHideBlur(true)
+        }
     }
     
     override func scrollViewDidEndDecelerating(scrollView: UIScrollView) {
@@ -219,26 +246,22 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
             } else {
                 model.goToPreviousDay()
             }
-            
-            resetCachedAssets()
-            collectionView!.reloadData()
-            collectionView!.setContentOffset(CGPointMake(0, -collectionView!.contentInset.top), animated: false)
-            showHideNoPhotosLabel()
-            
-            topPullView?.date = model.previousDay()
-            bottomPullView?.date = model.nextDay()
-            title = dateFormatter.stringFromDate(model.date).uppercaseString
         }
     }
     
     // MARK: Scroll to Change Date
     
-    func createPullViews() {
-        topPullView = PullView(frame: CGRectMake(0, 0, collectionView!.frame.width, 0), date: model.previousDay())
-        bottomPullView = PullView(frame: CGRectMake(0, 0, collectionView!.frame.width, 0), date: model.nextDay())
-        
-        collectionView!.addSubview(topPullView!)
-        collectionView!.addSubview(bottomPullView!)
+    func createOrUpdatePullViews(date: NSDate) {
+        if let tpv = topPullView, bpv = bottomPullView {
+            tpv.date = GridViewModel.previousDay(date)
+            bpv.date = GridViewModel.nextDay(date)
+        } else {
+            topPullView = PullView(frame: CGRectMake(0, 0, collectionView!.frame.width, 0), date: GridViewModel.previousDay(date))
+            bottomPullView = PullView(frame: CGRectMake(0, 0, collectionView!.frame.width, 0), date: GridViewModel.nextDay(date))
+            
+            collectionView!.addSubview(topPullView!)
+            collectionView!.addSubview(bottomPullView!)
+        }
     }
     
     func adjustPullViewPositions() {
@@ -325,6 +348,10 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
     // MARK: Asset Caching
     
     func resetCachedAssets() {
+        guard imageManager != nil else {
+            return
+        }
+        
         imageManager.stopCachingImagesForAllAssets()
         previousPreheatRect = CGRectZero
     }
@@ -398,6 +425,19 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
     }
     
     // MARK: Helpers
+    func showHideBlur(show: Bool) {
+        if show {
+            let window = UIApplication.sharedApplication().keyWindow!
+            var frame = window.frame
+            frame.origin.y += topLayoutGuide.length
+            
+            blurView.frame = frame
+            window.addSubview(blurView)
+        } else {
+            blurView.removeFromSuperview()
+        }
+    }
+    
     
     func configureCellSizeForViewSize(viewSize : CGSize) {
         let MIN_WIDTH = CGFloat(90.0)

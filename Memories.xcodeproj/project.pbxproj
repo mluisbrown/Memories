@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4C0410E61BC8787200BBB76C /* UIDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C0410E51BC8787200BBB76C /* UIDevice.swift */; settings = {ASSET_TAGS = (); }; };
 		4C2DFCAA1B9E21BC00AD6E16 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C2DFCA91B9E21BC00AD6E16 /* NotificationManager.swift */; };
 		4C3334531B65712D00D907C8 /* PhotoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3334521B65712D00D907C8 /* PhotoViewModel.swift */; };
 		4C3334551B659DAA00D907C8 /* ZoomingPhotoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3334541B659DAA00D907C8 /* ZoomingPhotoView.swift */; };
@@ -22,6 +23,10 @@
 		4C989BE11BA780BB00D4C13F /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C989BE01BA780BB00D4C13F /* SettingsViewModel.swift */; settings = {ASSET_TAGS = (); }; };
 		4CAAF0751B827EAD00AE47C3 /* PullView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CAAF0741B827EAD00AE47C3 /* PullView.swift */; };
 		4CB674B51BA1EBC7001F401A /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB674B41BA1EBC7001F401A /* SettingsViewController.swift */; };
+		4CBA89631BBC66BB00913336 /* RMStore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CBA89621BBC66BB00913336 /* RMStore.framework */; };
+		4CBA89651BBC66E000913336 /* RMStore.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4CBA89641BBC66E000913336 /* RMStore.framework.dSYM */; };
+		4CBA89671BBC926100913336 /* UpgradeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBA89661BBC926100913336 /* UpgradeManager.swift */; settings = {ASSET_TAGS = (); }; };
+		4CBA89691BBC9BF300913336 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CBA89681BBC9BF300913336 /* Security.framework */; };
 		4CEAA8EE1B3340C600774FE8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CEAA8ED1B3340C600774FE8 /* AppDelegate.swift */; };
 		4CEAA8F31B3340C600774FE8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4CEAA8F11B3340C600774FE8 /* Main.storyboard */; };
 		4CEAA8F51B3340C600774FE8 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4CEAA8F41B3340C600774FE8 /* Images.xcassets */; };
@@ -39,12 +44,14 @@
 			files = (
 				4C8594D11BB33E27005CCFAC /* Cartography.framework.dSYM in CopyFiles */,
 				4C8594D31BB33E2F005CCFAC /* DACircularProgress.framework.dSYM in CopyFiles */,
+				4CBA89651BBC66E000913336 /* RMStore.framework.dSYM in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4C0410E51BC8787200BBB76C /* UIDevice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIDevice.swift; sourceTree = "<group>"; };
 		4C2DFCA91B9E21BC00AD6E16 /* NotificationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
 		4C3334521B65712D00D907C8 /* PhotoViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoViewModel.swift; sourceTree = "<group>"; };
 		4C3334541B659DAA00D907C8 /* ZoomingPhotoView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZoomingPhotoView.swift; sourceTree = "<group>"; };
@@ -60,6 +67,10 @@
 		4C989BE01BA780BB00D4C13F /* SettingsViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
 		4CAAF0741B827EAD00AE47C3 /* PullView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PullView.swift; sourceTree = "<group>"; };
 		4CB674B41BA1EBC7001F401A /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
+		4CBA89621BBC66BB00913336 /* RMStore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RMStore.framework; path = Carthage/Build/iOS/RMStore.framework; sourceTree = "<group>"; };
+		4CBA89641BBC66E000913336 /* RMStore.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = RMStore.framework.dSYM; path = Carthage/Build/iOS/RMStore.framework.dSYM; sourceTree = "<group>"; };
+		4CBA89661BBC926100913336 /* UpgradeManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UpgradeManager.swift; sourceTree = "<group>"; };
+		4CBA89681BBC9BF300913336 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		4CEAA8E81B3340C600774FE8 /* Memories.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Memories.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4CEAA8EC1B3340C600774FE8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4CEAA8ED1B3340C600774FE8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -77,8 +88,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4CBA89691BBC9BF300913336 /* Security.framework in Frameworks */,
 				4C8594CC1BB33D49005CCFAC /* Cartography.framework in Frameworks */,
 				4C8594CD1BB33D4C005CCFAC /* DACircularProgress.framework in Frameworks */,
+				4CBA89631BBC66BB00913336 /* RMStore.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -88,8 +101,11 @@
 		4C8594D41BB33E9C005CCFAC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4CBA89681BBC9BF300913336 /* Security.framework */,
 				4C8594D21BB33E2F005CCFAC /* DACircularProgress.framework.dSYM */,
 				4C8594D01BB33E27005CCFAC /* Cartography.framework.dSYM */,
+				4CBA89641BBC66E000913336 /* RMStore.framework.dSYM */,
+				4CBA89621BBC66BB00913336 /* RMStore.framework */,
 				4C8594C91BB33D02005CCFAC /* DACircularProgress.framework */,
 				4C8594C51BB33CF5005CCFAC /* Cartography.framework */,
 			);
@@ -118,7 +134,9 @@
 			isa = PBXGroup;
 			children = (
 				4CEAA8ED1B3340C600774FE8 /* AppDelegate.swift */,
+				4C989BDE1BA7806E00D4C13F /* Dynamic.swift */,
 				4C2DFCA91B9E21BC00AD6E16 /* NotificationManager.swift */,
+				4CBA89661BBC926100913336 /* UpgradeManager.swift */,
 				4C6F48EE1B69850F00CF7E67 /* DismissSegue.swift */,
 				4CF5FEEE1B58212700F8517D /* GridViewModel.swift */,
 				4CEAA90D1B3343F700774FE8 /* GridViewController.swift */,
@@ -130,8 +148,8 @@
 				4CAAF0741B827EAD00AE47C3 /* PullView.swift */,
 				4CB674B41BA1EBC7001F401A /* SettingsViewController.swift */,
 				4C989BE01BA780BB00D4C13F /* SettingsViewModel.swift */,
+				4C0410E51BC8787200BBB76C /* UIDevice.swift */,
 				4CEAA8F11B3340C600774FE8 /* Main.storyboard */,
-				4C989BDE1BA7806E00D4C13F /* Dynamic.swift */,
 				4CEAA8F41B3340C600774FE8 /* Images.xcassets */,
 				4CEAA8EB1B3340C600774FE8 /* Supporting Files */,
 			);
@@ -242,6 +260,7 @@
 			inputPaths = (
 				"$(SRCROOT)/Carthage/Build/iOS/Cartography.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/DACircularProgress.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/RMStore.framework",
 			);
 			outputPaths = (
 			);
@@ -263,8 +282,10 @@
 				4C3334531B65712D00D907C8 /* PhotoViewModel.swift in Sources */,
 				4C2DFCAA1B9E21BC00AD6E16 /* NotificationManager.swift in Sources */,
 				4CF5FEEF1B58212700F8517D /* GridViewModel.swift in Sources */,
+				4C0410E61BC8787200BBB76C /* UIDevice.swift in Sources */,
 				4CAAF0751B827EAD00AE47C3 /* PullView.swift in Sources */,
 				4CEAA9101B33462600774FE8 /* GridViewCell.swift in Sources */,
+				4CBA89671BBC926100913336 /* UpgradeManager.swift in Sources */,
 				4CEAA90E1B3343F700774FE8 /* GridViewController.swift in Sources */,
 				4C6F48EF1B69850F00CF7E67 /* DismissSegue.swift in Sources */,
 				4C6299AD1B4CB0AD00B8795E /* PhotoViewController.swift in Sources */,
@@ -327,6 +348,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -350,7 +372,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -365,6 +387,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
+				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -375,7 +398,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -385,6 +409,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.luacheia.memories;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "";
 			};
 			name = Debug;
@@ -393,8 +418,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				ENABLE_BITCODE = NO;
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
@@ -403,6 +429,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.luacheia.memories;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "";
 			};
 			name = Release;

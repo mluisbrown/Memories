@@ -9,11 +9,11 @@
 import Foundation
 import Photos
 
-struct GridViewModel {
+class GridViewModel {
     static var earliestYear : Int?
     
-    let gregorian = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
-    var assetFetchResults = [PHFetchResult]()
+    static let gregorian = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
+    var assetFetchResults = [PHFetchResult]() 
     var earliestAssetYear : Int {
         get {
             if let year = GridViewModel.earliestYear {
@@ -24,12 +24,8 @@ struct GridViewModel {
         }
     }
     
-    var date : NSDate {
-        didSet {
-            buildFetchResultsForDate(date)
-        }
-    }
-    
+    var date : Dynamic<NSDate>
+
     var sectionCount : Int {
         get {
             return assetFetchResults.count
@@ -37,12 +33,18 @@ struct GridViewModel {
     }
     
     init() {
-        self.date = NSDate()
+        self.date = Dynamic(NSDate())
+        self.date.autoListener = {
+            self.assetFetchResults = self.buildFetchResultsForDate($0)
+        }
     }
     
     init(date: NSDate) {
-        self.date = date
-        self.buildFetchResultsForDate(date)
+        self.date = Dynamic(date)
+        self.date.autoListener = {
+            self.assetFetchResults = self.buildFetchResultsForDate($0)
+        }
+        self.assetFetchResults = self.buildFetchResultsForDate(date)
     }
 
     static private func calculateEarliestAssetYear() -> Int {
@@ -63,16 +65,13 @@ struct GridViewModel {
         return year
     }
 
-    private mutating func buildFetchResultsForDate(date : NSDate) {
-        // clean out previous fetch results
-        assetFetchResults = [PHFetchResult]()
-        
+    private func buildFetchResultsForDate(date : NSDate) -> [PHFetchResult] {
         let options = PHFetchOptions()
         options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
         
-        let startAndEndDates = startAndEndDatesForDate(date, fromYear: earliestAssetYear, toYear: gregorian.component(.Year, fromDate: NSDate()))
+        let startAndEndDates = GridViewModel.startAndEndDatesForDate(date, fromYear: earliestAssetYear, toYear: GridViewModel.gregorian.component(.Year, fromDate: NSDate()))
         
-        assetFetchResults = startAndEndDates.map {
+        return startAndEndDates.map {
             NSPredicate(format: "creationDate >= %@ && creationDate <= %@", argumentArray: [$0.startDate, $0.endDate])
         }.map {
             options.predicate = $0
@@ -82,7 +81,7 @@ struct GridViewModel {
         }
     }
     
-    private func startAndEndDatesForDate(date: NSDate, fromYear : Int, toYear : Int) -> [(startDate: NSDate, endDate: NSDate)] {
+    static private func startAndEndDatesForDate(date: NSDate, fromYear : Int, toYear : Int) -> [(startDate: NSDate, endDate: NSDate)] {
         let startComps = gregorian.components([.Month, .Day] , fromDate: date)
         let endComps = gregorian.components([.Month, .Day] , fromDate: date)
 
@@ -101,25 +100,25 @@ struct GridViewModel {
         }
     }
     
-    func addDaysToDate(date: NSDate, days : Int) -> NSDate {
+    static func addDaysToDate(date: NSDate, days : Int) -> NSDate {
         return gregorian.dateByAddingUnit(.Day, value: days, toDate: date, options: NSCalendarOptions(rawValue: 0))!
     }
     
     // MARK: API
-    func nextDay() -> NSDate {
+    static func nextDay(date: NSDate) -> NSDate {
         return addDaysToDate(date, days: 1)
     }
 
-    func previousDay() -> NSDate {
+    static func previousDay(date: NSDate) -> NSDate {
         return addDaysToDate(date, days: -1)
     }    
     
-    mutating func goToNextDay() {
-        date = nextDay()
+    func goToNextDay() {
+        date.value = GridViewModel.nextDay(date.value)
     }
 
-    mutating func goToPreviousDay() {
-        date = previousDay()
+    func goToPreviousDay() {
+        date.value = GridViewModel.previousDay(date.value)
     }
     
     func assetAtIndexPath(indexPath : NSIndexPath) -> PHAsset? {
@@ -145,7 +144,7 @@ struct GridViewModel {
         
         let asset = assetFetchResults[section].firstObject as! PHAsset
         let creationDate = asset.creationDate
-        let comps = gregorian.components(.Year, fromDate: creationDate!)
+        let comps = GridViewModel.gregorian.components(.Year, fromDate: creationDate!)
         
         return comps.year
     }
@@ -157,7 +156,7 @@ struct GridViewModel {
         return assetFetchResults[section]
     }
     
-    mutating func setFetchResultForSection(section : Int, fetchResult : PHFetchResult) {
+    func setFetchResultForSection(section : Int, fetchResult : PHFetchResult) {
         guard section < assetFetchResults.count else {
             return
         }

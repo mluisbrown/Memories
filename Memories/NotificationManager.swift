@@ -42,7 +42,7 @@ class NotificationManager {
             return date
         }
         
-        return NSDate()
+        return nil
     }
     
     static func setLaunchDate(launchDate: NSDate?) {

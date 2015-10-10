@@ -127,6 +127,10 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
     }
     
     // MARK: Implementation
+
+    func hideProgressView(hide: Bool) {
+        progressView.hidden = hide
+    }
     
     func displayLinkTick() {
         if let zoomedLayer = imageView.layer.presentationLayer() {
