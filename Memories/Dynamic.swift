@@ -35,4 +35,9 @@ class Dynamic<T> {
         self.value = v
         self.autoListener = autoListener
     }
+    
+    deinit {
+        self.autoListener = nil
+        self.listener = nil
+    }
 }

@@ -14,12 +14,23 @@ struct SettingsViewModel {
     let notificationMinute : Dynamic<Int>
     let userHasUpgraded : Dynamic<Bool>
     let upgradeButtonText : Dynamic<String>
+    let storeAvailable : Dynamic<Bool>
     
     init(notificationsEnabled: Bool, notificationHour: Int, notificationMinute: Int) {
         self.notificationsEnabled = Dynamic(notificationsEnabled)
         self.notificationHour = Dynamic(notificationHour)
         self.notificationMinute = Dynamic(notificationMinute)
         self.userHasUpgraded = Dynamic(UpgradeManager.upgraded)
-        self.upgradeButtonText = Dynamic(NSLocalizedString("Buy", comment: "") + " " + UpgradeManager.upgradePrice)
+        
+        let buy = NSLocalizedString("Buy", comment: "")
+        self.upgradeButtonText = Dynamic(buy)
+        self.storeAvailable = Dynamic(UpgradeManager.upgradePrice != nil)
+        
+        UpgradeManager.getUpgradePrice { (price) in
+            if let price = price {
+                self.upgradeButtonText.value = buy + " " + price
+                self.storeAvailable.value = true
+            }
+        }
     }
 }

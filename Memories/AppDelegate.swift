@@ -32,8 +32,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // this will schedule notifications if they are allowed and enabled
         NotificationManager.scheduleNotifications()
         
-        UpgradeManager.initialize()
-        
         return true
     }
 

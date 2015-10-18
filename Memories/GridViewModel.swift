@@ -122,6 +122,11 @@ class GridViewModel {
     }
     
     func assetAtIndexPath(indexPath : NSIndexPath) -> PHAsset? {
+        guard indexPath.section < assetFetchResults.count &&
+            indexPath.item < assetFetchResults[indexPath.section].count else {
+            return nil
+        }
+        
         return assetFetchResults[indexPath.section][indexPath.item] as? PHAsset
     }
     
@@ -161,7 +166,11 @@ class GridViewModel {
             return
         }
         
-        self.assetFetchResults[section] = fetchResult
+        if fetchResult.count == 0 {
+            assetFetchResults.removeAtIndex(section)
+        } else {
+            assetFetchResults[section] = fetchResult
+        }
     }
     
     func photoViewModelForIndexPath(indexPath: NSIndexPath) -> PhotoViewModel {

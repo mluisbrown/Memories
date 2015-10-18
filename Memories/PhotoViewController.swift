@@ -12,6 +12,7 @@ import Photos
 class PhotoViewController: UIViewController, UIScrollViewDelegate {
     @IBOutlet var scrollView: UIScrollView!
     @IBOutlet weak var shareButton: UIButton!
+    @IBOutlet weak var deleteButton: UIButton!
 
     let PADDING : CGFloat = 10.0;
     
@@ -38,27 +39,16 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate {
         cacheSize = CGSizeMake(256, 256)
         print("cacheSize: \(cacheSize)")
         imageManager.startCachingImagesForAssets(model.assets, targetSize: cacheSize, contentMode: .AspectFill, options: nil)
-        
-        let pageCount = model.assets.count
-        for _ in 0..<pageCount {
-            pageViews.append(nil)
-        }
     }
 
     override func viewDidLayoutSubviews() {
-        let pageCount = model.assets.count
-        
-        let pagesScrollViewSize = scrollView.bounds.size
-        scrollView.contentSize = CGSize(width: pagesScrollViewSize.width * CGFloat(pageCount),
-            height: pagesScrollViewSize.height)
-        
-        self.loadVisiblePages()
+        setupViews()
     }
     
     override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransitionToSize(size, withTransitionCoordinator: coordinator)
-        self.initialPage = self.model.selectedAsset
-        self.initialOffsetSet = false
+        initialPage = model.selectedAsset
+        initialOffsetSet = false
     }
     
     override func prefersStatusBarHidden() -> Bool {
@@ -85,7 +75,59 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate {
         }
     }
     
+    @IBAction func deletePhoto(sender: UIButton) {
+        let asset = model.assets[model.selectedAsset]
+        
+        PHPhotoLibrary.sharedPhotoLibrary().performChanges({
+            PHAssetChangeRequest.deleteAssets([asset])
+        }, completionHandler: { success, error in
+            if success {
+                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    self.removeAssetFromModelAtIndex(self.model.selectedAsset)
+                })
+            }
+        })
+    }
+    
     // MARK: Internal implementation
+    func setupViews() {
+        let pageCount = model.assets.count
+
+        if pageViews.count == 0 {
+            for _ in 0..<pageCount {
+                pageViews.append(nil)
+            }
+            initialPage = model.selectedAsset
+            initialOffsetSet = false
+        }
+
+        let pagesScrollViewSize = scrollView.bounds.size
+        scrollView.contentSize = CGSize(width: pagesScrollViewSize.width * CGFloat(pageCount),
+            height: pagesScrollViewSize.height)
+        
+        loadVisiblePages()
+    }
+    
+    func removeAssetFromModelAtIndex(index: Int) {
+        let newAssets = model.assets.enumerate().filter {
+            $0.index != self.model.selectedAsset
+        }.map {
+            $0.element
+        }
+
+        if newAssets.isEmpty {
+            presentingViewController?.dismissViewControllerAnimated(true, completion: nil);
+            return
+        }
+        
+        let newSelectedAsset = model.selectedAsset > 0 ? model.selectedAsset - 1 : 0
+        model = PhotoViewModel(assets: newAssets, selectedAsset: newSelectedAsset)
+        purgeAllViews()
+        pageViews = []
+        
+        setupViews()
+    }
+    
     func loadPage(page: Int, requestFullImage: Bool) {
         guard page >= 0 && page < model.assets.count else {
             return
@@ -107,6 +149,7 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate {
                 pageView.adjustZoomScale();
                 if requestFullImage {
                     shareButton.enabled = true
+                    deleteButton.enabled = true
                 }
                 return
             }
@@ -133,6 +176,7 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate {
                 pageView.image = result
                 if page == self.model.selectedAsset {
                     self.shareButton.enabled = false
+                    self.deleteButton.enabled = false
                 }
             }
         })
@@ -140,11 +184,6 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate {
         // then get the full size image if required
         if requestFullImage {
             if !UpgradeManager.highQualityViewAllowed() {
-                guard !UpgradeManager.upgradePromptShown else {
-                    pageView.hideProgressView(true)
-                    return
-                }
-                
                 UpgradeManager.promptForUpgradeInViewController(self) {
                     if !$0 {
                         pageView.hideProgressView(true)
@@ -187,6 +226,7 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate {
                 pageView.imageIsDegraded = false
                 if page == self.model.selectedAsset {
                     self.shareButton.enabled = true
+                    self.deleteButton.enabled = true
                 }
             }
             

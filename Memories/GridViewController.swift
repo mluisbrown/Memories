@@ -313,7 +313,7 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
                     // get the new fetch result
                     self.model.setFetchResultForSection(section, fetchResult: collectionChanges.fetchResultAfterChanges)
                     
-                    if (!collectionChanges.hasIncrementalChanges || collectionChanges.hasMoves) {
+                    if !collectionChanges.hasIncrementalChanges || collectionChanges.hasMoves {
                         self.collectionView?.reloadData()
                     } else {
                         self.collectionView?.performBatchUpdates({
@@ -332,7 +332,10 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
                                     self.collectionView?.reloadItemsAtIndexPaths(changedIndexes.indexPathsFromIndexesInSection(section))
                                 }
                             }
-                            }, completion: nil)
+                            if collectionChanges.fetchResultAfterChanges.count == 0 {
+                                self.collectionView?.deleteSections(NSIndexSet(index: section))
+                            }
+                        }, completion: nil)
                     }
                     
                     cacheNeedsReset = true

@@ -118,7 +118,7 @@
                         <barButtonItem key="leftBarButtonItem" image="settings" id="BFe-Hn-3uP">
                             <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             <connections>
-                                <segue destination="5dC-Oh-Cmg" kind="presentation" id="r7q-AV-GaJ"/>
+                                <segue destination="5dC-Oh-Cmg" kind="presentation" modalPresentationStyle="formSheet" id="r7q-AV-GaJ"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -138,10 +138,78 @@
                         <animations/>
                         <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
                         <sections>
+                            <tableViewSection id="3sS-BC-kiE">
+                                <cells>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" rowHeight="161" id="Sk4-Zw-3Hn">
+                                        <rect key="frame" x="0.0" y="99" width="600" height="161"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Sk4-Zw-3Hn" id="lW8-as-hQ0">
+                                            <rect key="frame" x="0.0" y="0.0" width="600" height="160"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="1000" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RGO-0f-XYF" userLabel="Upgrade Text">
+                                                    <rect key="frame" x="16" y="8" width="568" height="84"/>
+                                                    <animations/>
+                                                    <string key="text">Memories lets you view 5 full quality photos each day. You can Upgrade to remove this restriction, which also enables sharing and deleting photos. Memories is developed by me, Michael Brown, on evenings and weekends. It's a lot of work and a lot of time when I'm not with my family. Please consider upgrading to support my work. Thank you.
+</string>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <button opaque="NO" contentMode="scaleToFill" verticalCompressionResistancePriority="1000" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xCI-GP-ox5">
+                                                    <rect key="frame" x="16" y="119" width="67" height="33"/>
+                                                    <animations/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <state key="normal" title="Upgrade"/>
+                                                    <connections>
+                                                        <action selector="upgradeTapped:" destination="lrk-w0-uZT" eventType="touchUpInside" id="H1U-gM-gYJ"/>
+                                                    </connections>
+                                                </button>
+                                                <button opaque="NO" contentMode="scaleToFill" verticalCompressionResistancePriority="1000" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9jx-Pu-5kh">
+                                                    <rect key="frame" x="525" y="119" width="59" height="33"/>
+                                                    <animations/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <state key="normal" title="Restore"/>
+                                                    <connections>
+                                                        <action selector="restoreTapped:" destination="lrk-w0-uZT" eventType="touchUpInside" id="CUw-HS-sJ4"/>
+                                                    </connections>
+                                                </button>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Thank you for supporting me!" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2t5-UW-Cfd">
+                                                    <rect key="frame" x="187" y="125" width="226" height="21"/>
+                                                    <animations/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <animations/>
+                                            <constraints>
+                                                <constraint firstItem="RGO-0f-XYF" firstAttribute="top" secondItem="lW8-as-hQ0" secondAttribute="top" constant="8" id="0dh-HS-eHy"/>
+                                                <constraint firstItem="9jx-Pu-5kh" firstAttribute="centerY" secondItem="xCI-GP-ox5" secondAttribute="centerY" id="9A2-vV-pG9"/>
+                                                <constraint firstAttribute="bottom" secondItem="xCI-GP-ox5" secondAttribute="bottom" constant="8" id="KbZ-6z-gV1"/>
+                                                <constraint firstItem="2t5-UW-Cfd" firstAttribute="centerX" secondItem="lW8-as-hQ0" secondAttribute="centerX" id="LXQ-Wd-HGr"/>
+                                                <constraint firstAttribute="bottomMargin" secondItem="RGO-0f-XYF" secondAttribute="bottom" constant="8" id="Pjt-fe-1Ob"/>
+                                                <constraint firstItem="2t5-UW-Cfd" firstAttribute="centerY" secondItem="xCI-GP-ox5" secondAttribute="centerY" id="Yhb-dd-Nk6"/>
+                                                <constraint firstItem="xCI-GP-ox5" firstAttribute="top" relation="greaterThanOrEqual" secondItem="RGO-0f-XYF" secondAttribute="bottom" constant="5" id="iFh-b7-iB0"/>
+                                                <constraint firstItem="RGO-0f-XYF" firstAttribute="leading" secondItem="lW8-as-hQ0" secondAttribute="leadingMargin" constant="8" id="mAh-Q2-3tK"/>
+                                                <constraint firstItem="xCI-GP-ox5" firstAttribute="leading" secondItem="RGO-0f-XYF" secondAttribute="leading" id="pCn-U1-NXy"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="9jx-Pu-5kh" secondAttribute="trailing" constant="8" id="teR-VH-B6E"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="RGO-0f-XYF" secondAttribute="trailing" constant="8" id="z1V-7j-OlH"/>
+                                            </constraints>
+                                            <variation key="default">
+                                                <mask key="constraints">
+                                                    <exclude reference="Pjt-fe-1Ob"/>
+                                                </mask>
+                                            </variation>
+                                        </tableViewCellContentView>
+                                        <animations/>
+                                    </tableViewCell>
+                                </cells>
+                            </tableViewSection>
                             <tableViewSection headerTitle="Notifications" footerTitle="Memories will notify you at this time each day if you have photo memories" id="y81-dl-kMT">
                                 <cells>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="dAA-Ng-USI">
-                                        <rect key="frame" x="0.0" y="114" width="600" height="44"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" id="dAA-Ng-USI">
+                                        <rect key="frame" x="0.0" y="311" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="dAA-Ng-USI" id="mrU-li-9js">
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="43"/>
@@ -172,16 +240,19 @@
                                         </tableViewCellContentView>
                                         <animations/>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="216" id="XQT-GT-P3z">
-                                        <rect key="frame" x="0.0" y="158" width="600" height="216"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" rowHeight="162" id="XQT-GT-P3z">
+                                        <rect key="frame" x="0.0" y="355" width="600" height="162"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="XQT-GT-P3z" id="GdD-5v-PcF">
-                                            <rect key="frame" x="0.0" y="0.0" width="600" height="215"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="600" height="161"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <datePicker contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="time" minuteInterval="1" translatesAutoresizingMaskIntoConstraints="NO" id="hy5-2I-bQz">
-                                                    <rect key="frame" x="140" y="-1" width="320" height="216"/>
+                                                    <rect key="frame" x="140" y="-1" width="320" height="163"/>
                                                     <animations/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="162" id="K6N-Mf-Id7"/>
+                                                    </constraints>
                                                     <date key="date" timeIntervalSinceReferenceDate="463532359.76187199">
                                                         <!--2015-09-09 22:59:19 +0000-->
                                                     </date>
@@ -200,78 +271,10 @@
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
-                            <tableViewSection headerTitle="Upgrade" id="3sS-BC-kiE">
-                                <cells>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" rowHeight="161" id="Sk4-Zw-3Hn">
-                                        <rect key="frame" x="0.0" y="441" width="600" height="161"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Sk4-Zw-3Hn" id="lW8-as-hQ0">
-                                            <rect key="frame" x="0.0" y="0.0" width="600" height="160"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="1000" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RGO-0f-XYF" userLabel="Upgrade Text">
-                                                    <rect key="frame" x="16" y="8" width="568" height="101"/>
-                                                    <animations/>
-                                                    <string key="text">Memories lets you view 5 full quality photos each day. You can Upgrade to remove this restriction, which also enables sharing photos. Memories is developed by me, Michael Brown, on my own on evenings and weekends. It's a lot of work and a lot of time when I'm not with my family. If you like the app and you use it frequently, please consider upgrading to support my work. Thank you.
-</string>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                                <button opaque="NO" contentMode="scaleToFill" verticalCompressionResistancePriority="1000" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xCI-GP-ox5">
-                                                    <rect key="frame" x="16" y="119" width="67" height="33"/>
-                                                    <animations/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                    <state key="normal" title="Upgrade"/>
-                                                    <connections>
-                                                        <action selector="upgradeTapped:" destination="lrk-w0-uZT" eventType="touchUpInside" id="H1U-gM-gYJ"/>
-                                                    </connections>
-                                                </button>
-                                                <button opaque="NO" contentMode="scaleToFill" verticalCompressionResistancePriority="1000" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9jx-Pu-5kh">
-                                                    <rect key="frame" x="525" y="119" width="59" height="33"/>
-                                                    <animations/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                    <state key="normal" title="Restore"/>
-                                                    <connections>
-                                                        <action selector="restoreTapped:" destination="lrk-w0-uZT" eventType="touchUpInside" id="CUw-HS-sJ4"/>
-                                                    </connections>
-                                                </button>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Thank you for supporting me!" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2t5-UW-Cfd">
-                                                    <rect key="frame" x="187" y="125" width="226" height="21"/>
-                                                    <animations/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                            </subviews>
-                                            <animations/>
-                                            <constraints>
-                                                <constraint firstItem="RGO-0f-XYF" firstAttribute="top" secondItem="lW8-as-hQ0" secondAttribute="top" constant="8" id="0dh-HS-eHy"/>
-                                                <constraint firstItem="9jx-Pu-5kh" firstAttribute="centerY" secondItem="xCI-GP-ox5" secondAttribute="centerY" id="9A2-vV-pG9"/>
-                                                <constraint firstAttribute="bottom" secondItem="xCI-GP-ox5" secondAttribute="bottom" constant="8" id="KbZ-6z-gV1"/>
-                                                <constraint firstItem="2t5-UW-Cfd" firstAttribute="centerX" secondItem="lW8-as-hQ0" secondAttribute="centerX" id="LXQ-Wd-HGr"/>
-                                                <constraint firstAttribute="bottomMargin" secondItem="RGO-0f-XYF" secondAttribute="bottom" constant="8" id="Pjt-fe-1Ob"/>
-                                                <constraint firstItem="2t5-UW-Cfd" firstAttribute="centerY" secondItem="xCI-GP-ox5" secondAttribute="centerY" id="Yhb-dd-Nk6"/>
-                                                <constraint firstItem="xCI-GP-ox5" firstAttribute="top" relation="greaterThanOrEqual" secondItem="RGO-0f-XYF" secondAttribute="bottom" constant="5" id="iFh-b7-iB0"/>
-                                                <constraint firstItem="RGO-0f-XYF" firstAttribute="leading" secondItem="lW8-as-hQ0" secondAttribute="leadingMargin" constant="8" id="mAh-Q2-3tK"/>
-                                                <constraint firstItem="xCI-GP-ox5" firstAttribute="leading" secondItem="RGO-0f-XYF" secondAttribute="leading" id="pCn-U1-NXy"/>
-                                                <constraint firstAttribute="trailingMargin" secondItem="9jx-Pu-5kh" secondAttribute="trailing" constant="8" id="teR-VH-B6E"/>
-                                                <constraint firstAttribute="trailingMargin" secondItem="RGO-0f-XYF" secondAttribute="trailing" constant="8" id="z1V-7j-OlH"/>
-                                            </constraints>
-                                            <variation key="default">
-                                                <mask key="constraints">
-                                                    <exclude reference="Pjt-fe-1Ob"/>
-                                                </mask>
-                                            </variation>
-                                        </tableViewCellContentView>
-                                        <animations/>
-                                    </tableViewCell>
-                                </cells>
-                            </tableViewSection>
                             <tableViewSection headerTitle="Feedback" footerTitle="Memories will never prompt you for a review" id="eRM-Bi-ePn">
                                 <cells>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" id="yvT-6j-Jyy">
-                                        <rect key="frame" x="0.0" y="653" width="600" height="44"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" accessoryType="disclosureIndicator" indentationWidth="10" id="yvT-6j-Jyy">
+                                        <rect key="frame" x="0.0" y="584" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="yvT-6j-Jyy" id="Tsv-Ux-wbP">
                                             <rect key="frame" x="0.0" y="0.0" width="567" height="43"/>
@@ -293,8 +296,8 @@
                                         </tableViewCellContentView>
                                         <animations/>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" id="WGm-1S-QSZ">
-                                        <rect key="frame" x="0.0" y="697" width="600" height="44"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" accessoryType="disclosureIndicator" indentationWidth="10" id="WGm-1S-QSZ">
+                                        <rect key="frame" x="0.0" y="628" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="WGm-1S-QSZ" id="aW0-iK-r0Z">
                                             <rect key="frame" x="0.0" y="0.0" width="567" height="43"/>
@@ -406,6 +409,25 @@
                                     <action selector="sharePhoto:" destination="IGe-pw-kxC" eventType="touchUpInside" id="XVR-f7-LSR"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9AS-GW-LvP" userLabel="Delete Button">
+                                <rect key="frame" x="10" y="550" width="40" height="40"/>
+                                <animations/>
+                                <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.5" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="40" id="Nvd-yk-WOs"/>
+                                    <constraint firstAttribute="height" constant="40" id="wy0-l7-sE9"/>
+                                </constraints>
+                                <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <state key="normal" image="delete"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="20"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="deletePhoto:" destination="IGe-pw-kxC" eventType="touchUpInside" id="tk0-Nc-fbe"/>
+                                </connections>
+                            </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aka-lC-37E" userLabel="Close Button">
                                 <rect key="frame" x="550" y="10" width="40" height="40"/>
                                 <animations/>
@@ -429,8 +451,10 @@
                         <animations/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="GR2-pH-NTw" firstAttribute="top" secondItem="9AS-GW-LvP" secondAttribute="bottom" constant="10" id="E56-Lk-Bky"/>
                             <constraint firstItem="BOF-fB-WYF" firstAttribute="top" secondItem="ngb-Kf-4Io" secondAttribute="top" id="EC0-Mv-FJd"/>
                             <constraint firstAttribute="trailing" secondItem="aka-lC-37E" secondAttribute="trailing" constant="10" id="ICl-iR-Gma"/>
+                            <constraint firstItem="9AS-GW-LvP" firstAttribute="leading" secondItem="ngb-Kf-4Io" secondAttribute="leading" constant="10" id="Ulq-ZU-aW0"/>
                             <constraint firstItem="GR2-pH-NTw" firstAttribute="top" secondItem="Jpu-wC-w7H" secondAttribute="bottom" constant="10" id="ifT-ao-sVX"/>
                             <constraint firstAttribute="trailing" secondItem="Jpu-wC-w7H" secondAttribute="trailing" constant="10" id="kW3-4j-pPe"/>
                             <constraint firstItem="BOF-fB-WYF" firstAttribute="bottom" secondItem="ngb-Kf-4Io" secondAttribute="bottom" id="mHc-iL-YLL"/>
@@ -441,6 +465,7 @@
                     </view>
                     <nil key="simulatedStatusBarMetrics"/>
                     <connections>
+                        <outlet property="deleteButton" destination="9AS-GW-LvP" id="zxV-dV-s4u"/>
                         <outlet property="scrollView" destination="BOF-fB-WYF" id="uvf-cr-JyI"/>
                         <outlet property="shareButton" destination="Jpu-wC-w7H" id="H0r-ws-LSU"/>
                         <outlet property="view" destination="ngb-Kf-4Io" id="s2D-L4-ZJj"/>
@@ -453,10 +478,11 @@
     </scenes>
     <resources>
         <image name="close" width="25" height="25"/>
+        <image name="delete" width="25" height="25"/>
         <image name="settings" width="25" height="25"/>
         <image name="share" width="25" height="25"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="hon-NQ-Umc"/>
+        <segue reference="xja-hh-pIl"/>
     </inferredMetricsTieBreakers>
 </document>

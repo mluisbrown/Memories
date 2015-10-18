@@ -10,7 +10,7 @@ import Foundation
 import Photos
 
 struct PhotoViewModel {
-    var assets : [PHAsset]!
+    let assets : [PHAsset]
     var selectedAsset : Int
     
     init (assets: [PHAsset], selectedAsset: Int) {
