@@ -1,2 +1,4 @@
 Carthage/Build
 Memories.xcodeproj/xcuserdata
+Crashlytics.framework
+Fabric.framework
