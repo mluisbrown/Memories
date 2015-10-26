@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4C0410E61BC8787200BBB76C /* UIDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C0410E51BC8787200BBB76C /* UIDevice.swift */; settings = {ASSET_TAGS = (); }; };
+		4C0410E61BC8787200BBB76C /* UIDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C0410E51BC8787200BBB76C /* UIDevice.swift */; };
 		4C2DFCAA1B9E21BC00AD6E16 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C2DFCA91B9E21BC00AD6E16 /* NotificationManager.swift */; };
 		4C3334531B65712D00D907C8 /* PhotoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3334521B65712D00D907C8 /* PhotoViewModel.swift */; };
 		4C3334551B659DAA00D907C8 /* ZoomingPhotoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3334541B659DAA00D907C8 /* ZoomingPhotoView.swift */; };
@@ -18,15 +18,17 @@
 		4C8594CD1BB33D4C005CCFAC /* DACircularProgress.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C8594C91BB33D02005CCFAC /* DACircularProgress.framework */; };
 		4C8594D11BB33E27005CCFAC /* Cartography.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4C8594D01BB33E27005CCFAC /* Cartography.framework.dSYM */; };
 		4C8594D31BB33E2F005CCFAC /* DACircularProgress.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4C8594D21BB33E2F005CCFAC /* DACircularProgress.framework.dSYM */; };
-		4C91432C1BA958CC001B30A9 /* notification.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 4C91432B1BA958CC001B30A9 /* notification.mp3 */; settings = {ASSET_TAGS = (); }; };
-		4C989BDF1BA7806E00D4C13F /* Dynamic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C989BDE1BA7806E00D4C13F /* Dynamic.swift */; settings = {ASSET_TAGS = (); }; };
-		4C989BE11BA780BB00D4C13F /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C989BE01BA780BB00D4C13F /* SettingsViewModel.swift */; settings = {ASSET_TAGS = (); }; };
+		4C91432C1BA958CC001B30A9 /* notification.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 4C91432B1BA958CC001B30A9 /* notification.mp3 */; };
+		4C989BDF1BA7806E00D4C13F /* Dynamic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C989BDE1BA7806E00D4C13F /* Dynamic.swift */; };
+		4C989BE11BA780BB00D4C13F /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C989BE01BA780BB00D4C13F /* SettingsViewModel.swift */; };
 		4CAAF0751B827EAD00AE47C3 /* PullView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CAAF0741B827EAD00AE47C3 /* PullView.swift */; };
 		4CB674B51BA1EBC7001F401A /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB674B41BA1EBC7001F401A /* SettingsViewController.swift */; };
 		4CBA89631BBC66BB00913336 /* RMStore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CBA89621BBC66BB00913336 /* RMStore.framework */; };
 		4CBA89651BBC66E000913336 /* RMStore.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4CBA89641BBC66E000913336 /* RMStore.framework.dSYM */; };
-		4CBA89671BBC926100913336 /* UpgradeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBA89661BBC926100913336 /* UpgradeManager.swift */; settings = {ASSET_TAGS = (); }; };
+		4CBA89671BBC926100913336 /* UpgradeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBA89661BBC926100913336 /* UpgradeManager.swift */; };
 		4CBA89691BBC9BF300913336 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CBA89681BBC9BF300913336 /* Security.framework */; };
+		4CCA009D1BDD5A4E00C365D9 /* Fabric.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CCA009B1BDD5A4E00C365D9 /* Fabric.framework */; };
+		4CCA009E1BDD5A4E00C365D9 /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CCA009C1BDD5A4E00C365D9 /* Crashlytics.framework */; };
 		4CEAA8EE1B3340C600774FE8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CEAA8ED1B3340C600774FE8 /* AppDelegate.swift */; };
 		4CEAA8F31B3340C600774FE8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4CEAA8F11B3340C600774FE8 /* Main.storyboard */; };
 		4CEAA8F51B3340C600774FE8 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4CEAA8F41B3340C600774FE8 /* Images.xcassets */; };
@@ -71,6 +73,8 @@
 		4CBA89641BBC66E000913336 /* RMStore.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = RMStore.framework.dSYM; path = Carthage/Build/iOS/RMStore.framework.dSYM; sourceTree = "<group>"; };
 		4CBA89661BBC926100913336 /* UpgradeManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UpgradeManager.swift; sourceTree = "<group>"; };
 		4CBA89681BBC9BF300913336 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		4CCA009B1BDD5A4E00C365D9 /* Fabric.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Fabric.framework; sourceTree = "<group>"; };
+		4CCA009C1BDD5A4E00C365D9 /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = "<group>"; };
 		4CEAA8E81B3340C600774FE8 /* Memories.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Memories.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4CEAA8EC1B3340C600774FE8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4CEAA8ED1B3340C600774FE8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -89,8 +93,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				4CBA89691BBC9BF300913336 /* Security.framework in Frameworks */,
+				4CCA009D1BDD5A4E00C365D9 /* Fabric.framework in Frameworks */,
 				4C8594CC1BB33D49005CCFAC /* Cartography.framework in Frameworks */,
 				4C8594CD1BB33D4C005CCFAC /* DACircularProgress.framework in Frameworks */,
+				4CCA009E1BDD5A4E00C365D9 /* Crashlytics.framework in Frameworks */,
 				4CBA89631BBC66BB00913336 /* RMStore.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -101,6 +107,8 @@
 		4C8594D41BB33E9C005CCFAC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4CCA009B1BDD5A4E00C365D9 /* Fabric.framework */,
+				4CCA009C1BDD5A4E00C365D9 /* Crashlytics.framework */,
 				4CBA89681BBC9BF300913336 /* Security.framework */,
 				4C8594D21BB33E2F005CCFAC /* DACircularProgress.framework.dSYM */,
 				4C8594D01BB33E27005CCFAC /* Cartography.framework.dSYM */,
@@ -194,6 +202,7 @@
 				4CEAA8E61B3340C600774FE8 /* Resources */,
 				4C8594CE1BB33D7F005CCFAC /* ShellScript */,
 				4C8594CF1BB33E01005CCFAC /* CopyFiles */,
+				4CCA009A1BDD59FF00C365D9 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -267,6 +276,19 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "/usr/local/bin/carthage copy-frameworks";
+		};
+		4CCA009A1BDD59FF00C365D9 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "./Fabric.framework/run e8d3a149b5ad9fb12403d0c9af599d9a7958aef9 c6438fec346f5ef966c14508dfadbf145539af24b12b0eb728c9683cf5170d4f";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -404,6 +426,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
+					"$(PROJECT_DIR)",
 				);
 				INFOPLIST_FILE = Memories/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -424,6 +447,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
+					"$(PROJECT_DIR)",
 				);
 				INFOPLIST_FILE = Memories/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

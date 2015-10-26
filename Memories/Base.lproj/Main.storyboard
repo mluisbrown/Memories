@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="8191" systemVersion="15A284" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="Qt4-xf-ejy">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9059" systemVersion="15A284" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="Qt4-xf-ejy">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="8154"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9049"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
@@ -150,7 +150,7 @@
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="1000" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RGO-0f-XYF" userLabel="Upgrade Text">
                                                     <rect key="frame" x="16" y="8" width="568" height="84"/>
                                                     <animations/>
-                                                    <string key="text">Memories lets you view 5 full quality photos each day. You can Upgrade to remove this restriction, which also enables sharing and deleting photos. Memories is developed by me, Michael Brown, on evenings and weekends. It's a lot of work and a lot of time when I'm not with my family. Please consider upgrading to support my work. Thank you.
+                                                    <string key="text">Memories lets you view 5 full quality photos each day which you can zoom, share or delete. You can Upgrade to remove this restriction. Memories is developed by me, Michael Brown, on evenings and weekends. It's a lot of work and a lot of time when I'm not with my family. Please consider upgrading to support my work. Thank you.
 </string>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
@@ -483,6 +483,6 @@
         <image name="share" width="25" height="25"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="xja-hh-pIl"/>
+        <segue reference="hon-NQ-Umc"/>
     </inferredMetricsTieBreakers>
 </document>

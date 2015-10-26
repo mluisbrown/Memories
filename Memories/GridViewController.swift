@@ -98,9 +98,9 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
             let startDate: NSDate
 #if (arch(i386) || arch(x86_64)) && os(iOS)
             let comps = NSDateComponents()
-            comps.day = 8
-            comps.month = 8
-            comps.year = 2012
+            comps.day = 16
+            comps.month = 10
+            comps.year = 2015
             let testDate = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!.dateFromComponents(comps)!
             startDate = testDate
 #else
@@ -187,7 +187,6 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
             imageManager.requestImageForAsset(asset, targetSize: gridThumbnailSize, contentMode: .AspectFill, options: nil) { (result : UIImage?, info : [NSObject : AnyObject]?) -> Void in
                 // Only update the thumbnail if the cell tag hasn't changed. Otherwise, the cell has been re-used.
                 if cell.tag == currentTag {
-                    print("thumbSize: \(result?.size.width),\(result?.size.height)")
                     cell.thumbnailImage = result
                 }
             }
@@ -453,7 +452,6 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
         
         let scale = UIScreen.mainScreen().scale
         gridThumbnailSize = CGSizeMake(cellSize.width * scale, cellSize.height * scale)
-        print("gridThumbnailSize: \(gridThumbnailSize)")
     }
     
     func showHideNoPhotosLabel() {

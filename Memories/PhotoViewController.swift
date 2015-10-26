@@ -37,7 +37,6 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate {
         initialPage = model.selectedAsset
         // TODO: find out optimum size to use
         cacheSize = CGSizeMake(256, 256)
-        print("cacheSize: \(cacheSize)")
         imageManager.startCachingImagesForAssets(model.assets, targetSize: cacheSize, contentMode: .AspectFill, options: nil)
     }
 
@@ -172,8 +171,8 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate {
         pageView.imageIsDegraded = true
         imageManager.requestImageForAsset(asset, targetSize: cacheSize, contentMode: .AspectFill, options: nil, resultHandler: { (result, userInfo) -> Void in
             if let image = result {
-                NSLog("Cache Result with image for page \(page) requestFullImage: \(requestFullImage) iamgeSize: \(image.size.width), \(image.size.height)");
-                pageView.image = result
+                // NSLog("Cache Result with image for page \(page) requestFullImage: \(requestFullImage) iamgeSize: \(image.size.width), \(image.size.height)");
+                pageView.image = image
                 if page == self.model.selectedAsset {
                     self.shareButton.enabled = false
                     self.deleteButton.enabled = false
@@ -204,7 +203,6 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate {
         let pageView = pageViews[page]!
         
         options.progressHandler  = {(progress : Double, error: NSError?, stop: UnsafeMutablePointer<ObjCBool>, userInfo: [NSObject : AnyObject]?) -> Void in
-            NSLog("Progress: %f", progress);
             dispatch_async(dispatch_get_main_queue()) {
                 pageView.updateProgress(progress)
                 
@@ -220,7 +218,6 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate {
         
         let requestId = PHImageManager.defaultManager().requestImageForAsset(asset, targetSize: PHImageManagerMaximumSize, contentMode: .AspectFit, options: options) { (result, userInfo) -> Void in
             if let image = result {
-                NSLog("Result with image for page \(page) requestFullImage: true iamgeSize: \(image.size.width), \(image.size.height)");
                 UpgradeManager.highQualityViewCount++
                 pageView.image = image
                 pageView.imageIsDegraded = false
@@ -230,9 +227,8 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate {
                 }
             }
             
-            if let error = userInfo?[PHImageErrorKey] as? NSError {
+            if let _ = userInfo?[PHImageErrorKey] as? NSError {
                 pageView.fullImageUnavailable = true
-                NSLog("Error: \(error.localizedDescription)")
             }
         }
         
@@ -273,7 +269,6 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate {
             return
         }
         
-        NSLog("Visible page: %d", page);
         model.selectedAsset = page
         
         // Work out which pages you want to load

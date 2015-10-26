@@ -166,7 +166,6 @@ class NotificationManager {
             }
         }
         
-        NSLog("datesMap has \(datesMap.count) entries.")
         return datesMap
     }
     
