@@ -19,8 +19,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         Fabric.with([Crashlytics.self])
         
-        UINavigationBar.appearance().titleTextAttributes = [NSFontAttributeName : UIFont.systemFontOfSize(16)]
-        
         NSUserDefaults.standardUserDefaults().registerDefaults([NotificationManager.NOTIFICATION_TIME_KEY : 1000,
             NotificationManager.HAS_PROMPTED_KEY : false,
             NotificationManager.NOTIFICATIONS_ENABLED_KEY: false])

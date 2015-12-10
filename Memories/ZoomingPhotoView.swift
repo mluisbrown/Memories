@@ -154,7 +154,7 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
                 bounds.size.height / image.size.height);
             
             minimumZoomScale = minZoom
-            maximumZoomScale = minZoom < 1 ? minZoom * 3 : minZoom
+            maximumZoomScale = minZoom * 4
             bounceScale = minimumZoomScale
             
             zoomScale = minZoom
@@ -162,7 +162,7 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
             
             // only allow scrolling if the image has been zoomed
             // larger than the window
-            scrollEnabled = minZoom < 1 || zoomScale <= minZoom
+            scrollEnabled = zoomScale >= minZoom
         }
     }
     
@@ -211,8 +211,7 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
             bounceScale = minimumZoomScale
         }
         
-        scrollEnabled = minimumZoomScale < 1 || zoomScale <= minimumZoomScale
-        
+        scrollEnabled = zoomScale >= minimumZoomScale
         updateConstraints()
     }
     

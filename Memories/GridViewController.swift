@@ -32,7 +32,7 @@ extension UICollectionView {
     }
 }
 
-class GridViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, PHPhotoLibraryChangeObserver {
+class GridViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, PHPhotoLibraryChangeObserver, UIPopoverPresentationControllerDelegate {
     let reuseIdentifier = "PhotoCell"
     let headerIdentifier = "YearHeader"
     var gridThumbnailSize : CGSize = CGSizeZero
@@ -46,12 +46,14 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
                 self.showHideNoPhotosLabel()
                 
                 self.createOrUpdatePullViews(date)
-                self.title = self.dateFormatter.stringFromDate(date).uppercaseString
+                self.title = self.dateFormatter.stringFromDate(date).uppercaseString + " ▾" // ▼
                 self.showHideBlur(false)
             }
         }
     }
 
+    var titleView : UILabel!
+    
     var imageManager : PHCachingImageManager!
     var previousPreheatRect : CGRect = CGRectZero
     var cellSize : CGSize = CGSizeZero
@@ -95,17 +97,7 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
             self.photosAllowed = true
             self.imageManager = PHCachingImageManager()
             
-            let startDate: NSDate
-#if (arch(i386) || arch(x86_64)) && os(iOS)
-            let comps = NSDateComponents()
-            comps.day = 16
-            comps.month = 10
-            comps.year = 2015
-            let testDate = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!.dateFromComponents(comps)!
-            startDate = testDate
-#else
-            startDate = NSDate()
-#endif
+            let startDate = NSDate()
             if let date = NotificationManager.launchDate() {
                 self.model.date.value = date
             } else {
@@ -115,6 +107,53 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
             PHPhotoLibrary.sharedPhotoLibrary().registerChangeObserver(self);
             NSNotificationCenter.defaultCenter().addObserver(self, selector:"appDidBecomeActive", name:
                 UIApplicationDidBecomeActiveNotification, object: nil)
+        }
+    }
+
+    override var title: String? {
+        set {
+            super.title = newValue
+            
+            let titleView : UILabel!
+            if let aTitleView : UILabel = self.navigationItem.titleView as? UILabel  {
+                titleView = aTitleView;
+            } else {
+                titleView = UILabel(frame: CGRectZero);
+                	titleView.backgroundColor = UIColor.clearColor()
+                titleView.font = UIFont.systemFontOfSize(16)
+                titleView.textColor = UIColor.whiteColor()
+                titleView.userInteractionEnabled = true
+                self.navigationItem.titleView = titleView
+                
+                let tgr = UITapGestureRecognizer(target: self, action: "titleTapped:")
+                titleView.addGestureRecognizer(tgr)
+            }
+
+            titleView.text = newValue
+            titleView.sizeToFit()
+        }
+        
+        get {
+            return super.title
+        }
+    }
+    
+    func titleTapped(tgr: UITapGestureRecognizer) {
+        let sourceView = tgr.view!
+        
+        if let datePickerVC = storyboard?.instantiateViewControllerWithIdentifier("datePicker") as? DatePickerViewController {
+            datePickerVC.modalPresentationStyle = UIModalPresentationStyle.Popover
+            datePickerVC.preferredContentSize = CGSizeMake(200, 200)
+            
+            if let popoverPresentationController = datePickerVC.popoverPresentationController {
+                popoverPresentationController.sourceView = sourceView
+                popoverPresentationController.sourceRect = CGRectMake(0, 0, sourceView.frame.size.width, sourceView.frame.size.height)
+                popoverPresentationController.delegate = self
+                popoverPresentationController.backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.2)
+            }
+            
+            datePickerVC.selectedDate = model.date.value
+            presentViewController(datePickerVC, animated: true, completion: nil)
         }
     }
     
@@ -152,6 +191,27 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
         super.didReceiveMemoryWarning()
     }
 
+    // MARK - UIPopoverPresentationControllerDelegate
+    func popoverPresentationControllerShouldDismissPopover(popoverPresentationController: UIPopoverPresentationController) -> Bool {
+        return true
+    }
+
+    func popoverPresentationControllerDidDismissPopover(popoverPresentationController: UIPopoverPresentationController) {
+        let datePickerVC = popoverPresentationController.presentedViewController as! DatePickerViewController
+        
+        if !datePickerVC.selectedDate!.isEqualToDate(model.date.value) {
+            model.date.value = datePickerVC.selectedDate!
+        }
+    }
+    
+    func adaptivePresentationStyleForPresentationController(controller: UIPresentationController) -> UIModalPresentationStyle {
+        return UIModalPresentationStyle.None
+    }
+    
+    func adaptivePresentationStyleForPresentationController(controller: UIPresentationController, traitCollection: UITraitCollection) -> UIModalPresentationStyle {
+        return UIModalPresentationStyle.None
+    }
+    
     // MARK: - Navigation
 
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
@@ -165,6 +225,10 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
         photoViewController.model = model.photoViewModelForIndexPath(indexPath!)
     }
 
+    func setSelectedIndex(index: Int) {
+        collectionView?.selectItemAtIndexPath(model.indexPathForSelectedIndex(index), animated: false, scrollPosition: .CenteredVertically)
+    }
+    
     // MARK: UICollectionViewDataSource
 
     override func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
@@ -307,8 +371,9 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
         dispatch_async(dispatch_get_main_queue()) { () -> Void in
             var cacheNeedsReset = false
             
-            for section in 0..<self.model.sectionCount {
-                if let collectionChanges = changeInstance.changeDetailsForFetchResult(self.model.fetchResultForSection(section)!) {
+            for section in (0..<self.model.sectionCount).reverse() {
+                if let fetchResult = self.model.fetchResultForSection(section),
+                    collectionChanges = changeInstance.changeDetailsForFetchResult(fetchResult) {
                     // get the new fetch result
                     self.model.setFetchResultForSection(section, fetchResult: collectionChanges.fetchResultAfterChanges)
                     
@@ -326,7 +391,7 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
                                     self.collectionView?.insertItemsAtIndexPaths(insertedIndexes.indexPathsFromIndexesInSection(section))
                                 }
                             }
-                            if let changedIndexes = collectionChanges.insertedIndexes {
+                            if let changedIndexes = collectionChanges.changedIndexes {
                                 if (changedIndexes.count != 0) {
                                     self.collectionView?.reloadItemsAtIndexPaths(changedIndexes.indexPathsFromIndexesInSection(section))
                                 }

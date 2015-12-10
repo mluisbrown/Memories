@@ -13,6 +13,7 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate {
     @IBOutlet var scrollView: UIScrollView!
     @IBOutlet weak var shareButton: UIButton!
     @IBOutlet weak var deleteButton: UIButton!
+    @IBOutlet weak var closeButton: UIButton!
 
     let PADDING : CGFloat = 10.0;
     
@@ -81,11 +82,20 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate {
             PHAssetChangeRequest.deleteAssets([asset])
         }, completionHandler: { success, error in
             if success {
-                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                dispatch_async(dispatch_get_main_queue()) {
                     self.removeAssetFromModelAtIndex(self.model.selectedAsset)
-                })
+                }
             }
         })
+    }
+    
+    @IBAction func close(sender: UIButton) {
+        if let navController = presentingViewController as? UINavigationController,
+            gridViewController = navController.topViewController as? GridViewController {
+            navController.dismissViewControllerAnimated(false) { [weak self] in
+                gridViewController.setSelectedIndex(self!.model.selectedAsset)
+            }
+        }
     }
     
     // MARK: Internal implementation

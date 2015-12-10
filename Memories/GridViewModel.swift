@@ -191,4 +191,17 @@ class GridViewModel {
         
         return PhotoViewModel(assets: assets, selectedAsset: selectedIndex)
     }
+    
+    func indexPathForSelectedIndex(selectedIndex: Int) -> NSIndexPath {
+        var sectionTotal = 0
+        
+        for (section, fetchResult) in assetFetchResults.enumerate() {
+            if sectionTotal + fetchResult.count > selectedIndex {
+                return NSIndexPath(forItem: selectedIndex - sectionTotal, inSection: section)
+            }
+            sectionTotal += fetchResult.count
+        }
+        
+        return NSIndexPath()
+    }
 }
