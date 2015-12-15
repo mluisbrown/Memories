@@ -453,7 +453,7 @@
                         <viewControllerLayoutGuide type="bottom" id="dLG-5F-c2D"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="6qd-La-U2L">
-                        <rect key="frame" x="0.0" y="0.0" width="200" height="200"/>
+                        <rect key="frame" x="0.0" y="0.0" width="200" height="240"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hz8-q5-lvH">
@@ -482,30 +482,64 @@
                                 <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XkC-rE-OSo">
+                                <rect key="frame" x="134" y="202" width="50" height="30"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="50" id="O0l-cV-8X3"/>
+                                </constraints>
+                                <state key="normal" title="Go">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="selectDateAndClose:" destination="664-5B-kap" eventType="touchUpInside" id="Kfd-Rn-XOk"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qga-5q-Fjx">
+                                <rect key="frame" x="16" y="202" width="50" height="30"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="50" id="4zr-qJ-Dfc"/>
+                                </constraints>
+                                <state key="normal" title="Today">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="gotoToday:" destination="664-5B-kap" eventType="touchUpInside" id="laJ-W9-fb0"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="y0y-n9-5wK" firstAttribute="trailing" secondItem="6qd-La-U2L" secondAttribute="trailingMargin" id="2mH-ts-DX5"/>
+                            <constraint firstItem="dLG-5F-c2D" firstAttribute="top" secondItem="qga-5q-Fjx" secondAttribute="bottom" constant="8" id="8SC-aI-bYl"/>
                             <constraint firstItem="hz8-q5-lvH" firstAttribute="leading" secondItem="6qd-La-U2L" secondAttribute="leading" id="9ld-dA-XSN"/>
+                            <constraint firstItem="XkC-rE-OSo" firstAttribute="centerX" secondItem="6qd-La-U2L" secondAttribute="centerX" id="9zc-NW-2DA"/>
                             <constraint firstItem="gWU-uh-HgH" firstAttribute="leading" secondItem="6qd-La-U2L" secondAttribute="leadingMargin" id="AQw-z5-ghH"/>
+                            <constraint firstItem="qga-5q-Fjx" firstAttribute="leading" secondItem="6qd-La-U2L" secondAttribute="leading" constant="16" id="DWG-TC-JVO"/>
+                            <constraint firstAttribute="trailing" secondItem="XkC-rE-OSo" secondAttribute="trailing" constant="16" id="L8z-Ek-gOi"/>
+                            <constraint firstItem="dLG-5F-c2D" firstAttribute="top" secondItem="XkC-rE-OSo" secondAttribute="bottom" constant="8" id="YW0-iv-U0A"/>
                             <constraint firstItem="gWU-uh-HgH" firstAttribute="top" secondItem="ORz-tx-AN1" secondAttribute="bottom" constant="8" symbolic="YES" id="Z6U-fO-5fp"/>
                             <constraint firstItem="hz8-q5-lvH" firstAttribute="top" secondItem="6qd-La-U2L" secondAttribute="top" id="b9s-Jp-wzv"/>
                             <constraint firstItem="y0y-n9-5wK" firstAttribute="top" secondItem="ORz-tx-AN1" secondAttribute="bottom" constant="8" id="bS5-Wm-2WE"/>
                             <constraint firstItem="hz8-q5-lvH" firstAttribute="top" secondItem="gWU-uh-HgH" secondAttribute="bottom" id="cDU-qy-a3Y"/>
-                            <constraint firstAttribute="bottom" secondItem="hz8-q5-lvH" secondAttribute="bottom" id="fFD-mY-lDr"/>
+                            <constraint firstAttribute="bottom" secondItem="hz8-q5-lvH" secondAttribute="bottom" constant="40" id="fFD-mY-lDr"/>
                             <constraint firstAttribute="trailing" secondItem="hz8-q5-lvH" secondAttribute="trailing" id="onv-iD-zgm"/>
                         </constraints>
                         <variation key="default">
                             <mask key="constraints">
                                 <exclude reference="b9s-Jp-wzv"/>
+                                <exclude reference="9zc-NW-2DA"/>
                             </mask>
                         </variation>
                     </view>
                     <nil key="simulatedStatusBarMetrics"/>
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-                    <size key="freeformSize" width="200" height="200"/>
+                    <size key="freeformSize" width="200" height="240"/>
                     <connections>
                         <outlet property="datePicker" destination="hz8-q5-lvH" id="Hu2-9V-N87"/>
+                        <outlet property="goButton" destination="XkC-rE-OSo" id="Nsh-Hz-SSr"/>
+                        <outlet property="todayButton" destination="qga-5q-Fjx" id="Yxj-MJ-flj"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="XdN-jX-krv" userLabel="First Responder" sceneMemberID="firstResponder"/>

@@ -9,7 +9,7 @@
 import UIKit
 import Photos
 
-class PhotoViewController: UIViewController, UIScrollViewDelegate {
+class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControllerTransitioningDelegate {
     @IBOutlet var scrollView: UIScrollView!
     @IBOutlet weak var shareButton: UIButton!
     @IBOutlet weak var deleteButton: UIButton!
@@ -24,6 +24,11 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate {
     var pageViews: [ZoomingPhotoView?] = []
     let imageManager : PHCachingImageManager
     var cacheSize : CGSize = CGSizeZero
+    
+    var hideStatusBar = true
+    
+    var presentTransition: PhotoViewPresentTransition?
+    var dismissTransition: PhotoViewDismissTransition?
     
     required init?(coder aDecoder: NSCoder) {
         self.imageManager = PHCachingImageManager()
@@ -52,7 +57,12 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate {
     }
     
     override func prefersStatusBarHidden() -> Bool {
-        return true
+        return hideStatusBar
+    }
+    
+    func hideStatusBar(hide: Bool) {
+        hideStatusBar = hide
+        setNeedsStatusBarAppearanceUpdate()
     }
     
     override func didReceiveMemoryWarning() {
@@ -92,9 +102,16 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate {
     @IBAction func close(sender: UIButton) {
         if let navController = presentingViewController as? UINavigationController,
             gridViewController = navController.topViewController as? GridViewController {
-            navController.dismissViewControllerAnimated(false) { [weak self] in
-                gridViewController.setSelectedIndex(self!.model.selectedAsset)
+            gridViewController.setSelectedIndex(model.selectedAsset)
+            
+            if traitCollection.verticalSizeClass == .Regular {
+                hideStatusBar(false)
             }
+            let imageView = gridViewController.imageViewForIndex(model.selectedAsset)
+            let pageView = pageViews[model.selectedAsset]
+            dismissTransition = PhotoViewDismissTransition(destImageView: imageView!, sourceImageView: pageView!.imageView)
+
+            navController.dismissViewControllerAnimated(true) {}
         }
     }
     
@@ -319,5 +336,14 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate {
         if scrollView == self.scrollView {
             loadVisiblePages()
         }
+    }
+
+    // MARK: UIViewControllerTransitioningDelegate
+    func animationControllerForPresentedController(presented: UIViewController, presentingController presenting: UIViewController, sourceController source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        return presentTransition
+    }
+    
+    func animationControllerForDismissedController(dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        return dismissTransition
     }
 }

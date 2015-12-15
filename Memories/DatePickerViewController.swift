@@ -14,14 +14,25 @@ import Cartography
 class DatePickerViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
 
     @IBOutlet weak var datePicker: UIPickerView!
+    @IBOutlet weak var goButton: UIButton!
+    @IBOutlet weak var todayButton: UIButton!
 
-    var selectedDate : NSDate?
-    var datesWithCount : [(date: NSDate, count: Int)] = []
+    var newDateSelected = false
+    var initialDate: NSDate?
+    var selectedDate: NSDate?
+    var datesWithCount: [(date: NSDate, count: Int)] = []
     
     let progressView = DACircularProgressView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        goButton.layer.borderWidth = 1
+        goButton.layer.borderColor = UIColor.whiteColor().CGColor
+        goButton.layer.cornerRadius = 4
+        todayButton.layer.borderWidth = 1
+        todayButton.layer.borderColor = UIColor.whiteColor().CGColor
+        todayButton.layer.cornerRadius = 4
         
         progressView.trackTintColor = UIColor.clearColor()
         progressView.thicknessRatio = 0.1
@@ -40,10 +51,9 @@ class DatePickerViewController: UIViewController, UIPickerViewDataSource, UIPick
             self.progressView.hidden = true
             self.datePicker.reloadAllComponents()
             
-            if let initialDate = self.selectedDate {
+            if let initialDate = self.initialDate {
                 if let initialRow = self.getInitialRow(initialDate) {
-                    self.selectedDate = self.datesWithCount[initialRow].date
-                    self.datePicker.selectRow(initialRow, inComponent: 0, animated: true)
+                    self.datePicker.selectRow(initialRow, inComponent: 0, animated: false)
                 }
             }
         }
@@ -71,29 +81,38 @@ class DatePickerViewController: UIViewController, UIPickerViewDataSource, UIPick
         return pickerRowView
     }
     
-    func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        selectedDate = datesWithCount[row].date
+// Actions
+    @IBAction func selectDateAndClose(sender: UIButton) {
+        selectedDate = datesWithCount[datePicker.selectedRowInComponent(0)].date
+
+        if let ppc = self.popoverPresentationController {
+            presentingViewController?.dismissViewControllerAnimated(true) {
+                if let ppcDelegate = ppc.delegate {
+                    ppcDelegate.popoverPresentationControllerDidDismissPopover?(ppc)
+                }
+            }
+        }
     }
+
+    @IBAction func gotoToday(sender: UIButton) {
+        if let todayRow = self.getInitialRow(NSDate()) {
+            self.datePicker.selectRow(todayRow, inComponent: 0, animated: true)
+        }
+    }
+    
     
 // MARK: helpers
     private func getInitialRow(initialDate : NSDate) -> Int? {
         let gregorian = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
-        let todayComps = gregorian.components([.Year, .Month, .Day], fromDate: NSDate())
-        let currentYear = todayComps.year
+        let initialDay = gregorian.ordinalityOfUnit(.Day, inUnit: .Era, forDate: initialDate)
         
-        let comps = gregorian.components([.Month, .Day], fromDate: initialDate)
-        selectedDate = gregorian.dateWithEra(1, year: currentYear, month: comps.month, day: comps.day, hour: 0, minute: 0, second: 0, nanosecond: 0)!
-        
-        for (index, dateWithCount) in datesWithCount.enumerate() {
-            if dateWithCount.date.isEqualToDate(selectedDate!) {
-                return index
-            }
-            if dateWithCount.date.compare(selectedDate!) == .OrderedDescending {
-                return min(index - 1, 0)
-            }
+        let diffs: [Int] = datesWithCount.map() {
+            let countDay = gregorian.ordinalityOfUnit(.Day, inUnit: .Era, forDate: $0.date)
+            return abs(countDay - initialDay)
         }
 
-        return datesWithCount.count - 1;
+        // get the index of the smallest date difference (ie, the closest matching date)
+        return zip(diffs, diffs.indices).minElement { $0.0 < $1.0 }.map { $0.1 }
     }
     
     private static func buildDatesWithCount(progressView: DACircularProgressView, completion: (datesWithCount: [(date: NSDate, count: Int)]) -> ()) {
@@ -105,7 +124,7 @@ class DatePickerViewController: UIViewController, UIPickerViewDataSource, UIPick
             return
         }
         
-        let queue = dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0)
+        let queue = dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0)
         
         dispatch_async(queue) {
             let options = PHFetchOptions()

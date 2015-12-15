@@ -143,7 +143,7 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
         
         if let datePickerVC = storyboard?.instantiateViewControllerWithIdentifier("datePicker") as? DatePickerViewController {
             datePickerVC.modalPresentationStyle = UIModalPresentationStyle.Popover
-            datePickerVC.preferredContentSize = CGSizeMake(200, 200)
+            datePickerVC.preferredContentSize = CGSizeMake(200, 240)
             
             if let popoverPresentationController = datePickerVC.popoverPresentationController {
                 popoverPresentationController.sourceView = sourceView
@@ -152,7 +152,7 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
                 popoverPresentationController.backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.2)
             }
             
-            datePickerVC.selectedDate = model.date.value
+            datePickerVC.initialDate = model.date.value
             presentViewController(datePickerVC, animated: true, completion: nil)
         }
     }
@@ -199,9 +199,9 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
     func popoverPresentationControllerDidDismissPopover(popoverPresentationController: UIPopoverPresentationController) {
         let datePickerVC = popoverPresentationController.presentedViewController as! DatePickerViewController
         
-        if !datePickerVC.selectedDate!.isEqualToDate(model.date.value) {
+        if let selectedDate = datePickerVC.selectedDate where !selectedDate.isEqualToDate(model.date.value) {
             model.date.value = datePickerVC.selectedDate!
-        }
+        }        
     }
     
     func adaptivePresentationStyleForPresentationController(controller: UIPresentationController) -> UIModalPresentationStyle {
@@ -223,10 +223,24 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
         
         let photoViewController = segue.destinationViewController as! PhotoViewController
         photoViewController.model = model.photoViewModelForIndexPath(indexPath!)
+        
+        if let cell = sender as? GridViewCell, imageView = cell.imageView {
+            photoViewController.presentTransition = PhotoViewPresentTransition(sourceImageView: imageView)
+            photoViewController.transitioningDelegate = photoViewController
+            photoViewController.modalPresentationStyle = .Custom
+        }
     }
 
     func setSelectedIndex(index: Int) {
         collectionView?.selectItemAtIndexPath(model.indexPathForSelectedIndex(index), animated: false, scrollPosition: .CenteredVertically)
+    }
+    
+    func imageViewForIndex(index: Int) -> UIImageView? {
+        guard let cell = collectionView?.cellForItemAtIndexPath(model.indexPathForSelectedIndex(index)) as? GridViewCell else {
+            return nil
+        }
+        
+        return cell.imageView
     }
     
     // MARK: UICollectionViewDataSource
