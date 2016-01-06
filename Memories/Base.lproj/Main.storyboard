@@ -62,7 +62,6 @@
                                 <size key="customSize" width="80" height="80"/>
                                 <connections>
                                     <outlet property="imageView" destination="s3v-El-2E9" id="69f-FY-dM6"/>
-                                    <segue destination="IGe-pw-kxC" kind="presentation" identifier="photos" modalTransitionStyle="crossDissolve" id="e6e-DJ-OPT"/>
                                 </connections>
                             </collectionViewCell>
                         </cells>
@@ -347,7 +346,7 @@
         <!--Photo View Controller-->
         <scene sceneID="fhF-ht-CYQ">
             <objects>
-                <viewController id="IGe-pw-kxC" customClass="PhotoViewController" customModule="Memories" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="photoViewController" id="IGe-pw-kxC" customClass="PhotoViewController" customModule="Memories" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="E5j-pK-Pbs"/>
                         <viewControllerLayoutGuide type="bottom" id="GR2-pH-NTw"/>

@@ -171,8 +171,7 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
         // make sure it's layed out correctly
         if let pageView = pageViews[page] {
             if !requestFullImage || !pageView.imageIsDegraded {
-                pageView.frame = frame;
-                pageView.adjustZoomScale();
+                pageView.frame = frame
                 if requestFullImage {
                     shareButton.enabled = true
                     deleteButton.enabled = true
@@ -250,7 +249,11 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
                 pageView.imageIsDegraded = false
                 if page == self.model.selectedAsset {
                     self.shareButton.enabled = true
-                    self.deleteButton.enabled = true
+                    if #available(iOS 9.0, *) {
+                        self.deleteButton.enabled = !asset.sourceType.contains(.TypeiTunesSynced)
+                    } else {
+                        self.deleteButton.enabled = true
+                    }
                 }
             }
             

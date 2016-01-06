@@ -129,6 +129,9 @@ class DatePickerViewController: UIViewController, UIPickerViewDataSource, UIPick
         dispatch_async(queue) {
             let options = PHFetchOptions()
             options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
+            if #available(iOS 9.0, *) {
+                options.includeAssetSourceTypes = [.TypeUserLibrary, .TypeiTunesSynced, .TypeCloudShared]
+            }
             let fetchResult = PHAsset.fetchAssetsWithMediaType(.Image, options: options)
             
             let gregorian = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!

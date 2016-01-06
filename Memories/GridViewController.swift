@@ -213,24 +213,20 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
     }
     
     // MARK: - Navigation
-
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        guard segue.identifier != nil && segue.identifier! == "photos" else {
-            return;
-        }
-        
-        let indexPath = collectionView?.indexPathForCell(sender as! UICollectionViewCell)
-        
-        let photoViewController = segue.destinationViewController as! PhotoViewController
-        photoViewController.model = model.photoViewModelForIndexPath(indexPath!)
-        
-        if let cell = sender as? GridViewCell, imageView = cell.imageView {
-            photoViewController.presentTransition = PhotoViewPresentTransition(sourceImageView: imageView)
-            photoViewController.transitioningDelegate = photoViewController
-            photoViewController.modalPresentationStyle = .Custom
+    
+    override func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+        if let photoViewController = storyboard?.instantiateViewControllerWithIdentifier("photoViewController") as? PhotoViewController {
+            photoViewController.model = model.photoViewModelForIndexPath(indexPath)
+            if let cell = collectionView.cellForItemAtIndexPath(indexPath) as? GridViewCell, imageView = cell.imageView {
+                photoViewController.presentTransition = PhotoViewPresentTransition(sourceImageView: imageView)
+                photoViewController.transitioningDelegate = photoViewController
+                photoViewController.modalPresentationStyle = .Custom
+                
+                presentViewController(photoViewController, animated: true, completion: nil)
+            }
         }
     }
-
+    
     func setSelectedIndex(index: Int) {
         collectionView?.selectItemAtIndexPath(model.indexPathForSelectedIndex(index), animated: false, scrollPosition: .CenteredVertically)
     }

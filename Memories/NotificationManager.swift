@@ -141,8 +141,10 @@ class NotificationManager {
         
         let options = PHFetchOptions()
         options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
-        let fetchResult = PHAsset.fetchAssetsWithMediaType(.Image, options: options)
-        
+        if #available(iOS 9.0, *) {
+            options.includeAssetSourceTypes = [.TypeUserLibrary, .TypeiTunesSynced, .TypeCloudShared]
+        }
+        let fetchResult = PHAsset.fetchAssetsWithMediaType(.Image, options: options)        
         
         let gregorian = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
         let todayComps = gregorian.components([.Year, .Month, .Day], fromDate: NSDate())

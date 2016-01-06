@@ -68,6 +68,9 @@ class GridViewModel {
     private func buildFetchResultsForDate(date : NSDate) -> [PHFetchResult] {
         let options = PHFetchOptions()
         options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
+        if #available(iOS 9.0, *) {
+            options.includeAssetSourceTypes = [.TypeUserLibrary, .TypeiTunesSynced, .TypeCloudShared]
+        }
         
         let startAndEndDates = GridViewModel.startAndEndDatesForDate(date, fromYear: earliestAssetYear, toYear: GridViewModel.gregorian.component(.Year, fromDate: NSDate()))
         

@@ -29,6 +29,8 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
     var lastZoomScale : CGFloat = -1
     var progressConstraintGroup : ConstraintGroup!
     
+    var doubleTapper: UITapGestureRecognizer!
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.delegate = self
@@ -56,6 +58,7 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
         
         displayLink = CADisplayLink(target: self, selector: "displayLinkTick")
         displayLink.addToRunLoop(NSRunLoop.currentRunLoop(), forMode: NSDefaultRunLoopMode)
+        displayLink.paused = true
         
         progressView = DACircularProgressView()
         progressView.roundedCorners = Int(false)
@@ -92,6 +95,10 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
             align(left: errorView, progressView)
             align(right: errorView, progressView)
         }
+        
+        doubleTapper = UITapGestureRecognizer(target: self, action: "imageDoubleTapped:")
+        doubleTapper.numberOfTapsRequired = 2
+        self.addGestureRecognizer(doubleTapper)
     }
 
     deinit {
@@ -123,6 +130,12 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
     var imageIsDegraded : Bool = true {
         didSet {
             progressView.hidden = !self.imageIsDegraded
+        }
+    }
+    
+    override var frame : CGRect {
+        didSet {
+            adjustZoomScale()
         }
     }
     
@@ -163,13 +176,21 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
             // only allow scrolling if the image has been zoomed
             // larger than the window
             scrollEnabled = zoomScale >= minZoom
+            
+            adjustImageConstraintsForZoomScale(zoomScale)
         }
     }
     
     // MARK: UIView
     
     override func updateConstraints() {
-        
+        let scale = bounceScale < minimumZoomScale ? bounceScale : zoomScale
+        adjustImageConstraintsForZoomScale(scale)
+    
+        super.updateConstraints()
+    }
+    
+    func adjustImageConstraintsForZoomScale(scale: CGFloat) {
         if let image = imageView.image {
             let imageWidth = image.size.width
             let imageHeight = image.size.height
@@ -177,8 +198,6 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
             let boundsSize = bounds.size
             let viewWidth = boundsSize.width
             let viewHeight = boundsSize.height
-            
-            let scale = bounceScale < minimumZoomScale ? bounceScale : zoomScale
             
             // center image if it is smaller than screen
             var hPadding = (viewWidth - scale * imageWidth) / 2
@@ -192,22 +211,55 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
             
             imageConstraintTop.constant = vPadding
             imageConstraintBottom.constant = vPadding
-
+            
             constrain(self, progressView, replace: progressConstraintGroup) {view, progressView in
                 progressView.top == view.top + vPadding + (scale * imageHeight) - 25
                 progressView.left == view.left + hPadding + (scale * imageWidth) - 25
             }
         }
-
-        super.updateConstraints()
     }
+    
+    // UITapGestureRecognizer action
+    func imageDoubleTapped(recognizer: UITapGestureRecognizer) {
+        let touchPoint = recognizer.locationOfTouch(0, inView: imageView)
+        
+        if zoomScale == minimumZoomScale {
+            let newScale = zoomScale * 3
+            let zoomRect = self.zoomRect(forScale: newScale, center: touchPoint)
+            
+            adjustImageConstraintsForZoomScale(newScale)
+            UIView.animateWithDuration(0.5) {
+                self.zoomToRect(zoomRect, animated: false)
+                self.layoutIfNeeded()
+            }
+        }
+        else  {
+            adjustImageConstraintsForZoomScale(minimumZoomScale)
+            UIView.animateWithDuration(0.5) {
+                self.setZoomScale(self.minimumZoomScale, animated: false)
+                self.layoutIfNeeded()
+            }
+        }
+    }
+    
+    private func zoomRect(forScale scale: CGFloat, center: CGPoint) -> CGRect {
+        let width = frame.size.width  / scale
+        let height = frame.size.height / scale
+        let originX = center.x - (width / 2.0)
+        let originY = center.y - (height / 2.0)
+        
+        return CGRect(x: originX, y: originY, width: width, height: height)
+    }
+    
     
     // MARK: UIScrollViewDelegate
     
     func scrollViewDidZoom(scrollView: UIScrollView) {
         if zoomScale < minimumZoomScale {
             bounceScale = zoomScale
+            displayLink.paused = false
         } else if !zoomBouncing {
+            displayLink.paused = true
             bounceScale = minimumZoomScale
         }
         

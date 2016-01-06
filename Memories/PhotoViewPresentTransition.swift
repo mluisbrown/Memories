@@ -23,8 +23,14 @@ class PhotoViewPresentTransition: NSObject, UIViewControllerAnimatedTransitionin
     }
     
     func animateTransition(transitionContext: UIViewControllerContextTransitioning) {
-        let container = transitionContext.containerView()!
-        let toViewController = transitionContext.viewControllerForKey(UITransitionContextToViewControllerKey)!
+        guard let container = transitionContext.containerView(),
+            toViewController = transitionContext.viewControllerForKey(UITransitionContextToViewControllerKey),
+            toView = transitionContext.viewForKey(UITransitionContextToViewKey) else {
+            transitionContext.completeTransition(false)
+            return
+        }
+        
+        toView.autoresizingMask = [.FlexibleHeight, .FlexibleWidth]
         
         let transitionView = UIView(frame: transitionContext.finalFrameForViewController(toViewController))
         transitionView.backgroundColor = UIColor.clearColor()
@@ -37,8 +43,8 @@ class PhotoViewPresentTransition: NSObject, UIViewControllerAnimatedTransitionin
         imageView.clipsToBounds = true
         transitionView.addSubview(imageView)
 
-        container.addSubview(toViewController.view)
-        toViewController.view.alpha = 0.0
+        container.addSubview(toView)
+        toView.alpha = 0.0
         self.sourceImageView.hidden = true
         
         let newImageSize = AVMakeRectWithAspectRatioInsideRect(sourceImageView.image!.size, CGRect(origin: CGPointZero, size: transitionView.frame.size)).size
@@ -51,14 +57,12 @@ class PhotoViewPresentTransition: NSObject, UIViewControllerAnimatedTransitionin
             }
             
             UIView.addKeyframeWithRelativeStartTime(0.75, relativeDuration: 0.25) {
-                toViewController.view.alpha = 1.0
+                toView.alpha = 1.0
             }
         }) { finished in
             self.sourceImageView.hidden = false
-
             transitionView.removeFromSuperview()
             transitionContext.completeTransition(!transitionContext.transitionWasCancelled())
         }        
     }
-
 }
