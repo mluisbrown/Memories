@@ -19,9 +19,19 @@
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
+		<key>Photo Widget.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>3</integer>
+		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>4C211F471C3DB8270082F4DF</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>4CEAA8E71B3340C600774FE8</key>
 		<dict>
 			<key>primary</key>
