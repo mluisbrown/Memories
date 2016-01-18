@@ -19,6 +19,11 @@
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
+		<key>PHAssetHelper.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>4</integer>
+		</dict>
 		<key>Photo Widget.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -38,6 +43,11 @@
 			<true/>
 		</dict>
 		<key>4CEAA8FC1B3340C600774FE8</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>4CF4104A1C4BB098002FD49A</key>
 		<dict>
 			<key>primary</key>
 			<true/>

@@ -9,6 +9,7 @@
 import Foundation
 import UIKit
 import Photos
+import PHAssetHelper
 
 class NotificationManager {
     static let HAS_PROMPTED_KEY = "HasPromptedForUserNotifications"
@@ -123,62 +124,33 @@ class NotificationManager {
         guard notificationsAllowed() && notificationsEnabled() else { return }
         
         let operation = NSBlockOperation { () -> Void in
-            scheduleNotificationsWithDatesMap(buildDatesMap())
+            scheduleNotificationsWithDatesMap(PHAssetHelper().datesMap())
         }
 
         let queue = NSOperationQueue()
         queue.addOperation(operation)
     }
     
-    private static func buildDatesMap() -> [NSDate : Int] {
-        var datesMap = [NSDate : Int]()
-
-        // don't want to trigger a "Allow Photos?"
-        // prompt whilst scheduling notificaions
-        guard PHPhotoLibrary.authorizationStatus() == .Authorized else {
-            return datesMap
-        }
-        
-        let options = PHFetchOptions()
-        options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
-        if #available(iOS 9.0, *) {
-            options.includeAssetSourceTypes = [.TypeUserLibrary, .TypeiTunesSynced, .TypeCloudShared]
-        }
-        let fetchResult = PHAsset.fetchAssetsWithMediaType(.Image, options: options)        
-        
-        let gregorian = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
-        let todayComps = gregorian.components([.Year, .Month, .Day], fromDate: NSDate())
-        let todayKey = todayComps.month * 100 + todayComps.day
-        let currentYear = todayComps.year
-        
-        let time = notificationTime()
-        
-        fetchResult.enumerateObjectsUsingBlock { (object, index, stop) -> Void in
-            let asset : PHAsset = object as! PHAsset
-            let comps = gregorian.components([.Month, .Day], fromDate: asset.creationDate!)
-            let key = comps.month * 100 + comps.day
-            let notificationYear = key >= todayKey ? currentYear : currentYear + 1
-            
-            let date = gregorian.dateWithEra(1, year: notificationYear, month: comps.month, day: comps.day, hour: time.hour, minute: time.minute, second: 0, nanosecond: 0)!
-            
-            if let entry = datesMap[date] {
-                datesMap[date] = entry + 1
-            } else {
-                datesMap[date] = 1
-            }
-        }
-        
-        return datesMap
-    }
-    
     private static func scheduleNotificationsWithDatesMap(datesMap: [NSDate:Int]) {
         let timeZone = NSTimeZone.systemTimeZone()
         let bodyFormatString = NSLocalizedString("You have %lu photo memories for today", comment: "")
         let titleFormatString = NSLocalizedString("%lu Photo Memories", comment: "")
+
+        let gregorian = NSDate.gregorianCalendar
+        let todayComps = gregorian.components([.Year, .Month, .Day], fromDate: NSDate())
+        let todayKey = todayComps.month * 100 + todayComps.day
+        let currentYear = todayComps.year
+        let time = notificationTime()
         
-        let notifications : [UILocalNotification] = datesMap.map {
-            // transform into array of date, count tuples
-            (date: $0.0, count: $0.1)
+        let notifications : [UILocalNotification] = datesMap.map { (date: NSDate, count: Int) -> (date: NSDate, count: Int) in
+            // adjust dates so that any date earlier than today has the
+            // following year as its notification date
+            let comps = gregorian.components([.Month, .Day], fromDate: date)
+            let key = comps.month * 100 + comps.day
+            let notificationYear = key >= todayKey ? currentYear : currentYear + 1
+            let notificationDate = gregorian.dateWithEra(1, year: notificationYear, month: comps.month, day: comps.day, hour: time.hour, minute: time.minute, second: 0, nanosecond: 0)!
+
+            return (date: notificationDate, count: count)
         }.sort {
             // sort in ascending order of date
             $0.date.compare($1.date) == .OrderedAscending

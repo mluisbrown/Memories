@@ -10,6 +10,7 @@ import UIKit
 import Photos
 import DACircularProgress
 import Cartography
+import PHAssetHelper
 
 class DatePickerViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
 
@@ -17,12 +18,15 @@ class DatePickerViewController: UIViewController, UIPickerViewDataSource, UIPick
     @IBOutlet weak var goButton: UIButton!
     @IBOutlet weak var todayButton: UIButton!
 
+    let gregorian = NSDate.gregorianCalendar
+    
     var newDateSelected = false
     var initialDate: NSDate?
     var selectedDate: NSDate?
     var datesWithCount: [(date: NSDate, count: Int)] = []
     
     let progressView = DACircularProgressView()
+    let assetHelper = PHAssetHelper()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -46,8 +50,13 @@ class DatePickerViewController: UIViewController, UIPickerViewDataSource, UIPick
     }
     
     override func viewDidAppear(animated: Bool) {
-        DatePickerViewController.buildDatesWithCount(progressView) {
+        self.progressView.setProgress(0.33, animated: false)
+        self.progressView.indeterminateDuration = 1
+        self.progressView.indeterminate = 1
+        
+        self.buildDatesWithCount(progressView) {
             self.datesWithCount = $0
+            self.progressView.indeterminate = 0
             self.progressView.hidden = true
             self.datePicker.reloadAllComponents()
             
@@ -103,7 +112,6 @@ class DatePickerViewController: UIViewController, UIPickerViewDataSource, UIPick
     
 // MARK: helpers
     private func getInitialRow(initialDate : NSDate) -> Int? {
-        let gregorian = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
         let initialDay = gregorian.ordinalityOfUnit(.Day, inUnit: .Era, forDate: initialDate)
         
         let diffs: [Int] = datesWithCount.map() {
@@ -115,7 +123,7 @@ class DatePickerViewController: UIViewController, UIPickerViewDataSource, UIPick
         return zip(diffs, diffs.indices).minElement { $0.0 < $1.0 }.map { $0.1 }
     }
     
-    private static func buildDatesWithCount(progressView: DACircularProgressView, completion: (datesWithCount: [(date: NSDate, count: Int)]) -> ()) {
+    private func buildDatesWithCount(progressView: DACircularProgressView, completion: (datesWithCount: [(date: NSDate, count: Int)]) -> ()) {
         var datesMap = [NSDate : Int]()
         
         // don't want to trigger a "Allow Photos?"
@@ -124,45 +132,10 @@ class DatePickerViewController: UIViewController, UIPickerViewDataSource, UIPick
             return
         }
         
-        let queue = dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0)
-        
-        dispatch_async(queue) {
-            let options = PHFetchOptions()
-            options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
-            if #available(iOS 9.0, *) {
-                options.includeAssetSourceTypes = [.TypeUserLibrary, .TypeiTunesSynced, .TypeCloudShared]
-            }
-            let fetchResult = PHAsset.fetchAssetsWithMediaType(.Image, options: options)
-            
-            let gregorian = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
-            let todayComps = gregorian.components([.Year, .Month, .Day], fromDate: NSDate())
-            let currentYear = todayComps.year
-            
-            let fetchCount = fetchResult.count
-            let mainQueue = dispatch_get_main_queue()
-            var steppedProgress = CGFloat(0.04)
-            fetchResult.enumerateObjectsUsingBlock { (object, index, stop) -> Void in
-                let progress = CGFloat(index) / CGFloat(fetchCount)
-                if progress > steppedProgress {
-                    dispatch_async(mainQueue) {
-                        progressView.setProgress(progress, animated: false)
-                    }
-                    steppedProgress += 0.04
-                }
-                
-                let asset : PHAsset = object as! PHAsset
-                let comps = gregorian.components([.Month, .Day], fromDate: asset.creationDate!)
-                let date = gregorian.dateWithEra(1, year: currentYear, month: comps.month, day: comps.day, hour: 0, minute: 0, second: 0, nanosecond: 0)!
-                
-                if let entry = datesMap[date] {
-                    datesMap[date] = entry + 1
-                } else {
-                    datesMap[date] = 1
-                }
-            }
+        dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0)) {
+            datesMap = self.assetHelper.datesMap()
 
-            dispatch_async(mainQueue) {
-                progressView.setProgress(1, animated: false)
+            dispatch_async(dispatch_get_main_queue()) {
                 completion(datesWithCount: datesMap.map {
                     (date: $0.0, count: $0.1)
                 }.sort {

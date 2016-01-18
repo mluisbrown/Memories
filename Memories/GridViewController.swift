@@ -326,11 +326,11 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
     
     func createOrUpdatePullViews(date: NSDate) {
         if let tpv = topPullView, bpv = bottomPullView {
-            tpv.date = GridViewModel.previousDay(date)
-            bpv.date = GridViewModel.nextDay(date)
+            tpv.date = date.previousDay()
+            bpv.date = date.nextDay()
         } else {
-            topPullView = PullView(frame: CGRectMake(0, 0, collectionView!.frame.width, 0), date: GridViewModel.previousDay(date))
-            bottomPullView = PullView(frame: CGRectMake(0, 0, collectionView!.frame.width, 0), date: GridViewModel.nextDay(date))
+            topPullView = PullView(frame: CGRectMake(0, 0, collectionView!.frame.width, 0), date: date.previousDay())
+            bottomPullView = PullView(frame: CGRectMake(0, 0, collectionView!.frame.width, 0), date: date.nextDay())
             
             collectionView!.addSubview(topPullView!)
             collectionView!.addSubview(bottomPullView!)

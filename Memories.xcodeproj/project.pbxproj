@@ -44,6 +44,14 @@
 		4CEAA8F31B3340C600774FE8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4CEAA8F11B3340C600774FE8 /* Main.storyboard */; };
 		4CEAA90E1B3343F700774FE8 /* GridViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CEAA90D1B3343F700774FE8 /* GridViewController.swift */; };
 		4CEAA9101B33462600774FE8 /* GridViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CEAA90F1B33462600774FE8 /* GridViewCell.swift */; };
+		4CF4104E1C4BB099002FD49A /* PHAssetHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CF4104D1C4BB099002FD49A /* PHAssetHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4CF410521C4BB099002FD49A /* PHAssetHelper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CF4104B1C4BB098002FD49A /* PHAssetHelper.framework */; };
+		4CF410531C4BB099002FD49A /* PHAssetHelper.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4CF4104B1C4BB098002FD49A /* PHAssetHelper.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		4CF410591C4BB112002FD49A /* PHAssetHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF410581C4BB112002FD49A /* PHAssetHelper.swift */; };
+		4CF4105A1C4BB466002FD49A /* PHAssetHelper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CF4104B1C4BB098002FD49A /* PHAssetHelper.framework */; };
+		4CF4105C1C4BB732002FD49A /* DateUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF4105B1C4BB732002FD49A /* DateUtils.swift */; };
+		4CF4105D1C4BC044002FD49A /* DateUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF4105B1C4BB732002FD49A /* DateUtils.swift */; };
+		4CF4105E1C4BC045002FD49A /* DateUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF4105B1C4BB732002FD49A /* DateUtils.swift */; };
 		4CF574801C06749B00D12ADB /* DatePickerRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF5747F1C06749B00D12ADB /* DatePickerRowView.swift */; };
 		4CF5FEEF1B58212700F8517D /* GridViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF5FEEE1B58212700F8517D /* GridViewModel.swift */; };
 /* End PBXBuildFile section */
@@ -55,6 +63,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 4C211F471C3DB8270082F4DF;
 			remoteInfo = "Photo Widget";
+		};
+		4CF410501C4BB099002FD49A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4CEAA8E01B3340C600774FE8 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4CF4104A1C4BB098002FD49A;
+			remoteInfo = PHAssetHelper;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -80,6 +95,17 @@
 				4C8594D31BB33E2F005CCFAC /* DACircularProgress.framework.dSYM in CopyFiles */,
 				4CBA89651BBC66E000913336 /* RMStore.framework.dSYM in CopyFiles */,
 			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4CF410571C4BB099002FD49A /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				4CF410531C4BB099002FD49A /* PHAssetHelper.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -126,6 +152,11 @@
 		4CEAA9031B3340C600774FE8 /* MemoriesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoriesTests.swift; sourceTree = "<group>"; };
 		4CEAA90D1B3343F700774FE8 /* GridViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridViewController.swift; sourceTree = "<group>"; };
 		4CEAA90F1B33462600774FE8 /* GridViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridViewCell.swift; sourceTree = "<group>"; };
+		4CF4104B1C4BB098002FD49A /* PHAssetHelper.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = PHAssetHelper.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		4CF4104D1C4BB099002FD49A /* PHAssetHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PHAssetHelper.h; sourceTree = "<group>"; };
+		4CF4104F1C4BB099002FD49A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		4CF410581C4BB112002FD49A /* PHAssetHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PHAssetHelper.swift; sourceTree = "<group>"; };
+		4CF4105B1C4BB732002FD49A /* DateUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateUtils.swift; sourceTree = "<group>"; };
 		4CF5747F1C06749B00D12ADB /* DatePickerRowView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatePickerRowView.swift; sourceTree = "<group>"; };
 		4CF5FEEE1B58212700F8517D /* GridViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -135,6 +166,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4CF4105A1C4BB466002FD49A /* PHAssetHelper.framework in Frameworks */,
 				4C211F4A1C3DB8270082F4DF /* NotificationCenter.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -146,10 +178,18 @@
 				4C1000A71BFE5B350035649E /* AdSupport.framework in Frameworks */,
 				4CBA89691BBC9BF300913336 /* Security.framework in Frameworks */,
 				4CCA009D1BDD5A4E00C365D9 /* Fabric.framework in Frameworks */,
+				4CF410521C4BB099002FD49A /* PHAssetHelper.framework in Frameworks */,
 				4C8594CC1BB33D49005CCFAC /* Cartography.framework in Frameworks */,
 				4C8594CD1BB33D4C005CCFAC /* DACircularProgress.framework in Frameworks */,
 				4CCA009E1BDD5A4E00C365D9 /* Crashlytics.framework in Frameworks */,
 				4CBA89631BBC66BB00913336 /* RMStore.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4CF410471C4BB098002FD49A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -173,6 +213,7 @@
 				4C989BDE1BA7806E00D4C13F /* Dynamic.swift */,
 				4C0410E51BC8787200BBB76C /* UIDevice.swift */,
 				4C6F48EE1B69850F00CF7E67 /* DismissSegue.swift */,
+				4CF4105B1C4BB732002FD49A /* DateUtils.swift */,
 			);
 			name = Utilities;
 			sourceTree = "<group>";
@@ -259,6 +300,7 @@
 				4CEAA8EA1B3340C600774FE8 /* Memories */,
 				4CEAA9001B3340C600774FE8 /* MemoriesTests */,
 				4C211F4B1C3DB8270082F4DF /* Photo Widget */,
+				4CF4104C1C4BB099002FD49A /* PHAssetHelper */,
 				4C8594D41BB33E9C005CCFAC /* Frameworks */,
 				4CEAA8E91B3340C600774FE8 /* Products */,
 			);
@@ -269,6 +311,7 @@
 			children = (
 				4CEAA8E81B3340C600774FE8 /* Memories.app */,
 				4C211F481C3DB8270082F4DF /* Photo Widget.appex */,
+				4CF4104B1C4BB098002FD49A /* PHAssetHelper.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -317,7 +360,28 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		4CF4104C1C4BB099002FD49A /* PHAssetHelper */ = {
+			isa = PBXGroup;
+			children = (
+				4CF4104D1C4BB099002FD49A /* PHAssetHelper.h */,
+				4CF4104F1C4BB099002FD49A /* Info.plist */,
+				4CF410581C4BB112002FD49A /* PHAssetHelper.swift */,
+			);
+			path = PHAssetHelper;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		4CF410481C4BB098002FD49A /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4CF4104E1C4BB099002FD49A /* PHAssetHelper.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
 		4C211F471C3DB8270082F4DF /* Photo Widget */ = {
@@ -348,16 +412,36 @@
 				4C8594CF1BB33E01005CCFAC /* CopyFiles */,
 				4CCA009A1BDD59FF00C365D9 /* ShellScript */,
 				4C211F581C3DB8270082F4DF /* Embed App Extensions */,
+				4CF410571C4BB099002FD49A /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				4C211F531C3DB8270082F4DF /* PBXTargetDependency */,
+				4CF410511C4BB099002FD49A /* PBXTargetDependency */,
 			);
 			name = Memories;
 			productName = Memories;
 			productReference = 4CEAA8E81B3340C600774FE8 /* Memories.app */;
 			productType = "com.apple.product-type.application";
+		};
+		4CF4104A1C4BB098002FD49A /* PHAssetHelper */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4CF410561C4BB099002FD49A /* Build configuration list for PBXNativeTarget "PHAssetHelper" */;
+			buildPhases = (
+				4CF410461C4BB098002FD49A /* Sources */,
+				4CF410471C4BB098002FD49A /* Frameworks */,
+				4CF410481C4BB098002FD49A /* Headers */,
+				4CF410491C4BB098002FD49A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PHAssetHelper;
+			productName = PHAssetHelper;
+			productReference = 4CF4104B1C4BB098002FD49A /* PHAssetHelper.framework */;
+			productType = "com.apple.product-type.framework";
 		};
 /* End PBXNativeTarget section */
 
@@ -365,7 +449,7 @@
 		4CEAA8E01B3340C600774FE8 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 0720;
+				LastSwiftUpdateCheck = 0730;
 				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = "Michael Brown";
 				TargetAttributes = {
@@ -375,6 +459,10 @@
 					};
 					4CEAA8E71B3340C600774FE8 = {
 						CreatedOnToolsVersion = 6.3.2;
+						DevelopmentTeam = 4KZP2U7889;
+					};
+					4CF4104A1C4BB098002FD49A = {
+						CreatedOnToolsVersion = 7.3;
 						DevelopmentTeam = 4KZP2U7889;
 					};
 				};
@@ -394,6 +482,7 @@
 			targets = (
 				4CEAA8E71B3340C600774FE8 /* Memories */,
 				4C211F471C3DB8270082F4DF /* Photo Widget */,
+				4CF4104A1C4BB098002FD49A /* PHAssetHelper */,
 			);
 		};
 /* End PBXProject section */
@@ -415,6 +504,13 @@
 				4C315DF41C4A8337008003E1 /* Images.xcassets in Resources */,
 				4CEAA8F31B3340C600774FE8 /* Main.storyboard in Resources */,
 				4C91432C1BA958CC001B30A9 /* notification.mp3 in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4CF410491C4BB098002FD49A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -458,6 +554,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4C315DF21C4A617C008003E1 /* TodayViewModel.swift in Sources */,
+				4CF4105D1C4BC044002FD49A /* DateUtils.swift in Sources */,
 				4C211F4D1C3DB8270082F4DF /* TodayViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -479,6 +576,7 @@
 				4CAAF0751B827EAD00AE47C3 /* PullView.swift in Sources */,
 				4CEAA9101B33462600774FE8 /* GridViewCell.swift in Sources */,
 				4CBA89671BBC926100913336 /* UpgradeManager.swift in Sources */,
+				4CF4105C1C4BB732002FD49A /* DateUtils.swift in Sources */,
 				4CEAA90E1B3343F700774FE8 /* GridViewController.swift in Sources */,
 				4C00A4F51C1B7ED30078A43F /* PhotoViewDismissTransition.swift in Sources */,
 				4CE8BD971C03BBE500207BE1 /* DatePickerViewController.swift in Sources */,
@@ -489,6 +587,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		4CF410461C4BB098002FD49A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4CF410591C4BB112002FD49A /* PHAssetHelper.swift in Sources */,
+				4CF4105E1C4BC045002FD49A /* DateUtils.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -496,6 +603,11 @@
 			isa = PBXTargetDependency;
 			target = 4C211F471C3DB8270082F4DF /* Photo Widget */;
 			targetProxy = 4C211F521C3DB8270082F4DF /* PBXContainerItemProxy */;
+		};
+		4CF410511C4BB099002FD49A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4CF4104A1C4BB098002FD49A /* PHAssetHelper */;
+			targetProxy = 4CF410501C4BB099002FD49A /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -677,6 +789,53 @@
 			};
 			name = Release;
 		};
+		4CF410541C4BB099002FD49A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = PHAssetHelper/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.luacheia.PHAssetHelper;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		4CF410551C4BB099002FD49A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CLANG_ENABLE_MODULES = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = PHAssetHelper/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.luacheia.PHAssetHelper;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -706,6 +865,14 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		4CF410561C4BB099002FD49A /* Build configuration list for PBXNativeTarget "PHAssetHelper" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4CF410541C4BB099002FD49A /* Debug */,
+				4CF410551C4BB099002FD49A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 /* End XCConfigurationList section */
 	};
