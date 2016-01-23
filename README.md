@@ -6,7 +6,7 @@ http://memories.land/
 Memories uses icon images from the [Essence](http://iconsandcoffee.com/essence/) collection by [Icons & Coffee](http://iconsandcoffee.com), who hold the copyright to the images. They are provided in this repo with permission from Icons & Coffee.
 
 # Downloading the code
-Clone the repo: `git clone https://github.com/artsy/eidolon.git`
+Clone the repo: `git clone https://github.com/mluisbrown/Memories.git`
 
 You will need [Xcode 7](https://developer.apple.com/xcode/download/) to build the app as it is entirely written in [Swift 2](https://swift.org). The project uses [Carthage](https://github.com/Carthage/Carthage) as a dependency manager, so you will need that too.
 
