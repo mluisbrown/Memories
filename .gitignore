@@ -1,0 +1,7 @@
+Carthage/
+Memories.xcodeproj/xcuserdata
+Crashlytics.framework
+Fabric.framework
+Screenshots/
+Icon/
+icon.*
