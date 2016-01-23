@@ -17,3 +17,5 @@ Open `Memories.xcodeproj` in Xcode. Build and run! **NOTE:** The iOS simulator o
 
 # Contributing
 This project is a fully featured app developed by myself (Michael Brown) and available in the Apple iOS App Store, and includes a freemium business model by the way of restricted features that are unlocked through an In-App purchase. As such I don't expect to receive a significant number of community contributions. I've opted to develop this project in the open from now on partly as an experiment and partly to give more visibility to the work I do on [evenings and weekends](http://www.theonion.com/blogpost/find-the-thing-youre-most-passionate-about-then-do-31742).
+
+However, don't hesitate to send me a pull request if there's something you think needs improving. 
