@@ -12,13 +12,16 @@ import Photos
 public class PHAssetHelper {
     
     private static var datesMapCache : [NSDate : Int]?
-    var earliestAssetYear: Int = 2000
+    private static var eariestAssetYearCache : Int?
     
     public init() {
-        earliestAssetYear = self.calcEarliestAssetYear()
     }
     
-    private func calcEarliestAssetYear() -> Int {
+    private func earliestAssetYear() -> Int {
+        guard PHAssetHelper.eariestAssetYearCache == nil else {
+            return PHAssetHelper.eariestAssetYearCache!
+        }
+        
         // default to 2000
         var year = 2000
         
@@ -29,6 +32,7 @@ public class PHAssetHelper {
             }
         }
         
+        PHAssetHelper.eariestAssetYearCache = year;
         return year
     }
     
@@ -93,7 +97,7 @@ public class PHAssetHelper {
             options.includeAssetSourceTypes = [.TypeUserLibrary, .TypeiTunesSynced, .TypeCloudShared]
         }
         
-        let startAndEndDates = startAndEndDatesForDateInYears(date, fromYear: earliestAssetYear, toYear: NSDate().year())
+        let startAndEndDates = startAndEndDatesForDateInYears(date, fromYear: earliestAssetYear(), toYear: NSDate().year())
         
         return startAndEndDates.map {
             NSPredicate(format: "creationDate >= %@ && creationDate <= %@", argumentArray: [$0.startDate, $0.endDate])
