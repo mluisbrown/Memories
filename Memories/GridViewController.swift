@@ -259,9 +259,9 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
         
         if let asset = model.assetAtIndexPath(indexPath) {
             imageManager.requestImageForAsset(asset, targetSize: gridThumbnailSize, contentMode: .AspectFill, options: nil) { (result : UIImage?, info : [NSObject : AnyObject]?) -> Void in
-                // Only update the thumbnail if the cell tag hasn't changed. Otherwise, the cell has been re-used.
-                if cell.tag == currentTag {
-                    cell.thumbnailImage = result
+                if let image = result where cell.tag == currentTag {
+                    // Only update the thumbnail if the cell tag hasn't changed. Otherwise, the cell has been re-used.
+                    cell.thumbnailImage = image
                 }
             }
         }
