@@ -244,7 +244,7 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
         
         let requestId = PHImageManager.defaultManager().requestImageForAsset(asset, targetSize: PHImageManagerMaximumSize, contentMode: .AspectFit, options: options) { (result, userInfo) -> Void in
             if let image = result {
-                UpgradeManager.highQualityViewCount++
+                UpgradeManager.highQualityViewCount += 1
                 pageView.image = image
                 pageView.imageIsDegraded = false
                 if page == self.model.selectedAsset {
@@ -306,7 +306,7 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
         let lastPage = page + 1
         
         // Purge anything before the first page
-        for var index = 0; index < firstPage; ++index {
+        for index in 0 ..< firstPage {
             purgePage(index)
         }
         
@@ -316,7 +316,7 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
         }
         
         // Purge anything after the last page
-        for var index = lastPage+1; index < model.assets.count; ++index {
+        for index in lastPage+1 ..< model.assets.count {
             purgePage(index)
         }
     }
