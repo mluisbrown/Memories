@@ -111,7 +111,7 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
             let pageView = pageViews[model.selectedAsset]
             dismissTransition = PhotoViewDismissTransition(destImageView: imageView!, sourceImageView: pageView!.imageView)
 
-            navController.dismissViewControllerAnimated(true) {}
+            navController.dismissViewControllerAnimated(true) { self.purgeAllViews() }
         }
     }
     
@@ -306,25 +306,17 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
         let lastPage = page + 1
         
         // Purge anything before the first page
-        for index in 0 ..< firstPage {
-            purgePage(index)
-        }
+        0.stride(to: firstPage, by: 1).forEach(purgePage)
         
         // Load pages in our range
-        for index in firstPage...lastPage {
-            loadPage(index, requestFullImage: index == page)
-        }
+        (firstPage...lastPage).forEach { loadPage($0, requestFullImage: $0 == page) }
         
         // Purge anything after the last page
-        for index in lastPage+1 ..< model.assets.count {
-            purgePage(index)
-        }
+        model.assets.count.stride(to: lastPage, by: -1).forEach(purgePage)
     }
     
     func purgeAllViews() {
-        for (idx, _) in pageViews.enumerate() {
-            purgePage(idx)
-        }
+        pageViews.indices.forEach(purgePage)
     }
     
     func contentOffsetForPageAtIndex(index : Int) -> CGPoint {
