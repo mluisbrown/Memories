@@ -11,8 +11,12 @@ import UIKit
 class GridViewCell: UICollectionViewCell {
     @IBOutlet var imageView: UIImageView?
     var thumbnailImage: UIImage? {
-        didSet {
-            imageView?.image = thumbnailImage
+        set {
+            imageView?.image = newValue
+        }
+
+        get {
+            return imageView?.image
         }
     }
 }

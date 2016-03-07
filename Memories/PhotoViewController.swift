@@ -111,7 +111,7 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
             let pageView = pageViews[model.selectedAsset]
             dismissTransition = PhotoViewDismissTransition(destImageView: imageView!, sourceImageView: pageView!.imageView)
 
-            navController.dismissViewControllerAnimated(true) {}
+            navController.dismissViewControllerAnimated(true) { self.purgeAllViews() }
         }
     }
     
@@ -244,7 +244,7 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
         
         let requestId = PHImageManager.defaultManager().requestImageForAsset(asset, targetSize: PHImageManagerMaximumSize, contentMode: .AspectFit, options: options) { (result, userInfo) -> Void in
             if let image = result {
-                UpgradeManager.highQualityViewCount++
+                UpgradeManager.highQualityViewCount += 1
                 pageView.image = image
                 pageView.imageIsDegraded = false
                 if page == self.model.selectedAsset {
@@ -306,25 +306,17 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
         let lastPage = page + 1
         
         // Purge anything before the first page
-        for var index = 0; index < firstPage; ++index {
-            purgePage(index)
-        }
+        0.stride(to: firstPage, by: 1).forEach(purgePage)
         
         // Load pages in our range
-        for index in firstPage...lastPage {
-            loadPage(index, requestFullImage: index == page)
-        }
+        (firstPage...lastPage).forEach { loadPage($0, requestFullImage: $0 == page) }
         
         // Purge anything after the last page
-        for var index = lastPage+1; index < model.assets.count; ++index {
-            purgePage(index)
-        }
+        model.assets.count.stride(to: lastPage, by: -1).forEach(purgePage)
     }
     
     func purgeAllViews() {
-        for (idx, _) in pageViews.enumerate() {
-            purgePage(idx)
-        }
+        pageViews.indices.forEach(purgePage)
     }
     
     func contentOffsetForPageAtIndex(index : Int) -> CGPoint {

@@ -109,7 +109,7 @@ class GridViewModel {
                 if (section == indexPath.section && index == indexPath.item) {
                     selectedIndex = currentIndex
                 }
-                currentIndex++
+                currentIndex += 1
             })
         }            
         
