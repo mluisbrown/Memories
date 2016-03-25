@@ -105,7 +105,7 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
             }
             
             PHPhotoLibrary.sharedPhotoLibrary().registerChangeObserver(self);
-            NSNotificationCenter.defaultCenter().addObserver(self, selector:"appDidBecomeActive", name:
+            NSNotificationCenter.defaultCenter().addObserver(self, selector:#selector(GridViewController.appDidBecomeActive), name:
                 UIApplicationDidBecomeActiveNotification, object: nil)
         }
     }
@@ -125,7 +125,7 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
                 titleView.userInteractionEnabled = true
                 self.navigationItem.titleView = titleView
                 
-                let tgr = UITapGestureRecognizer(target: self, action: "titleTapped:")
+                let tgr = UITapGestureRecognizer(target: self, action: #selector(GridViewController.titleTapped(_:)))
                 titleView.addGestureRecognizer(tgr)
             }
 

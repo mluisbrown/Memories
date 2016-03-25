@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10089" systemVersion="15C50" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="M4Y-Lb-cyx">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="M4Y-Lb-cyx">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10072.1"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
@@ -25,8 +25,13 @@
                                 </constraints>
                             </imageView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hpG-l7-kDG" userLabel="Previous Button">
-                                <rect key="frame" x="36" y="245" width="25" height="25"/>
+                                <rect key="frame" x="21" y="238" width="40" height="40"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="40" id="2gu-Q1-bHJ"/>
+                                    <constraint firstAttribute="width" constant="40" id="hER-gB-ozw"/>
+                                </constraints>
                                 <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <inset key="imageEdgeInsets" minX="5" minY="5" maxX="5" maxY="5"/>
                                 <state key="normal" image="leftArrow">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
@@ -35,8 +40,13 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8UB-C3-vCh" userLabel="Next Button">
-                                <rect key="frame" x="259" y="245" width="25" height="25"/>
+                                <rect key="frame" x="259" y="238" width="40" height="40"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="40" id="gj2-HO-IAa"/>
+                                    <constraint firstAttribute="height" constant="40" id="pQW-gm-l2t"/>
+                                </constraints>
                                 <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <inset key="imageEdgeInsets" minX="5" minY="5" maxX="5" maxY="5"/>
                                 <state key="normal" image="rightArrow"/>
                                 <connections>
                                     <action selector="nextBtnTapped:" destination="M4Y-Lb-cyx" eventType="touchUpInside" id="FPt-QH-cMl"/>
@@ -54,12 +64,12 @@
                             <constraint firstItem="eAH-P3-ahx" firstAttribute="leading" secondItem="S3S-Oj-5AN" secondAttribute="leadingMargin" id="CeD-Ka-0WY"/>
                             <constraint firstItem="lXA-Fe-1Yw" firstAttribute="centerY" secondItem="hpG-l7-kDG" secondAttribute="centerY" id="Ibz-58-7gN"/>
                             <constraint firstItem="lXA-Fe-1Yw" firstAttribute="centerX" secondItem="S3S-Oj-5AN" secondAttribute="centerX" id="OlU-on-QYf"/>
-                            <constraint firstItem="hpG-l7-kDG" firstAttribute="leading" secondItem="S3S-Oj-5AN" secondAttribute="leadingMargin" constant="20" id="UoZ-oi-m7W"/>
+                            <constraint firstItem="hpG-l7-kDG" firstAttribute="leading" secondItem="S3S-Oj-5AN" secondAttribute="leadingMargin" constant="5" id="UoZ-oi-m7W"/>
                             <constraint firstItem="FKl-LY-JtV" firstAttribute="top" secondItem="lXA-Fe-1Yw" secondAttribute="bottom" priority="751" constant="12" id="Zca-Ij-ttg"/>
                             <constraint firstItem="8UB-C3-vCh" firstAttribute="centerY" secondItem="lXA-Fe-1Yw" secondAttribute="centerY" id="g6I-Os-eSt"/>
                             <constraint firstItem="eAH-P3-ahx" firstAttribute="top" secondItem="Ft6-oW-KC0" secondAttribute="bottom" id="pcJ-Ch-1ho"/>
                             <constraint firstItem="lXA-Fe-1Yw" firstAttribute="top" secondItem="eAH-P3-ahx" secondAttribute="bottom" constant="8" id="rqD-jw-ctT"/>
-                            <constraint firstItem="8UB-C3-vCh" firstAttribute="trailing" secondItem="S3S-Oj-5AN" secondAttribute="trailingMargin" constant="-20" id="vhg-30-hZS"/>
+                            <constraint firstItem="8UB-C3-vCh" firstAttribute="trailing" secondItem="S3S-Oj-5AN" secondAttribute="trailingMargin" constant="-5" id="vhg-30-hZS"/>
                         </constraints>
                     </view>
                     <extendedEdge key="edgesForExtendedLayout"/>

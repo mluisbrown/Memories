@@ -56,7 +56,7 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
         imageConstraintLeft = hConstraints[0]
         imageConstraintRight = hConstraints[1]
         
-        displayLink = CADisplayLink(target: self, selector: "displayLinkTick")
+        displayLink = CADisplayLink(target: self, selector: #selector(ZoomingPhotoView.displayLinkTick))
         displayLink.addToRunLoop(NSRunLoop.currentRunLoop(), forMode: NSDefaultRunLoopMode)
         displayLink.paused = true
         
@@ -96,7 +96,7 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
             align(right: errorView, progressView)
         }
         
-        doubleTapper = UITapGestureRecognizer(target: self, action: "imageDoubleTapped:")
+        doubleTapper = UITapGestureRecognizer(target: self, action: #selector(ZoomingPhotoView.imageDoubleTapped(_:)))
         doubleTapper.numberOfTapsRequired = 2
         self.addGestureRecognizer(doubleTapper)
     }
