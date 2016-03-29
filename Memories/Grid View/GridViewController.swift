@@ -35,7 +35,9 @@ extension UICollectionView {
 class GridViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, PHPhotoLibraryChangeObserver, UIPopoverPresentationControllerDelegate {
     let reuseIdentifier = "PhotoCell"
     let headerIdentifier = "YearHeader"
-    var gridThumbnailSize : CGSize = CGSizeZero
+    // If the size is too large then PhotoKit doesn't return an optimal image size
+    // see rdar://25181601 (https://openradar.appspot.com/radar?id=6158824289337344)
+    let gridThumbnailSize = CGSize(width: 256, height: 256)
     
     var model : GridViewModel! {
         didSet {
@@ -187,6 +189,19 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
             })
     }
     
+    override func willTransitionToTraitCollection(newCollection: UITraitCollection, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
+        let largeScreen = newCollection.verticalSizeClass == .Regular &&
+                        newCollection.horizontalSizeClass == .Regular
+        let contentMode: UIViewContentMode = largeScreen ? .ScaleAspectFit : .ScaleAspectFill
+        
+        coordinator.animateAlongsideTransition({ (context : UIViewControllerTransitionCoordinatorContext) -> Void in
+            self.collectionView!.visibleCells().forEach {
+                let gridCell = $0 as! GridViewCell
+                gridCell.imageView?.contentMode = contentMode
+            }
+            }, completion: nil)
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
@@ -256,6 +271,8 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
         // Increment the cell's tag
         let currentTag = cell.tag + 1
         cell.tag = currentTag
+        
+        cell.imageView?.contentMode = thumbnailContentMode
         
         if let asset = model.assetAtIndexPath(indexPath) {
             imageManager.requestImageForAsset(asset, targetSize: gridThumbnailSize, contentMode: .AspectFill, options: nil) { (result : UIImage?, info : [NSObject : AnyObject]?) -> Void in
@@ -519,14 +536,12 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
     func configureCellSizeForViewSize(viewSize : CGSize) {
         let MIN_WIDTH = CGFloat(90.0)
         let viewWidth = viewSize.width
-        let cellsPerRow = floor(viewWidth / MIN_WIDTH)
+        let maxCellsPerRow: CGFloat = viewSize.width < viewSize.height ? 5 : 7
+        let cellsPerRow = min(floor(viewWidth / MIN_WIDTH), maxCellsPerRow)
         let cellWidth = floor((viewWidth  - (cellsPerRow - 1)) / cellsPerRow)
         
         let cellSize = CGSizeMake(cellWidth, cellWidth)
         self.cellSize = cellSize
-        
-        let scale = UIScreen.mainScreen().scale
-        gridThumbnailSize = CGSizeMake(cellSize.width * scale, cellSize.height * scale)
     }
     
     func showHideNoPhotosLabel() {

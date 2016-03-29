@@ -362,7 +362,7 @@
                                 </connections>
                             </scrollView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Jpu-wC-w7H" userLabel="Share Button">
-                                <rect key="frame" x="550" y="550" width="40" height="40"/>
+                                <rect key="frame" x="10" y="550" width="40" height="40"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.5" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="40" id="DPf-pG-1NC"/>
@@ -380,7 +380,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9AS-GW-LvP" userLabel="Delete Button">
-                                <rect key="frame" x="10" y="550" width="40" height="40"/>
+                                <rect key="frame" x="550" y="550" width="40" height="40"/>
                                 <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.5" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="40" id="Nvd-yk-WOs"/>
@@ -398,7 +398,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aka-lC-37E" userLabel="Close Button">
-                                <rect key="frame" x="550" y="10" width="40" height="40"/>
+                                <rect key="frame" x="10" y="10" width="40" height="40"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.5" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="40" id="45e-3D-wSJ"/>
@@ -421,14 +421,20 @@
                             <constraint firstItem="GR2-pH-NTw" firstAttribute="top" secondItem="9AS-GW-LvP" secondAttribute="bottom" constant="10" id="E56-Lk-Bky"/>
                             <constraint firstItem="BOF-fB-WYF" firstAttribute="top" secondItem="ngb-Kf-4Io" secondAttribute="top" id="EC0-Mv-FJd"/>
                             <constraint firstAttribute="trailing" secondItem="aka-lC-37E" secondAttribute="trailing" constant="10" id="ICl-iR-Gma"/>
-                            <constraint firstItem="9AS-GW-LvP" firstAttribute="leading" secondItem="ngb-Kf-4Io" secondAttribute="leading" constant="10" id="Ulq-ZU-aW0"/>
+                            <constraint firstItem="aka-lC-37E" firstAttribute="leading" secondItem="ngb-Kf-4Io" secondAttribute="leading" constant="10" id="Qpi-dn-rcB"/>
+                            <constraint firstItem="9AS-GW-LvP" firstAttribute="trailing" secondItem="ngb-Kf-4Io" secondAttribute="trailing" constant="-10" id="Ulq-ZU-aW0"/>
                             <constraint firstItem="GR2-pH-NTw" firstAttribute="top" secondItem="Jpu-wC-w7H" secondAttribute="bottom" constant="10" id="ifT-ao-sVX"/>
-                            <constraint firstAttribute="trailing" secondItem="Jpu-wC-w7H" secondAttribute="trailing" constant="10" id="kW3-4j-pPe"/>
+                            <constraint firstAttribute="leading" secondItem="Jpu-wC-w7H" secondAttribute="leading" constant="-10" id="kW3-4j-pPe"/>
                             <constraint firstItem="BOF-fB-WYF" firstAttribute="bottom" secondItem="ngb-Kf-4Io" secondAttribute="bottom" id="mHc-iL-YLL"/>
                             <constraint firstItem="aka-lC-37E" firstAttribute="top" secondItem="ngb-Kf-4Io" secondAttribute="topMargin" constant="10" id="mSR-1e-8vg"/>
                             <constraint firstItem="BOF-fB-WYF" firstAttribute="leading" secondItem="ngb-Kf-4Io" secondAttribute="leading" constant="-10" id="s5o-0Z-qfS"/>
                             <constraint firstAttribute="trailing" secondItem="BOF-fB-WYF" secondAttribute="trailing" constant="-10" id="zyy-Zk-wsK"/>
                         </constraints>
+                        <variation key="default">
+                            <mask key="constraints">
+                                <exclude reference="ICl-iR-Gma"/>
+                            </mask>
+                        </variation>
                     </view>
                     <nil key="simulatedStatusBarMetrics"/>
                     <connections>

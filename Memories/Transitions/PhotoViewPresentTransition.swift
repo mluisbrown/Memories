@@ -39,7 +39,7 @@ class PhotoViewPresentTransition: NSObject, UIViewControllerAnimatedTransitionin
         let imageViewFrameInOurCoordinateSystem = CGRectIntegral(transitionView.convertRect(self.sourceImageView.bounds, fromView: self.sourceImageView))
         let imageView = UIImageView(frame: imageViewFrameInOurCoordinateSystem)
         imageView.image = sourceImageView.image
-        imageView.contentMode = .ScaleAspectFill
+        imageView.contentMode = container.thumbnailContentMode
         imageView.clipsToBounds = true
         transitionView.addSubview(imageView)
 

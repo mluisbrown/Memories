@@ -23,7 +23,9 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
     var model : PhotoViewModel!
     var pageViews: [ZoomingPhotoView?] = []
     let imageManager : PHCachingImageManager
-    var cacheSize : CGSize = CGSizeZero
+    // If the size is too large then PhotoKit doesn't return an optimal image size
+    // see rdar://25181601 (https://openradar.appspot.com/radar?id=6158824289337344)
+    let cacheSize = CGSize(width: 256, height: 256)
     
     var hideStatusBar = false
     
@@ -47,8 +49,6 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
         super.viewDidLoad()
 
         initialPage = model.selectedAsset
-        // TODO: find out optimum size to use
-        cacheSize = CGSizeMake(256, 256)
         imageManager.startCachingImagesForAssets(model.assets, targetSize: cacheSize, contentMode: .AspectFill, options: nil)
     }
 
