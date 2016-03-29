@@ -9,7 +9,7 @@
 import UIKit
 import Photos
 
-class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControllerTransitioningDelegate {
+class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControllerTransitioningDelegate, ZoomingPhotoViewDelegate {
     @IBOutlet var scrollView: UIScrollView!
     @IBOutlet weak var shareButton: UIButton!
     @IBOutlet weak var deleteButton: UIButton!
@@ -25,7 +25,7 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
     let imageManager : PHCachingImageManager
     var cacheSize : CGSize = CGSizeZero
     
-    var hideStatusBar = true
+    var hideStatusBar = false
     
     var presentTransition: PhotoViewPresentTransition?
     var dismissTransition: PhotoViewDismissTransition?
@@ -33,6 +33,12 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
     required init?(coder aDecoder: NSCoder) {
         self.imageManager = PHCachingImageManager()
         super.init(coder: aDecoder)
+    }
+    
+    var controlsHidden: Bool {
+        get {
+            return closeButton.alpha == 0
+        }
     }
     
     // MARK: UIViewController
@@ -46,6 +52,10 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
         imageManager.startCachingImagesForAssets(model.assets, targetSize: cacheSize, contentMode: .AspectFill, options: nil)
     }
 
+    override func viewDidAppear(animated: Bool) {
+        hideStatusBar(true)
+    }
+    
     override func viewDidLayoutSubviews() {
         setupViews()
     }
@@ -57,12 +67,14 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
     }
     
     override func prefersStatusBarHidden() -> Bool {
-        return hideStatusBar
+        return hideStatusBar || traitCollection.verticalSizeClass == .Compact
     }
     
     func hideStatusBar(hide: Bool) {
         hideStatusBar = hide
-        setNeedsStatusBarAppearanceUpdate()
+        UIView.animateWithDuration(0.25) {
+            self.setNeedsStatusBarAppearanceUpdate()
+        }
     }
     
     override func didReceiveMemoryWarning() {
@@ -186,6 +198,7 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
             pageView = pageViews[page]
         } else {
             pageView = ZoomingPhotoView()
+            pageView.photoViewDelegate = self
             scrollView.addSubview(pageView)
             pageViews[page] = pageView
         }
@@ -340,5 +353,20 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
     
     func animationControllerForDismissedController(dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         return dismissTransition
+    }
+    
+    // MARK: ZoomingPhotoViewDelegate 
+    func hideControls(hide: Bool) {
+        guard hide != controlsHidden else {
+            return
+        }
+        
+        [shareButton, deleteButton, closeButton].forEach {
+            $0.alpha = hide ? 0 : 1
+        }
+    }
+    
+    func toggleControlsHidden() {
+        hideControls(!controlsHidden)
     }
 }

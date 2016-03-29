@@ -12,6 +12,7 @@ import AVFoundation
 class PhotoViewPresentTransition: NSObject, UIViewControllerAnimatedTransitioning {
     let sourceImageView : UIImageView
     let duration = NSTimeInterval(0.5)
+    let buttonOffset = CGFloat(50)
     
     init(sourceImageView: UIImageView) {
         self.sourceImageView = sourceImageView
@@ -46,12 +47,13 @@ class PhotoViewPresentTransition: NSObject, UIViewControllerAnimatedTransitionin
         toView.alpha = 0.0
         self.sourceImageView.hidden = true
         
-        let newImageSize = AVMakeRectWithAspectRatioInsideRect(sourceImageView.image!.size, CGRect(origin: CGPointZero, size: transitionView.frame.size)).size
+        let fullImageViewSize = AVMakeRectWithAspectRatioInsideRect(sourceImageView.image!.size, CGRect(origin: CGPointZero, size: transitionView.frame.size)).size
+        let newImageViewSize = adjustImageBoundsForButtons(fullImageViewSize, vcViewSize: transitionView.frame.size)
         
         UIView.animateKeyframesWithDuration(duration, delay: 0, options: .CalculationModeLinear, animations: {
             UIView.addKeyframeWithRelativeStartTime(0, relativeDuration: 0.75) {
                 transitionView.backgroundColor = UIColor.blackColor()
-                imageView.bounds = CGRect(origin: CGPointZero, size: newImageSize)
+                imageView.bounds = CGRect(origin: CGPointZero, size: newImageViewSize)
                 imageView.center = transitionView.center
             }
             
@@ -63,5 +65,38 @@ class PhotoViewPresentTransition: NSObject, UIViewControllerAnimatedTransitionin
             transitionView.removeFromSuperview()
             transitionContext.completeTransition(!transitionContext.transitionWasCancelled())
         }        
+    }
+    
+    private func adjustImageBoundsForButtons(imageViewSize: CGSize, vcViewSize: CGSize) -> CGSize {
+        let hPadding = floor((vcViewSize.width - imageViewSize.width) / 2)
+        let vPadding = floor((vcViewSize.height - imageViewSize.height) / 2)
+        
+        if vPadding < buttonOffset && hPadding < buttonOffset {
+            let scale: CGFloat
+            let padDim: CGFloat
+            let imageDim: CGFloat
+            
+            if hPadding > vPadding {
+                imageDim = imageViewSize.width
+                padDim = hPadding
+            } else if vPadding > hPadding {
+                imageDim = imageViewSize.height
+                padDim = vPadding
+            } else { // vPadding == hPadding
+                if imageViewSize.height > imageViewSize.width {
+                    imageDim = imageViewSize.height
+                    padDim = vPadding
+                } else {
+                    imageDim = imageViewSize.width
+                    padDim = hPadding
+                }
+            }
+            
+            scale = (imageDim - ((buttonOffset - padDim) * 2)) / imageDim
+            
+            return CGSizeApplyAffineTransform(imageViewSize, CGAffineTransformMakeScale(scale, scale))
+        }
+        
+        return imageViewSize
     }
 }
