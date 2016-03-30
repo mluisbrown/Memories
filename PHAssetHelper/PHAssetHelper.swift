@@ -28,7 +28,7 @@ public class PHAssetHelper {
         let fetchResult = allAssetsInDateOrder()
         if let firstAsset = fetchResult.firstObject as? PHAsset {
             if let firstDate = firstAsset.creationDate {
-                year = firstDate.year()
+                year = firstDate.year
             }
         }
         
@@ -58,7 +58,7 @@ public class PHAssetHelper {
         }
         
         let fetchResult = allAssetsInDateOrder()
-        let currentYear = NSDate().year()
+        let currentYear = NSDate().year
         let gregorian = NSDate.gregorianCalendar
         
         fetchResult.enumerateObjectsUsingBlock { (object, index, stop) -> Void in
@@ -108,7 +108,7 @@ public class PHAssetHelper {
             options.includeAssetSourceTypes = [.TypeUserLibrary, .TypeiTunesSynced, .TypeCloudShared]
         }
         
-        let startAndEndDates = startAndEndDatesForDateInYears(date, fromYear: earliestAssetYear(), toYear: NSDate().year())
+        let startAndEndDates = startAndEndDatesForDateInYears(date, fromYear: earliestAssetYear(), toYear: NSDate().year)
         
         return startAndEndDates.map {
             NSPredicate(format: "creationDate >= %@ && creationDate <= %@", argumentArray: [$0.startDate, $0.endDate])

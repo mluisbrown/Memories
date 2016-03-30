@@ -15,6 +15,7 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
     @IBOutlet weak var deleteButton: UIButton!
     @IBOutlet weak var closeButton: UIButton!
     @IBOutlet weak var heartButton: UIButton!
+    @IBOutlet weak var yearLabel: UILabel!
 
     let PADDING : CGFloat = 10.0;
     
@@ -178,6 +179,7 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
         let asset = model.assets[page]
         if page == self.model.selectedIndex {
             heartButton.setImage(buttonImageForFavorite(asset.favorite), forState: .Normal)
+            yearLabel.text = String("  \(asset.creationDate!.year)  ")
         }
         
         // if we already have a view with a full image or
@@ -404,7 +406,7 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
             return
         }
         
-        [shareButton, deleteButton, closeButton, heartButton].forEach {
+        [shareButton, deleteButton, closeButton, heartButton, yearLabel].forEach {
             $0.alpha = hide ? 0 : 1
         }
     }

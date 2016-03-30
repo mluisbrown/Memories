@@ -433,6 +433,20 @@
                                     <action selector="close:" destination="IGe-pw-kxC" eventType="touchUpInside" id="2AV-GU-Vhr"/>
                                 </connections>
                             </button>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" 2009 " textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qPH-RS-HRg">
+                                <rect key="frame" x="276" y="15" width="48" height="20"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.5" colorSpace="calibratedWhite"/>
+                                <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="10"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="boolean" keyPath="layer.maskToBounds" value="YES"/>
+                                </userDefinedRuntimeAttributes>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
@@ -446,15 +460,19 @@
                             <constraint firstAttribute="trailing" secondItem="rFZ-s7-BhA" secondAttribute="trailing" constant="10" id="dTd-aJ-bvG"/>
                             <constraint firstItem="GR2-pH-NTw" firstAttribute="top" secondItem="Jpu-wC-w7H" secondAttribute="bottom" constant="10" id="ifT-ao-sVX"/>
                             <constraint firstAttribute="leading" secondItem="Jpu-wC-w7H" secondAttribute="leading" constant="-10" id="kW3-4j-pPe"/>
+                            <constraint firstItem="qPH-RS-HRg" firstAttribute="top" secondItem="E5j-pK-Pbs" secondAttribute="bottom" constant="10" id="kja-4A-3eX"/>
+                            <constraint firstItem="qPH-RS-HRg" firstAttribute="centerX" secondItem="ngb-Kf-4Io" secondAttribute="centerX" id="l0c-K1-cbo"/>
                             <constraint firstItem="BOF-fB-WYF" firstAttribute="bottom" secondItem="ngb-Kf-4Io" secondAttribute="bottom" id="mHc-iL-YLL"/>
                             <constraint firstItem="aka-lC-37E" firstAttribute="top" secondItem="ngb-Kf-4Io" secondAttribute="topMargin" constant="10" id="mSR-1e-8vg"/>
                             <constraint firstItem="rFZ-s7-BhA" firstAttribute="top" secondItem="BOF-fB-WYF" secondAttribute="top" constant="10" id="s0L-d6-Mhw"/>
                             <constraint firstItem="BOF-fB-WYF" firstAttribute="leading" secondItem="ngb-Kf-4Io" secondAttribute="leading" constant="-10" id="s5o-0Z-qfS"/>
+                            <constraint firstItem="qPH-RS-HRg" firstAttribute="top" secondItem="ngb-Kf-4Io" secondAttribute="topMargin" constant="15" id="sOf-OU-O1u"/>
                             <constraint firstAttribute="trailing" secondItem="BOF-fB-WYF" secondAttribute="trailing" constant="-10" id="zyy-Zk-wsK"/>
                         </constraints>
                         <variation key="default">
                             <mask key="constraints">
                                 <exclude reference="ICl-iR-Gma"/>
+                                <exclude reference="kja-4A-3eX"/>
                                 <exclude reference="9UK-I3-BW1"/>
                                 <exclude reference="YOy-87-QaQ"/>
                             </mask>
@@ -468,6 +486,7 @@
                         <outlet property="scrollView" destination="BOF-fB-WYF" id="uvf-cr-JyI"/>
                         <outlet property="shareButton" destination="Jpu-wC-w7H" id="H0r-ws-LSU"/>
                         <outlet property="view" destination="ngb-Kf-4Io" id="s2D-L4-ZJj"/>
+                        <outlet property="yearLabel" destination="qPH-RS-HRg" id="705-9v-dKD"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="OpV-Ui-ufl" userLabel="First Responder" sceneMemberID="firstResponder"/>
