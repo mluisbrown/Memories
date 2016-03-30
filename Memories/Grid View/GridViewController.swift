@@ -141,25 +141,6 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
         }
     }
     
-    func titleTapped(tgr: UITapGestureRecognizer) {
-        let sourceView = tgr.view!
-        
-        if let datePickerVC = storyboard?.instantiateViewControllerWithIdentifier("datePicker") as? DatePickerViewController {
-            datePickerVC.modalPresentationStyle = UIModalPresentationStyle.Popover
-            datePickerVC.preferredContentSize = CGSizeMake(200, 240)
-            
-            if let popoverPresentationController = datePickerVC.popoverPresentationController {
-                popoverPresentationController.sourceView = sourceView
-                popoverPresentationController.sourceRect = CGRectMake(0, 0, sourceView.frame.size.width, sourceView.frame.size.height)
-                popoverPresentationController.delegate = self
-                popoverPresentationController.backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.2)
-            }
-            
-            datePickerVC.initialDate = model.date.value
-            presentViewController(datePickerVC, animated: true, completion: nil)
-        }
-    }
-    
     func appDidBecomeActive() {
         if let date = NotificationManager.launchDate() where self.photosAllowed {
             self.model.date.value = date
@@ -207,7 +188,28 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
         super.didReceiveMemoryWarning()
     }
 
-    // MARK - UIPopoverPresentationControllerDelegate
+    // MARK: - Actions
+    func titleTapped(tgr: UITapGestureRecognizer) {
+        let sourceView = tgr.view!
+        
+        if let datePickerVC = storyboard?.instantiateViewControllerWithIdentifier("datePicker") as? DatePickerViewController {
+            datePickerVC.modalPresentationStyle = UIModalPresentationStyle.Popover
+            datePickerVC.preferredContentSize = CGSizeMake(200, 240)
+            
+            if let popoverPresentationController = datePickerVC.popoverPresentationController {
+                popoverPresentationController.sourceView = sourceView
+                popoverPresentationController.sourceRect = CGRectMake(0, 0, sourceView.frame.size.width, sourceView.frame.size.height)
+                popoverPresentationController.delegate = self
+                popoverPresentationController.backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.2)
+            }
+            
+            datePickerVC.initialDate = model.date.value
+            presentViewController(datePickerVC, animated: true, completion: nil)
+        }
+    }
+    
+    
+    // MARK: - UIPopoverPresentationControllerDelegate
     func popoverPresentationControllerShouldDismissPopover(popoverPresentationController: UIPopoverPresentationController) -> Bool {
         return true
     }
@@ -228,7 +230,7 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
         return UIModalPresentationStyle.None
     }
     
-    // MARK: - Navigation
+    // MARK: - UICollectionViewDelegate
     
     override func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
         if let photoViewController = storyboard?.instantiateViewControllerWithIdentifier("photoViewController") as? PhotoViewController {
@@ -255,7 +257,7 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
         return cell.imageView
     }
     
-    // MARK: UICollectionViewDataSource
+    // MARK: - UICollectionViewDataSource
 
     override func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
         return model.sectionCount
@@ -294,7 +296,7 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
         return headerView
     }
     
-    // MARK: UICollectionViewDelegateFlowLayout
+    // MARK: - UICollectionViewDelegateFlowLayout
     
     func collectionView(collectionView: UICollectionView,
         layout collectionViewLayout: UICollectionViewLayout,
@@ -303,7 +305,7 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
     }
     
     
-    // MARK: UIScrollViewDelegate
+    // MARK: - UIScrollViewDelegate
     override func scrollViewDidScroll(scrollView: UIScrollView) {
         updateCachedAssets()
         adjustPullViewPositions()
@@ -340,7 +342,7 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
         }
     }
     
-    // MARK: Scroll to Change Date
+    // MARK: - Scroll to Change Date
     
     func createOrUpdatePullViews(date: NSDate) {
         if let tpv = topPullView, bpv = bottomPullView {
@@ -393,7 +395,7 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
         }
     }
     
-    // MARK: PHPhotoLibraryChangeObserver
+    // MARK: - PHPhotoLibraryChangeObserver
 
     func photoLibraryDidChange(changeInstance: PHChange) {
         dispatch_async(dispatch_get_main_queue()) { () -> Void in
@@ -441,7 +443,7 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
         }
     }
 
-    // MARK: Asset Caching
+    // MARK: - Asset Caching
     
     func resetCachedAssets() {
         guard imageManager != nil else {
@@ -520,7 +522,7 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
         }
     }
     
-    // MARK: Helpers
+    // MARK: - Helpers
     func showHideBlur(show: Bool) {
         if show {
             let window = UIApplication.sharedApplication().keyWindow!

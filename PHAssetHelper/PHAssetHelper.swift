@@ -64,7 +64,7 @@ public class PHAssetHelper {
         fetchResult.enumerateObjectsUsingBlock { (object, index, stop) -> Void in
             let asset : PHAsset = object as! PHAsset
             let comps = gregorian.components([.Month, .Day], fromDate: asset.creationDate!)
-            let date = gregorian.dateWithEra(1, year: currentYear, month: comps.month, day: comps.day, hour: 0, minute: 0, second: 0, nanosecond: 0)!
+            let date = gregorian.dateWithEra(1, year: currentYear, month: comps.month, day: comps.day, hour: 12, minute: 0, second: 0, nanosecond: 0)!
             
             if let entry = datesMap[date] {
                 datesMap[date] = entry + 1
