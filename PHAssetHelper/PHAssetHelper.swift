@@ -28,12 +28,23 @@ public class PHAssetHelper {
         let fetchResult = allAssetsInDateOrder()
         if let firstAsset = fetchResult.firstObject as? PHAsset {
             if let firstDate = firstAsset.creationDate {
-                year = firstDate.year()
+                year = firstDate.year
             }
         }
         
         PHAssetHelper.eariestAssetYearCache = year;
         return year
+    }
+    
+    public func refreshDatesMapCache() {
+        PHAssetHelper.datesMapCache = nil
+        
+        let operation = NSBlockOperation { () -> Void in
+            PHAssetHelper().datesMap()
+        }
+        
+        let queue = NSOperationQueue()
+        queue.addOperation(operation)
     }
     
     public func datesMap() -> [NSDate : Int] {
@@ -47,13 +58,13 @@ public class PHAssetHelper {
         }
         
         let fetchResult = allAssetsInDateOrder()
-        let currentYear = NSDate().year()
+        let currentYear = NSDate().year
         let gregorian = NSDate.gregorianCalendar
         
         fetchResult.enumerateObjectsUsingBlock { (object, index, stop) -> Void in
             let asset : PHAsset = object as! PHAsset
             let comps = gregorian.components([.Month, .Day], fromDate: asset.creationDate!)
-            let date = gregorian.dateWithEra(1, year: currentYear, month: comps.month, day: comps.day, hour: 0, minute: 0, second: 0, nanosecond: 0)!
+            let date = gregorian.dateWithEra(1, year: currentYear, month: comps.month, day: comps.day, hour: 12, minute: 0, second: 0, nanosecond: 0)!
             
             if let entry = datesMap[date] {
                 datesMap[date] = entry + 1
@@ -97,7 +108,7 @@ public class PHAssetHelper {
             options.includeAssetSourceTypes = [.TypeUserLibrary, .TypeiTunesSynced, .TypeCloudShared]
         }
         
-        let startAndEndDates = startAndEndDatesForDateInYears(date, fromYear: earliestAssetYear(), toYear: NSDate().year())
+        let startAndEndDates = startAndEndDatesForDateInYears(date, fromYear: earliestAssetYear(), toYear: NSDate().year)
         
         return startAndEndDates.map {
             NSPredicate(format: "creationDate >= %@ && creationDate <= %@", argumentArray: [$0.startDate, $0.endDate])

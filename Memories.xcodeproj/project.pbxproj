@@ -9,9 +9,6 @@
 /* Begin PBXBuildFile section */
 		4C00A4F51C1B7ED30078A43F /* PhotoViewDismissTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C00A4F41C1B7ED30078A43F /* PhotoViewDismissTransition.swift */; };
 		4C0410E61BC8787200BBB76C /* UIDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C0410E51BC8787200BBB76C /* UIDevice.swift */; };
-		4C08C2651C53FB960062BD0C /* Cartography.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C08C25C1C53FB040062BD0C /* Cartography.framework */; };
-		4C08C2661C53FB960062BD0C /* DACircularProgress.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C08C25D1C53FB040062BD0C /* DACircularProgress.framework */; };
-		4C08C2671C53FB960062BD0C /* RMStore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C08C25E1C53FB040062BD0C /* RMStore.framework */; };
 		4C09B82F1C53F65700C7D40F /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C09B82D1C53F65700C7D40F /* Crashlytics.framework */; };
 		4C09B8301C53F65700C7D40F /* Fabric.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C09B82E1C53F65700C7D40F /* Fabric.framework */; };
 		4C211F4A1C3DB8270082F4DF /* NotificationCenter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C211F491C3DB8270082F4DF /* NotificationCenter.framework */; };
@@ -27,12 +24,19 @@
 		4C5B90281B5D9C590014A87C /* GridHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C5B90271B5D9C590014A87C /* GridHeaderView.swift */; };
 		4C6299AD1B4CB0AD00B8795E /* PhotoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6299AC1B4CB0AD00B8795E /* PhotoViewController.swift */; };
 		4C6F48EF1B69850F00CF7E67 /* DismissSegue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6F48EE1B69850F00CF7E67 /* DismissSegue.swift */; };
+		4C8594CC1BB33D49005CCFAC /* Cartography.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C8594C51BB33CF5005CCFAC /* Cartography.framework */; };
+		4C8594CD1BB33D4C005CCFAC /* DACircularProgress.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C8594C91BB33D02005CCFAC /* DACircularProgress.framework */; };
+		4C8594D11BB33E27005CCFAC /* Cartography.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4C8594D01BB33E27005CCFAC /* Cartography.framework.dSYM */; };
+		4C8594D31BB33E2F005CCFAC /* DACircularProgress.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4C8594D21BB33E2F005CCFAC /* DACircularProgress.framework.dSYM */; };
 		4C91432C1BA958CC001B30A9 /* notification.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 4C91432B1BA958CC001B30A9 /* notification.mp3 */; };
 		4C921FD21C1A038800F0411D /* PhotoViewPresentTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C921FD11C1A038800F0411D /* PhotoViewPresentTransition.swift */; };
 		4C989BDF1BA7806E00D4C13F /* Dynamic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C989BDE1BA7806E00D4C13F /* Dynamic.swift */; };
 		4C989BE11BA780BB00D4C13F /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C989BE01BA780BB00D4C13F /* SettingsViewModel.swift */; };
 		4CAAF0751B827EAD00AE47C3 /* PullView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CAAF0741B827EAD00AE47C3 /* PullView.swift */; };
+		4CABEE221CAAF08500A9F23A /* UITraitEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CABEE211CAAF08500A9F23A /* UITraitEnvironment.swift */; };
 		4CB674B51BA1EBC7001F401A /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB674B41BA1EBC7001F401A /* SettingsViewController.swift */; };
+		4CBA89631BBC66BB00913336 /* RMStore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CBA89621BBC66BB00913336 /* RMStore.framework */; };
+		4CBA89651BBC66E000913336 /* RMStore.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4CBA89641BBC66E000913336 /* RMStore.framework.dSYM */; };
 		4CBA89671BBC926100913336 /* UpgradeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBA89661BBC926100913336 /* UpgradeManager.swift */; };
 		4CBA89691BBC9BF300913336 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CBA89681BBC9BF300913336 /* Security.framework */; };
 		4CE8BD971C03BBE500207BE1 /* DatePickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE8BD961C03BBE500207BE1 /* DatePickerViewController.swift */; };
@@ -87,6 +91,9 @@
 			dstPath = "";
 			dstSubfolderSpec = 16;
 			files = (
+				4C8594D11BB33E27005CCFAC /* Cartography.framework.dSYM in CopyFiles */,
+				4C8594D31BB33E2F005CCFAC /* DACircularProgress.framework.dSYM in CopyFiles */,
+				4CBA89651BBC66E000913336 /* RMStore.framework.dSYM in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -106,9 +113,6 @@
 /* Begin PBXFileReference section */
 		4C00A4F41C1B7ED30078A43F /* PhotoViewDismissTransition.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoViewDismissTransition.swift; sourceTree = "<group>"; };
 		4C0410E51BC8787200BBB76C /* UIDevice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIDevice.swift; sourceTree = "<group>"; };
-		4C08C25C1C53FB040062BD0C /* Cartography.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cartography.framework; path = Carthage/Build/iOS/Cartography.framework; sourceTree = "<group>"; };
-		4C08C25D1C53FB040062BD0C /* DACircularProgress.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DACircularProgress.framework; path = Carthage/Build/iOS/DACircularProgress.framework; sourceTree = "<group>"; };
-		4C08C25E1C53FB040062BD0C /* RMStore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RMStore.framework; path = Carthage/Build/iOS/RMStore.framework; sourceTree = "<group>"; };
 		4C09B82D1C53F65700C7D40F /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = "<group>"; };
 		4C09B82E1C53F65700C7D40F /* Fabric.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Fabric.framework; sourceTree = "<group>"; };
 		4C211F481C3DB8270082F4DF /* Photo Widget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Photo Widget.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -123,12 +127,19 @@
 		4C5B90271B5D9C590014A87C /* GridHeaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridHeaderView.swift; sourceTree = "<group>"; };
 		4C6299AC1B4CB0AD00B8795E /* PhotoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoViewController.swift; sourceTree = "<group>"; };
 		4C6F48EE1B69850F00CF7E67 /* DismissSegue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DismissSegue.swift; sourceTree = "<group>"; };
+		4C8594C51BB33CF5005CCFAC /* Cartography.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cartography.framework; path = Carthage/Build/iOS/Cartography.framework; sourceTree = "<group>"; };
+		4C8594C91BB33D02005CCFAC /* DACircularProgress.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DACircularProgress.framework; path = Carthage/Build/iOS/DACircularProgress.framework; sourceTree = "<group>"; };
+		4C8594D01BB33E27005CCFAC /* Cartography.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = Cartography.framework.dSYM; path = Carthage/Build/iOS/Cartography.framework.dSYM; sourceTree = "<group>"; };
+		4C8594D21BB33E2F005CCFAC /* DACircularProgress.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = DACircularProgress.framework.dSYM; path = Carthage/Build/iOS/DACircularProgress.framework.dSYM; sourceTree = "<group>"; };
 		4C91432B1BA958CC001B30A9 /* notification.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = notification.mp3; sourceTree = "<group>"; };
 		4C921FD11C1A038800F0411D /* PhotoViewPresentTransition.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoViewPresentTransition.swift; sourceTree = "<group>"; };
 		4C989BDE1BA7806E00D4C13F /* Dynamic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Dynamic.swift; sourceTree = "<group>"; };
 		4C989BE01BA780BB00D4C13F /* SettingsViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
 		4CAAF0741B827EAD00AE47C3 /* PullView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PullView.swift; sourceTree = "<group>"; };
+		4CABEE211CAAF08500A9F23A /* UITraitEnvironment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UITraitEnvironment.swift; sourceTree = "<group>"; };
 		4CB674B41BA1EBC7001F401A /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
+		4CBA89621BBC66BB00913336 /* RMStore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RMStore.framework; path = Carthage/Build/iOS/RMStore.framework; sourceTree = "<group>"; };
+		4CBA89641BBC66E000913336 /* RMStore.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = RMStore.framework.dSYM; path = Carthage/Build/iOS/RMStore.framework.dSYM; sourceTree = "<group>"; };
 		4CBA89661BBC926100913336 /* UpgradeManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UpgradeManager.swift; sourceTree = "<group>"; };
 		4CBA89681BBC9BF300913336 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		4CE8BD961C03BBE500207BE1 /* DatePickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatePickerViewController.swift; sourceTree = "<group>"; };
@@ -162,13 +173,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4C08C2651C53FB960062BD0C /* Cartography.framework in Frameworks */,
-				4C08C2661C53FB960062BD0C /* DACircularProgress.framework in Frameworks */,
-				4C08C2671C53FB960062BD0C /* RMStore.framework in Frameworks */,
 				4C09B8301C53F65700C7D40F /* Fabric.framework in Frameworks */,
+				4C09B82F1C53F65700C7D40F /* Crashlytics.framework in Frameworks */,
 				4CBA89691BBC9BF300913336 /* Security.framework in Frameworks */,
 				4CF410521C4BB099002FD49A /* PHAssetHelper.framework in Frameworks */,
-				4C09B82F1C53F65700C7D40F /* Crashlytics.framework in Frameworks */,
+				4C8594CC1BB33D49005CCFAC /* Cartography.framework in Frameworks */,
+				4C8594CD1BB33D4C005CCFAC /* DACircularProgress.framework in Frameworks */,
+				4CBA89631BBC66BB00913336 /* RMStore.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -185,10 +196,10 @@
 		4C211F4B1C3DB8270082F4DF /* Photo Widget */ = {
 			isa = PBXGroup;
 			children = (
-				4C315DF11C4A617C008003E1 /* TodayViewModel.swift */,
-				4C211F4C1C3DB8270082F4DF /* TodayViewController.swift */,
-				4C211F4E1C3DB8270082F4DF /* MainInterface.storyboard */,
 				4C211F511C3DB8270082F4DF /* Info.plist */,
+				4C211F4E1C3DB8270082F4DF /* MainInterface.storyboard */,
+				4C211F4C1C3DB8270082F4DF /* TodayViewController.swift */,
+				4C315DF11C4A617C008003E1 /* TodayViewModel.swift */,
 			);
 			path = "Photo Widget";
 			sourceTree = "<group>";
@@ -196,12 +207,13 @@
 		4C641B8A1C3DB240004B15D7 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				4CF4105B1C4BB732002FD49A /* DateUtils.swift */,
+				4C6F48EE1B69850F00CF7E67 /* DismissSegue.swift */,
 				4C989BDE1BA7806E00D4C13F /* Dynamic.swift */,
 				4C0410E51BC8787200BBB76C /* UIDevice.swift */,
-				4C6F48EE1B69850F00CF7E67 /* DismissSegue.swift */,
-				4CF4105B1C4BB732002FD49A /* DateUtils.swift */,
+				4CABEE211CAAF08500A9F23A /* UITraitEnvironment.swift */,
 			);
-			name = Utilities;
+			path = Utilities;
 			sourceTree = "<group>";
 		};
 		4C641B8B1C3DB274004B15D7 /* Managers */ = {
@@ -210,19 +222,19 @@
 				4C2DFCA91B9E21BC00AD6E16 /* NotificationManager.swift */,
 				4CBA89661BBC926100913336 /* UpgradeManager.swift */,
 			);
-			name = Managers;
+			path = Managers;
 			sourceTree = "<group>";
 		};
 		4C641B8C1C3DB2A5004B15D7 /* Grid View */ = {
 			isa = PBXGroup;
 			children = (
-				4CF5FEEE1B58212700F8517D /* GridViewModel.swift */,
-				4CEAA90D1B3343F700774FE8 /* GridViewController.swift */,
-				4CEAA90F1B33462600774FE8 /* GridViewCell.swift */,
 				4C5B90271B5D9C590014A87C /* GridHeaderView.swift */,
+				4CEAA90F1B33462600774FE8 /* GridViewCell.swift */,
+				4CEAA90D1B3343F700774FE8 /* GridViewController.swift */,
+				4CF5FEEE1B58212700F8517D /* GridViewModel.swift */,
 				4CAAF0741B827EAD00AE47C3 /* PullView.swift */,
 			);
-			name = "Grid View";
+			path = "Grid View";
 			sourceTree = "<group>";
 		};
 		4C641B8D1C3DB2BE004B15D7 /* Settings */ = {
@@ -231,35 +243,35 @@
 				4CB674B41BA1EBC7001F401A /* SettingsViewController.swift */,
 				4C989BE01BA780BB00D4C13F /* SettingsViewModel.swift */,
 			);
-			name = Settings;
+			path = Settings;
 			sourceTree = "<group>";
 		};
 		4C641B8E1C3DB2D6004B15D7 /* Date Picker */ = {
 			isa = PBXGroup;
 			children = (
-				4CE8BD961C03BBE500207BE1 /* DatePickerViewController.swift */,
 				4CF5747F1C06749B00D12ADB /* DatePickerRowView.swift */,
+				4CE8BD961C03BBE500207BE1 /* DatePickerViewController.swift */,
 			);
-			name = "Date Picker";
+			path = "Date Picker";
 			sourceTree = "<group>";
 		};
 		4C641B8F1C3DB2F8004B15D7 /* Photo View */ = {
 			isa = PBXGroup;
 			children = (
-				4C3334521B65712D00D907C8 /* PhotoViewModel.swift */,
 				4C6299AC1B4CB0AD00B8795E /* PhotoViewController.swift */,
+				4C3334521B65712D00D907C8 /* PhotoViewModel.swift */,
 				4C3334541B659DAA00D907C8 /* ZoomingPhotoView.swift */,
 			);
-			name = "Photo View";
+			path = "Photo View";
 			sourceTree = "<group>";
 		};
 		4C641B901C3DB30C004B15D7 /* Transitions */ = {
 			isa = PBXGroup;
 			children = (
-				4C921FD11C1A038800F0411D /* PhotoViewPresentTransition.swift */,
 				4C00A4F41C1B7ED30078A43F /* PhotoViewDismissTransition.swift */,
+				4C921FD11C1A038800F0411D /* PhotoViewPresentTransition.swift */,
 			);
-			name = Transitions;
+			path = Transitions;
 			sourceTree = "<group>";
 		};
 		4C8594D41BB33E9C005CCFAC /* Frameworks */ = {
@@ -268,6 +280,12 @@
 				4C09B82D1C53F65700C7D40F /* Crashlytics.framework */,
 				4C09B82E1C53F65700C7D40F /* Fabric.framework */,
 				4CBA89681BBC9BF300913336 /* Security.framework */,
+				4C8594D21BB33E2F005CCFAC /* DACircularProgress.framework.dSYM */,
+				4C8594D01BB33E27005CCFAC /* Cartography.framework.dSYM */,
+				4CBA89641BBC66E000913336 /* RMStore.framework.dSYM */,
+				4CBA89621BBC66BB00913336 /* RMStore.framework */,
+				4C8594C91BB33D02005CCFAC /* DACircularProgress.framework */,
+				4C8594C51BB33CF5005CCFAC /* Cartography.framework */,
 				4C211F491C3DB8270082F4DF /* NotificationCenter.framework */,
 			);
 			name = Frameworks;
@@ -276,13 +294,10 @@
 		4CEAA8DF1B3340C600774FE8 = {
 			isa = PBXGroup;
 			children = (
-				4C08C25C1C53FB040062BD0C /* Cartography.framework */,
-				4C08C25D1C53FB040062BD0C /* DACircularProgress.framework */,
-				4C08C25E1C53FB040062BD0C /* RMStore.framework */,
-				4CEAA8EA1B3340C600774FE8 /* Memories */,
-				4C211F4B1C3DB8270082F4DF /* Photo Widget */,
-				4CF4104C1C4BB099002FD49A /* PHAssetHelper */,
 				4C8594D41BB33E9C005CCFAC /* Frameworks */,
+				4CEAA8EA1B3340C600774FE8 /* Memories */,
+				4CF4104C1C4BB099002FD49A /* PHAssetHelper */,
+				4C211F4B1C3DB8270082F4DF /* Photo Widget */,
 				4CEAA8E91B3340C600774FE8 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -300,17 +315,17 @@
 		4CEAA8EA1B3340C600774FE8 /* Memories */ = {
 			isa = PBXGroup;
 			children = (
-				4CEAA8ED1B3340C600774FE8 /* AppDelegate.swift */,
-				4C641B8C1C3DB2A5004B15D7 /* Grid View */,
-				4C641B8F1C3DB2F8004B15D7 /* Photo View */,
 				4C641B8E1C3DB2D6004B15D7 /* Date Picker */,
+				4C641B8C1C3DB2A5004B15D7 /* Grid View */,
+				4C641B8B1C3DB274004B15D7 /* Managers */,
+				4C641B8F1C3DB2F8004B15D7 /* Photo View */,
+				4C641B8D1C3DB2BE004B15D7 /* Settings */,
+				4CEAA8EB1B3340C600774FE8 /* Supporting Files */,
 				4C641B901C3DB30C004B15D7 /* Transitions */,
 				4C641B8A1C3DB240004B15D7 /* Utilities */,
-				4C641B8B1C3DB274004B15D7 /* Managers */,
-				4C641B8D1C3DB2BE004B15D7 /* Settings */,
-				4CEAA8F11B3340C600774FE8 /* Main.storyboard */,
+				4CEAA8ED1B3340C600774FE8 /* AppDelegate.swift */,
 				4CEAA8F41B3340C600774FE8 /* Images.xcassets */,
-				4CEAA8EB1B3340C600774FE8 /* Supporting Files */,
+				4CEAA8F11B3340C600774FE8 /* Main.storyboard */,
 			);
 			path = Memories;
 			sourceTree = "<group>";
@@ -318,17 +333,17 @@
 		4CEAA8EB1B3340C600774FE8 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				4C91432B1BA958CC001B30A9 /* notification.mp3 */,
 				4CEAA8EC1B3340C600774FE8 /* Info.plist */,
+				4C91432B1BA958CC001B30A9 /* notification.mp3 */,
 			);
-			name = "Supporting Files";
+			path = "Supporting Files";
 			sourceTree = "<group>";
 		};
 		4CF4104C1C4BB099002FD49A /* PHAssetHelper */ = {
 			isa = PBXGroup;
 			children = (
-				4CF4104D1C4BB099002FD49A /* PHAssetHelper.h */,
 				4CF4104F1C4BB099002FD49A /* Info.plist */,
+				4CF4104D1C4BB099002FD49A /* PHAssetHelper.h */,
 				4CF410581C4BB112002FD49A /* PHAssetHelper.swift */,
 			);
 			path = PHAssetHelper;
@@ -533,6 +548,7 @@
 				4C3334551B659DAA00D907C8 /* ZoomingPhotoView.swift in Sources */,
 				4C5B90281B5D9C590014A87C /* GridHeaderView.swift in Sources */,
 				4C3334531B65712D00D907C8 /* PhotoViewModel.swift in Sources */,
+				4CABEE221CAAF08500A9F23A /* UITraitEnvironment.swift in Sources */,
 				4C2DFCAA1B9E21BC00AD6E16 /* NotificationManager.swift in Sources */,
 				4CF5FEEF1B58212700F8517D /* GridViewModel.swift in Sources */,
 				4CF574801C06749B00D12ADB /* DatePickerRowView.swift in Sources */,
@@ -582,6 +598,7 @@
 				4C211F4F1C3DB8270082F4DF /* Base */,
 			);
 			name = MainInterface.storyboard;
+			path = .;
 			sourceTree = "<group>";
 		};
 		4CEAA8F11B3340C600774FE8 /* Main.storyboard */ = {
@@ -590,6 +607,7 @@
 				4CEAA8F21B3340C600774FE8 /* Base */,
 			);
 			name = Main.storyboard;
+			path = .;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -723,7 +741,7 @@
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
 					"$(PROJECT_DIR)",
 				);
-				INFOPLIST_FILE = Memories/Info.plist;
+				INFOPLIST_FILE = "Memories/Supporting Files/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.luacheia.memories;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -745,7 +763,7 @@
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
 					"$(PROJECT_DIR)",
 				);
-				INFOPLIST_FILE = Memories/Info.plist;
+				INFOPLIST_FILE = "Memories/Supporting Files/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.luacheia.memories;
 				PRODUCT_NAME = "$(TARGET_NAME)";

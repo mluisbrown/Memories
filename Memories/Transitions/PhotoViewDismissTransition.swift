@@ -40,7 +40,7 @@ class PhotoViewDismissTransition: NSObject, UIViewControllerAnimatedTransitionin
         let startImageFrame = CGRectIntegral(transitionView.convertRect(self.sourceImageView.bounds, fromView: self.sourceImageView))
         let imageView = UIImageView(frame: startImageFrame)
         imageView.image = destImageView.image
-        imageView.contentMode = .ScaleAspectFill
+        imageView.contentMode = container.thumbnailContentMode
         imageView.clipsToBounds = true
         transitionView.addSubview(imageView)
         

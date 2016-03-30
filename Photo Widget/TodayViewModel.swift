@@ -31,6 +31,14 @@ class TodayViewModel {
         return assets[index]
     }
     
+    func currentAsset() -> PHAsset? {
+        guard assets.count > 0 else {
+            return nil
+        }
+
+        return assets[index]
+    }
+    
     func nextAsset() -> PHAsset? {
         guard assets.count > 0 else {
             return nil

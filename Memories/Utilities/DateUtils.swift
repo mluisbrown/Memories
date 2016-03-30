@@ -25,7 +25,7 @@ public extension NSDate {
         return addDays(-1)
     }
     
-    func year() -> Int {
+    var year: Int {
         let comps = NSDate.gregorianCalendar.components(.Year, fromDate: self)
         return comps.year
     }

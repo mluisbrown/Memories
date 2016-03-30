@@ -75,7 +75,7 @@ class GridViewModel {
         let asset = assetFetchResults[section].firstObject as! PHAsset
         let creationDate = asset.creationDate!
         
-        return creationDate.year()
+        return creationDate.year
     }
     
     func fetchResultForSection(section : Int) -> PHFetchResult? {

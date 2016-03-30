@@ -18,9 +18,10 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     
     var imageManager: PHCachingImageManager!
     var model: TodayViewModel?
+    var currentAsset: PHAsset?
     
-    let photoViewHeight = CGFloat(200)
-    let cacheSize = CGSizeMake(256, 256)
+    let photoViewHeight = CGFloat(integerLiteral: 200)
+    let cacheSize = CGSize(width: 256, height: 256)
     let dateFormatter = NSDateFormatter()
     
     override func viewDidLoad() {
@@ -41,7 +42,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
             imageManager.startCachingImagesForAssets(model!.assets, targetSize: cacheSize, contentMode: .AspectFit, options: nil)
         }
         
-        let imageTapper = UITapGestureRecognizer(target: self, action: "launchApp")
+        let imageTapper = UITapGestureRecognizer(target: self, action: #selector(TodayViewController.launchApp))
         photoView.addGestureRecognizer(imageTapper)
         photoView.userInteractionEnabled = true
     }
@@ -51,8 +52,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
             return
         }
 
-        let asset = model.randomAsset()
-        displayAsset(asset)
+        displayAsset(model.currentAsset())
     }
     
     override func didReceiveMemoryWarning() {
@@ -68,8 +68,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
             return
         }
         
-        let asset = model.nextAsset()
-        displayAsset(asset)
+        displayAsset(model.nextAsset())
     }
     
     @IBAction func previousBtnTapped(sender: UIButton) {
@@ -77,23 +76,34 @@ class TodayViewController: UIViewController, NCWidgetProviding {
             return
         }
         
-        let asset = model.previousAsset()
-        displayAsset(asset)
+        displayAsset(model.previousAsset())
     }
     
-    private func displayAsset(asset: PHAsset?, completion: ((Bool) -> Void)? = nil) {
+    private func displayAsset(asset: PHAsset?, completion: (Bool -> Void)? = nil) {
         guard let asset = asset else {
+            self.currentAsset = nil
             hidePhotoView(true) {
                 completion?(false)
             }
             return
         }
         
-        imageManager.requestImageForAsset(asset, targetSize: cacheSize, contentMode: .AspectFill, options: nil, resultHandler: { (result, userInfo) -> Void in
+        let options = PHImageRequestOptions()
+        options.networkAccessAllowed = false
+        options.deliveryMode = .Opportunistic
+        options.synchronous = false
+        
+        imageManager.requestImageForAsset(asset, targetSize: cacheSize, contentMode: .AspectFill, options: nil) { (result, userInfo) -> Void in
             if let image = result, assetDate = asset.creationDate {
                 self.hidePhotoView(false) {
-                    self.photoView.image = image
-                    self.yearLabel.text = self.dateFormatter.stringFromDate(assetDate)
+                    let newImageWider = image.size.width > self.photoView.image?.size.width
+                    let newAsset = asset != self.currentAsset
+                    
+                    if newAsset || newImageWider {
+                        self.currentAsset = asset
+                        self.photoView.image = image
+                        self.yearLabel.text = self.dateFormatter.stringFromDate(assetDate)
+                    }
                     
                     completion?(true)
                 }
@@ -101,10 +111,10 @@ class TodayViewController: UIViewController, NCWidgetProviding {
             else {
                 completion?(false)
             }
-        })
+        }
     }
 
-    private func hidePhotoView(hide: Bool, completion: (() -> Void)?) {
+    private func hidePhotoView(hide: Bool, completion: (Void -> Void)?) {
         let constant = hide ? 0 : photoViewHeight
         
         if photoHeightConstraint.constant != constant {
@@ -123,18 +133,17 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     
     // MARK: NCWidgetProviding
     
-    func widgetMarginInsetsForProposedMarginInsets(defaultMarginInsets: UIEdgeInsets) -> (UIEdgeInsets) {
+    func widgetMarginInsetsForProposedMarginInsets(defaultMarginInsets: UIEdgeInsets) -> UIEdgeInsets {
         return UIEdgeInsetsZero
     }
     
-    func widgetPerformUpdateWithCompletionHandler(completionHandler: ((NCUpdateResult) -> Void)) {
+    func widgetPerformUpdateWithCompletionHandler(completionHandler: NCUpdateResult -> Void) {
         guard let model = self.model else {
             completionHandler(NCUpdateResult.Failed)
             return
         }
         
-        let asset = model.randomAsset()
-        displayAsset(asset) { Bool in
+        displayAsset(model.randomAsset()) { Bool in
             completionHandler(NCUpdateResult.NewData)
         }
     }
