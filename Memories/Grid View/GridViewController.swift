@@ -9,6 +9,7 @@
 import UIKit
 import Photos
 import Cartography
+import PHAssetHelper
 
 extension NSIndexSet {
     func indexPathsFromIndexesInSection(section : Int) -> [NSIndexPath] {
@@ -435,6 +436,7 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
             
             if (cacheNeedsReset) {
                 self.resetCachedAssets()
+                PHAssetHelper().refreshDatesMapCache()
             }
         }
     }

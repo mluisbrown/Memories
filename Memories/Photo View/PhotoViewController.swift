@@ -9,13 +9,17 @@
 import UIKit
 import Photos
 
-class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControllerTransitioningDelegate, ZoomingPhotoViewDelegate {
+class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControllerTransitioningDelegate, PHPhotoLibraryChangeObserver, ZoomingPhotoViewDelegate {
     @IBOutlet var scrollView: UIScrollView!
     @IBOutlet weak var shareButton: UIButton!
     @IBOutlet weak var deleteButton: UIButton!
     @IBOutlet weak var closeButton: UIButton!
+    @IBOutlet weak var heartButton: UIButton!
 
     let PADDING : CGFloat = 10.0;
+    
+    let heartFullImg = UIImage(named: "heart-full")!.imageWithRenderingMode(.AlwaysTemplate)
+    let heartEmptyImg = UIImage(named: "heart-empty")!.imageWithRenderingMode(.AlwaysTemplate)
     
     var upgradePromptShown = false
     var initialOffsetSet = false
@@ -37,10 +41,18 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
         super.init(coder: aDecoder)
     }
     
+    deinit {
+        PHPhotoLibrary.sharedPhotoLibrary().unregisterChangeObserver(self)
+    }
+
     var controlsHidden: Bool {
         get {
             return closeButton.alpha == 0
         }
+    }
+    
+    private func buttonImageForFavorite(favorite: Bool) -> UIImage {
+        return favorite ? heartFullImg : heartEmptyImg
     }
     
     // MARK: UIViewController
@@ -48,8 +60,9 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        initialPage = model.selectedAsset
+        initialPage = model.selectedIndex
         imageManager.startCachingImagesForAssets(model.assets, targetSize: cacheSize, contentMode: .AspectFill, options: nil)
+        PHPhotoLibrary.sharedPhotoLibrary().registerChangeObserver(self);
     }
 
     override func viewDidAppear(animated: Bool) {
@@ -62,7 +75,7 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
     
     override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransitionToSize(size, withTransitionCoordinator: coordinator)
-        initialPage = model.selectedAsset
+        initialPage = model.selectedIndex
         initialOffsetSet = false
     }
     
@@ -83,7 +96,7 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
 
     // MARK: Actions
     @IBAction func sharePhoto(sender: UIButton) {
-        let page = model.selectedAsset
+        let page = model.selectedIndex
         
         if let pageView = pageViews[page] where !pageView.imageIsDegraded {
             let avc = UIActivityViewController(activityItems: [pageView.image!], applicationActivities: nil)
@@ -98,29 +111,33 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
     }
     
     @IBAction func deletePhoto(sender: UIButton) {
-        let asset = model.assets[model.selectedAsset]
+        let asset = model.selectedAsset
         
         PHPhotoLibrary.sharedPhotoLibrary().performChanges({
             PHAssetChangeRequest.deleteAssets([asset])
-        }, completionHandler: { success, error in
-            if success {
-                dispatch_async(dispatch_get_main_queue()) {
-                    self.removeAssetFromModelAtIndex(self.model.selectedAsset)
-                }
-            }
-        })
+        }, completionHandler: nil)
+    }
+    
+    @IBAction func toggleFavorite(sender: UIButton) {
+        let asset = model.selectedAsset
+        let newState = !asset.favorite
+        
+        PHPhotoLibrary.sharedPhotoLibrary().performChanges({
+            let request = PHAssetChangeRequest(forAsset: asset)
+            request.favorite = newState
+        }, completionHandler: nil)
     }
     
     @IBAction func close(sender: UIButton) {
         if let navController = presentingViewController as? UINavigationController,
             gridViewController = navController.topViewController as? GridViewController {
-            gridViewController.setSelectedIndex(model.selectedAsset)
+            gridViewController.setSelectedIndex(model.selectedIndex)
             
             if traitCollection.verticalSizeClass == .Regular {
                 hideStatusBar(false)
             }
-            let imageView = gridViewController.imageViewForIndex(model.selectedAsset)
-            let pageView = pageViews[model.selectedAsset]
+            let imageView = gridViewController.imageViewForIndex(model.selectedIndex)
+            let pageView = pageViews[model.selectedIndex]
             dismissTransition = PhotoViewDismissTransition(destImageView: imageView!, sourceImageView: pageView!.imageView)
 
             navController.dismissViewControllerAnimated(true) { self.purgeAllViews() }
@@ -135,7 +152,7 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
             for _ in 0..<pageCount {
                 pageViews.append(nil)
             }
-            initialPage = model.selectedAsset
+            initialPage = model.selectedIndex
             initialOffsetSet = false
         }
 
@@ -144,26 +161,6 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
             height: pagesScrollViewSize.height)
         
         loadVisiblePages()
-    }
-    
-    func removeAssetFromModelAtIndex(index: Int) {
-        let newAssets = model.assets.enumerate().filter {
-            $0.index != self.model.selectedAsset
-        }.map {
-            $0.element
-        }
-
-        if newAssets.isEmpty {
-            presentingViewController?.dismissViewControllerAnimated(true, completion: nil);
-            return
-        }
-        
-        let newSelectedAsset = model.selectedAsset > 0 ? model.selectedAsset - 1 : 0
-        model = PhotoViewModel(assets: newAssets, selectedAsset: newSelectedAsset)
-        purgeAllViews()
-        pageViews = []
-        
-        setupViews()
     }
     
     func loadPage(page: Int, requestFullImage: Bool) {
@@ -178,6 +175,11 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
         frame.origin.x = bounds.size.width * CGFloat(page) + PADDING
         frame.origin.y = 0.0
 
+        let asset = model.assets[page]
+        if page == self.model.selectedIndex {
+            heartButton.setImage(buttonImageForFavorite(asset.favorite), forState: .Normal)
+        }
+        
         // if we already have a view with a full image or
         // if we don't need the full image
         // make sure it's layed out correctly
@@ -187,6 +189,7 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
                 if requestFullImage {
                     shareButton.enabled = true
                     deleteButton.enabled = true
+                    heartButton.enabled = true
                 }
                 return
             }
@@ -204,17 +207,16 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
         }
         pageView.frame = frame
 
-        let asset = model.assets[page]
-
         // always get a thumbnail first
         pageView.imageIsDegraded = true
         imageManager.requestImageForAsset(asset, targetSize: cacheSize, contentMode: .AspectFill, options: nil, resultHandler: { (result, userInfo) -> Void in
             if let image = result {
                 // NSLog("Cache Result with image for page \(page) requestFullImage: \(requestFullImage) iamgeSize: \(image.size.width), \(image.size.height)");
                 pageView.image = image
-                if page == self.model.selectedAsset {
+                if page == self.model.selectedIndex {
                     self.shareButton.enabled = false
                     self.deleteButton.enabled = false
+                    self.heartButton.enabled = false
                 }
             }
         })
@@ -260,8 +262,10 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
                 UpgradeManager.highQualityViewCount += 1
                 pageView.image = image
                 pageView.imageIsDegraded = false
-                if page == self.model.selectedAsset {
+                if page == self.model.selectedIndex {
                     self.shareButton.enabled = true
+                    self.heartButton.enabled = true
+
                     if #available(iOS 9.0, *) {
                         self.deleteButton.enabled = !asset.sourceType.contains(.TypeiTunesSynced)
                     } else {
@@ -308,11 +312,11 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
         let page = lround(Double(fractionalPage))
         
         if !initialLoad &&
-            page == model.selectedAsset {
+            page == model.selectedIndex {
             return
         }
         
-        model.selectedAsset = page
+        model.selectedIndex = page
         
         // Work out which pages you want to load
         let firstPage = page - 1
@@ -355,13 +359,52 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
         return dismissTransition
     }
     
-    // MARK: ZoomingPhotoViewDelegate 
+    // MARK: PHPhotoLibraryChangeObserver
+    
+    func photoLibraryDidChange(changeInstance: PHChange) {
+        dispatch_async(dispatch_get_main_queue()) {
+            self.processLibraryChange(changeInstance)
+        }
+    }
+    
+    private func processLibraryChange(changeInstance: PHChange) {
+        let newAssets:[PHAsset] = model.assets.flatMap {
+            if let changeDetails = changeInstance.changeDetailsForObject($0) {
+                return changeDetails.objectWasDeleted ? nil : changeDetails.objectAfterChanges as? PHAsset
+            }
+            else {
+                return $0
+            }
+        }
+        
+        if newAssets.isEmpty {
+            presentingViewController?.dismissViewControllerAnimated(true, completion: nil);
+            return
+        }
+        
+        let assetsDeleted = newAssets.count < model.assets.count
+        let newSelectedAsset = min(model.selectedIndex, newAssets.count - 1)
+        model = PhotoViewModel(assets: newAssets, selectedAsset: newSelectedAsset)
+        
+        if assetsDeleted {
+            purgeAllViews()
+            pageViews = []
+            
+            setupViews()
+        }
+        else {
+            let asset = model.selectedAsset
+            heartButton.setImage(buttonImageForFavorite(asset.favorite), forState: .Normal)
+        }
+    }
+    
+    // MARK: ZoomingPhotoViewDelegate
     func hideControls(hide: Bool) {
         guard hide != controlsHidden else {
             return
         }
         
-        [shareButton, deleteButton, closeButton].forEach {
+        [shareButton, deleteButton, closeButton, heartButton].forEach {
             $0.alpha = hide ? 0 : 1
         }
     }

@@ -36,6 +36,17 @@ public class PHAssetHelper {
         return year
     }
     
+    public func refreshDatesMapCache() {
+        PHAssetHelper.datesMapCache = nil
+        
+        let operation = NSBlockOperation { () -> Void in
+            PHAssetHelper().datesMap()
+        }
+        
+        let queue = NSOperationQueue()
+        queue.addOperation(operation)
+    }
+    
     public func datesMap() -> [NSDate : Int] {
         guard PHAssetHelper.datesMapCache == nil else {
             return PHAssetHelper.datesMapCache!
