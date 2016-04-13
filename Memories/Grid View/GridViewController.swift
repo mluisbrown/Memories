@@ -40,20 +40,7 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
     // see rdar://25181601 (https://openradar.appspot.com/radar?id=6158824289337344)
     let gridThumbnailSize = CGSize(width: 256, height: 256)
     
-    var model : GridViewModel! {
-        didSet {
-            model.date.bind { [unowned self] (date) -> Void in
-                self.resetCachedAssets()
-                self.collectionView?.reloadData()
-                self.collectionView!.setContentOffset(CGPointMake(0, -self.collectionView!.contentInset.top), animated: false)
-                self.showHideNoPhotosLabel()
-                
-                self.createOrUpdatePullViews(date)
-                self.title = self.dateFormatter.stringFromDate(date).uppercaseString + " ▾" // ▼
-                self.showHideBlur(false)
-            }
-        }
-    }
+    var model : GridViewModel!
 
     var titleView : UILabel!
     
@@ -78,7 +65,6 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
         noPhotosLabel.backgroundColor = UIColor.clearColor()
         noPhotosLabel.font = UIFont.systemFontOfSize(16)
         noPhotosLabel.textColor = UIColor.whiteColor()
-        noPhotosLabel.text = NSLocalizedString("Sorry, no photos for this date :(", comment: "")
         
         super.init(coder: aDecoder)
     }
@@ -88,13 +74,22 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
         NSNotificationCenter.defaultCenter().removeObserver(self)
     }
     
-    // MARK: UIView
+    // MARK: - UIView
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        model = GridViewModel()
         dateFormatter.dateFormat = "MMMM dd"
+        model = GridViewModel() { [unowned self] date in
+            self.resetCachedAssets()
+            self.collectionView?.reloadData()
+            self.collectionView!.setContentOffset(CGPointMake(0, -self.collectionView!.contentInset.top), animated: false)
+            self.showHideNoPhotosLabel()
+            
+            self.createOrUpdatePullViews(date)
+            self.title = self.dateFormatter.stringFromDate(date).uppercaseString + " ▾" // ▼
+            self.showHideBlur(false)
+        }
         
         checkPhotosPermission {
             self.photosAllowed = true
@@ -155,7 +150,7 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
         updateCachedAssets()
-        showHideNoPhotosLabel()
+        showHideNoPhotosLabel(NSLocalizedString("Loading...", comment: ""))
     }
     
     override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
@@ -548,12 +543,14 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
         self.cellSize = cellSize
     }
     
-    func showHideNoPhotosLabel() {
+    func showHideNoPhotosLabel(text: String? = nil) {
         // make sure views have been layed out properly
         guard topLayoutGuide.length != 0 else {
             return
         }
         
+        noPhotosLabel.text = text ?? NSLocalizedString("Sorry, no photos for this date :(", comment: "")
+
         if model.sectionCount == 0 && noPhotosLabel.superview == nil {
             collectionView?.addSubview(noPhotosLabel)
             

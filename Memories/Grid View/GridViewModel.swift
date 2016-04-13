@@ -11,33 +11,47 @@ import Photos
 import PHAssetHelper
 
 class GridViewModel {
-    let assetHelper = PHAssetHelper()
-    var assetFetchResults = [PHFetchResult]()
+    private let assetHelper = PHAssetHelper()
+    private var assetFetchResults = [PHFetchResult]() {
+        didSet {
+            dispatch_async(dispatch_get_main_queue()) { [unowned self] in
+                self.onDataChanged(self.date.value)
+            }
+        }
+    }
     
-    var date : Dynamic<NSDate>
-
+    let date : Dynamic<NSDate>
+    let onDataChanged: (NSDate) -> ()
+    
     var sectionCount : Int {
         get {
             return assetFetchResults.count
         }
     }
     
-    init() {
+    init(onDataChanged: (date: NSDate) -> ()) {
+        self.onDataChanged = onDataChanged
         self.date = Dynamic(NSDate())
-        self.date.autoListener = {
-            self.assetFetchResults = self.assetHelper.fetchResultsForDateInAllYears($0)
+        self.date.bind {
+            let date = $0
+            dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0)) { [unowned self] in
+                self.assetFetchResults = self.assetHelper.fetchResultsForDateInAllYears(date)
+            }
         }
     }
     
-    init(date: NSDate) {
+    init(date: NSDate, onDataChanged: (date: NSDate) -> ()) {
+        self.onDataChanged = onDataChanged
         self.date = Dynamic(date)
-        self.date.autoListener = {
-            self.assetFetchResults = self.assetHelper.fetchResultsForDateInAllYears($0)
+        self.date.bindAndFire {
+            let date = $0
+            dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0)) { [unowned self] in
+                self.assetFetchResults = self.assetHelper.fetchResultsForDateInAllYears(date)
+            }
         }
-        self.assetFetchResults = self.assetHelper.fetchResultsForDateInAllYears(date)
     }
 
-    // MARK: API
+    // MARK: - API
     func goToNextDay() {
         date.value = date.value.nextDay()
     }
