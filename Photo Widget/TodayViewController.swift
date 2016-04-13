@@ -19,6 +19,8 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     var imageManager: PHCachingImageManager!
     var model: TodayViewModel?
     var currentAsset: PHAsset?
+    var readyForDisplay = false
+    var assetDisplayed = false
     
     let photoViewHeight = CGFloat(integerLiteral: 200)
     let cacheSize = CGSize(width: 256, height: 256)
@@ -37,9 +39,13 @@ class TodayViewController: UIViewController, NCWidgetProviding {
 #endif
         
         if PHPhotoLibrary.authorizationStatus() == .Authorized {
-            model = TodayViewModel(date: date)
             imageManager = PHCachingImageManager()
-            imageManager.startCachingImagesForAssets(model!.assets, targetSize: cacheSize, contentMode: .AspectFit, options: nil)
+            model = TodayViewModel(date: date) { [unowned self] in
+                self.imageManager.startCachingImagesForAssets(self.model!.assets, targetSize: self.cacheSize, contentMode: .AspectFill, options: nil)
+                if self.readyForDisplay && !self.assetDisplayed {
+                    self.displayAsset(self.model!.currentAsset())
+                }
+            }
         }
         
         let imageTapper = UITapGestureRecognizer(target: self, action: #selector(TodayViewController.launchApp))
@@ -48,10 +54,11 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     }
 
     override func viewDidAppear(animated: Bool) {
+        readyForDisplay = true
         guard let model = self.model else {
             return
         }
-
+        
         displayAsset(model.currentAsset())
     }
     
@@ -88,6 +95,8 @@ class TodayViewController: UIViewController, NCWidgetProviding {
             return
         }
         
+        assetDisplayed = true
+        
         let options = PHImageRequestOptions()
         options.networkAccessAllowed = false
         options.deliveryMode = .Opportunistic
@@ -98,14 +107,15 @@ class TodayViewController: UIViewController, NCWidgetProviding {
                 self.hidePhotoView(false) {
                     let newImageWider = image.size.width > self.photoView.image?.size.width
                     let newAsset = asset != self.currentAsset
+                    let newData = newAsset || newImageWider
                     
-                    if newAsset || newImageWider {
+                    if newData {
                         self.currentAsset = asset
                         self.photoView.image = image
                         self.yearLabel.text = self.dateFormatter.stringFromDate(assetDate)
                     }
                     
-                    completion?(true)
+                    completion?(newData)
                 }
             }
             else {
@@ -138,13 +148,20 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     }
     
     func widgetPerformUpdateWithCompletionHandler(completionHandler: NCUpdateResult -> Void) {
+        readyForDisplay = true
+
         guard let model = self.model else {
             completionHandler(NCUpdateResult.Failed)
             return
         }
         
-        displayAsset(model.randomAsset()) { Bool in
-            completionHandler(NCUpdateResult.NewData)
+        displayAsset(model.currentAsset()) { newData in
+            if newData {
+                completionHandler(NCUpdateResult.NewData)
+            }
+            else {
+                completionHandler(NCUpdateResult.NoData)
+            }
         }
     }
     

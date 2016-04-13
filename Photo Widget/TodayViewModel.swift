@@ -14,15 +14,21 @@ class TodayViewModel {
     let assetHelper = PHAssetHelper()
     
     let date : NSDate
-    let assets : [PHAsset]
-    var index = 0
+    var assets = [PHAsset]()
+    var index = -1
     
-    init(date: NSDate) {
+    init(date: NSDate, onDataReady: () -> ()) {
         self.date = date
-        assets = assetHelper.allAssetsForDateInAllYears(date)
+        dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0)) { [unowned self] in
+            self.assets = self.assetHelper.allAssetsForDateInAllYears(date)
+            dispatch_async(dispatch_get_main_queue()) {
+                onDataReady()
+            }
+        }
     }
     
-    func randomAsset() -> PHAsset? {
+    
+    private func randomAsset() -> PHAsset? {
         guard assets.count > 0 else {
             return nil
         }
@@ -36,6 +42,10 @@ class TodayViewModel {
             return nil
         }
 
+        if index < 1 {
+            return randomAsset()
+        }
+        
         return assets[index]
     }
     
