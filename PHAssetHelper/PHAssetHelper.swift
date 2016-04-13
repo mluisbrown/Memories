@@ -32,6 +32,8 @@ public class PHAssetHelper {
             }
         }
         
+        year = max(year, 1900)
+        
         PHAssetHelper.eariestAssetYearCache = year;
         return year
     }
