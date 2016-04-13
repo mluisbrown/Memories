@@ -162,30 +162,27 @@ class UpgradeManager {
     }
     
     static func upgrade(completion: ((success: Bool) -> ())?) {
-#if (arch(i386) || arch(x86_64)) && os(iOS)
-        upgraded = true
-        completion?(success: true)
-#else
         store.addPayment(UpgradeProductId, success: { (transaction) -> Void in
             upgraded = true
             completion?(success: true)
         }) { (transaction, error) -> Void in
             completion?(success: false)
         }
-#endif
     }
     
     static func restore(completion: ((success: Bool) -> ())?) {
-#if (arch(i386) || arch(x86_64)) && os(iOS)
-        upgraded = true
-        completion?(success: true)
-#else
         store.restoreTransactionsOnSuccess( { (transactions) -> Void in
+            guard transactions.count > 0,
+                let transaction = transactions[0] as? SKPaymentTransaction
+                where transaction.payment.productIdentifier == UpgradeProductId else {
+                    completion?(success: false)
+                    return
+            }
+
             upgraded = true
             completion?(success: true)
         }) { (error) -> Void in
             completion?(success: false)
         }
-#endif
     }
 }
