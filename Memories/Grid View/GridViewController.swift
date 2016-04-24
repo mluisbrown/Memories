@@ -45,8 +45,8 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
     var titleView : UILabel!
     
     var imageManager : PHCachingImageManager!
-    var previousPreheatRect : CGRect = CGRectZero
-    var cellSize : CGSize = CGSizeZero
+    var previousPreheatRect : CGRect = .zero
+    var cellSize : CGSize = .zero
     var photosAllowed = false
     
     let noPhotosLabel : UILabel
@@ -80,7 +80,8 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
         super.viewDidLoad()
         
         dateFormatter.dateFormat = "MMMM dd"
-        model = GridViewModel() { [unowned self] date in
+        model = GridViewModel() { [weak self] date in
+            guard let `self` = self else { return }
             self.resetCachedAssets()
             self.collectionView?.reloadData()
             self.collectionView!.setContentOffset(CGPointMake(0, -self.collectionView!.contentInset.top), animated: false)
