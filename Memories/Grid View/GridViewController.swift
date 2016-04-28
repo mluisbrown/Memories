@@ -151,6 +151,8 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
         updateCachedAssets()
+        
+        guard noPhotosLabel.text == nil else { return }
         showHideNoPhotosLabel(NSLocalizedString("Loading...", comment: ""))
     }
     
