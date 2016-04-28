@@ -40,7 +40,9 @@ class TodayViewController: UIViewController, NCWidgetProviding {
         
         if PHPhotoLibrary.authorizationStatus() == .Authorized {
             imageManager = PHCachingImageManager()
-            model = TodayViewModel(date: date) { [unowned self] in
+            model = TodayViewModel(date: date) { [weak self] in
+                guard let `self` = self else { return }
+                
                 self.imageManager.startCachingImagesForAssets(self.model!.assets, targetSize: self.cacheSize, contentMode: .AspectFill, options: nil)
                 if self.readyForDisplay && !self.assetDisplayed {
                     self.displayAsset(self.model!.currentAsset())

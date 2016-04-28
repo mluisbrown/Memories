@@ -140,7 +140,7 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
             break
         case upgradeIndexPath:
             let attributedString = NSAttributedString(string: upgradeLabel.text!, attributes: [NSFontAttributeName : UIFont.systemFontOfSize(14)])
-            let rect = attributedString.boundingRectWithSize(CGSizeMake(upgradeCell.frame.width - 32, CGFloat.max)
+            let rect = attributedString.boundingRectWithSize(CGSize(width: tableView.bounds.width - 32, height: CGFloat.max)
                 , options: [.UsesLineFragmentOrigin, .UsesFontLeading]
                 , context: nil)
             
