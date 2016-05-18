@@ -99,15 +99,24 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
     @IBAction func sharePhoto(sender: UIButton) {
         let page = model.selectedIndex
         
-        if let pageView = pageViews[page] where !pageView.imageIsDegraded {
-            let avc = UIActivityViewController(activityItems: [pageView.image!], applicationActivities: nil)
-            if let popover = avc.popoverPresentationController {
-                popover.sourceView = sender
-                popover.sourceRect = sender.bounds
-                popover.permittedArrowDirections = .Down
+        let asset = model.assets[page]
+        let options = PHImageRequestOptions()
+        options.version = .Current
+        options.networkAccessAllowed = false
+        PHImageManager.defaultManager().requestImageDataForAsset(asset, options: options) {
+            [weak self] imageData, dataUTI, orientation, info in
+            guard let `self` = self else { return }
+
+            if let imageData = imageData {
+                let avc = UIActivityViewController(activityItems: [imageData], applicationActivities: nil)
+                if let popover = avc.popoverPresentationController {
+                    popover.sourceView = sender
+                    popover.sourceRect = sender.bounds
+                    popover.permittedArrowDirections = .Down
+                }
+                
+                self.presentViewController(avc, animated: true, completion: nil)
             }
-            
-            presentViewController(avc, animated: true, completion: nil)
         }
     }
     
