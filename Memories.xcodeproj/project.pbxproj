@@ -123,6 +123,8 @@
 		4C5B90271B5D9C590014A87C /* GridHeaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridHeaderView.swift; sourceTree = "<group>"; };
 		4C6299AC1B4CB0AD00B8795E /* PhotoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoViewController.swift; sourceTree = "<group>"; };
 		4C6F48EE1B69850F00CF7E67 /* DismissSegue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DismissSegue.swift; sourceTree = "<group>"; };
+		4C6FF0461CED11E9001994DC /* Memories.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = Memories.entitlements; path = ../Memories.entitlements; sourceTree = "<group>"; };
+		4C6FF0491CED12D5001994DC /* Photo Widget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Photo Widget.entitlements"; sourceTree = "<group>"; };
 		4C8594C51BB33CF5005CCFAC /* Cartography.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cartography.framework; path = Carthage/Build/iOS/Cartography.framework; sourceTree = "<group>"; };
 		4C8594C91BB33D02005CCFAC /* DACircularProgress.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DACircularProgress.framework; path = Carthage/Build/iOS/DACircularProgress.framework; sourceTree = "<group>"; };
 		4C8594D01BB33E27005CCFAC /* Cartography.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = Cartography.framework.dSYM; path = Carthage/Build/iOS/Cartography.framework.dSYM; sourceTree = "<group>"; };
@@ -190,6 +192,7 @@
 		4C211F4B1C3DB8270082F4DF /* Photo Widget */ = {
 			isa = PBXGroup;
 			children = (
+				4C6FF0491CED12D5001994DC /* Photo Widget.entitlements */,
 				4C211F511C3DB8270082F4DF /* Info.plist */,
 				4C211F4E1C3DB8270082F4DF /* MainInterface.storyboard */,
 				4C211F4C1C3DB8270082F4DF /* TodayViewController.swift */,
@@ -325,6 +328,7 @@
 		4CEAA8EB1B3340C600774FE8 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				4C6FF0461CED11E9001994DC /* Memories.entitlements */,
 				4CEAA8EC1B3340C600774FE8 /* Info.plist */,
 				4C91432B1BA958CC001B30A9 /* notification.mp3 */,
 			);
@@ -426,10 +430,23 @@
 					4C211F471C3DB8270082F4DF = {
 						CreatedOnToolsVersion = 7.2;
 						DevelopmentTeam = 4KZP2U7889;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+						};
 					};
 					4CEAA8E71B3340C600774FE8 = {
 						CreatedOnToolsVersion = 6.3.2;
 						DevelopmentTeam = 4KZP2U7889;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+							com.apple.InAppPurchase = {
+								enabled = 1;
+							};
+						};
 					};
 					4CF4104A1C4BB098002FD49A = {
 						CreatedOnToolsVersion = 7.3;
@@ -594,6 +611,7 @@
 		4C211F551C3DB8270082F4DF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "Photo Widget/Photo Widget.entitlements";
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = dwarf;
@@ -609,6 +627,7 @@
 		4C211F561C3DB8270082F4DF /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "Photo Widget/Photo Widget.entitlements";
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				INFOPLIST_FILE = "Photo Widget/Info.plist";
@@ -710,6 +729,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Memories/Memories.entitlements;
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
@@ -732,6 +752,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Memories/Memories.entitlements;
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
