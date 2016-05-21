@@ -14,7 +14,28 @@ public class PHAssetHelper {
     private static var datesMapCache : [NSDate : Int]?
     private static var eariestAssetYearCache : Int?
     
+    private let userDefaults : NSUserDefaults
+    private let assetSourceTypesKey = "assetSourceTypes"
+
+    public static let sourceTypesChangedNotification = "PHAssetHelperSourceTypesChangedNotification"
+    
     public init() {
+        userDefaults = NSUserDefaults.init(suiteName: "group.com.luacheia.memories")!
+        if #available(iOS 9.0, *) {
+            let types: PHAssetSourceType = [.TypeUserLibrary, .TypeiTunesSynced, .TypeCloudShared]
+            userDefaults.registerDefaults([assetSourceTypesKey : NSNumber(unsignedLong: types.rawValue)])
+        }
+    }
+
+    @available(iOS 9.0, *)
+    public var assetSourceTypes: PHAssetSourceType {
+        get {
+            return PHAssetSourceType(rawValue: (userDefaults.valueForKey(assetSourceTypesKey) as! NSNumber).unsignedLongValue)
+        }
+        
+        set {
+            userDefaults.setValue(NSNumber(unsignedLong: newValue.rawValue), forKey: assetSourceTypesKey)
+        }
     }
     
     private func earliestAssetYear() -> Int {
@@ -41,7 +62,7 @@ public class PHAssetHelper {
     public func refreshDatesMapCache() {
         PHAssetHelper.datesMapCache = nil
         
-        let operation = NSBlockOperation { () -> Void in
+        let operation = NSBlockOperation {
             PHAssetHelper().datesMap()
         }
         
@@ -63,7 +84,7 @@ public class PHAssetHelper {
         let currentYear = NSDate().year
         let gregorian = NSDate.gregorianCalendar
         
-        fetchResult.enumerateObjectsUsingBlock { (object, index, stop) -> Void in
+        fetchResult.enumerateObjectsUsingBlock { object, index, stop in
             let asset : PHAsset = object as! PHAsset
             let comps = gregorian.components([.Month, .Day], fromDate: asset.creationDate!)
             let date = gregorian.dateWithEra(1, year: currentYear, month: comps.month, day: comps.day, hour: 12, minute: 0, second: 0, nanosecond: 0)!
@@ -83,7 +104,7 @@ public class PHAssetHelper {
         let options = PHFetchOptions()
         options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
         if #available(iOS 9.0, *) {
-            options.includeAssetSourceTypes = [.TypeUserLibrary, .TypeiTunesSynced, .TypeCloudShared]
+            options.includeAssetSourceTypes = assetSourceTypes
         }
         
         return PHAsset.fetchAssetsWithMediaType(.Image, options: options)
@@ -94,10 +115,10 @@ public class PHAssetHelper {
         var assets : [PHAsset] = [PHAsset]()
         
         for fetchResult in assetFetchResults {
-            fetchResult.enumerateObjectsUsingBlock({ (object, index, stop) -> Void in
+            fetchResult.enumerateObjectsUsingBlock { object, index, stop in
                 let asset : PHAsset = object as! PHAsset
                 assets.append(asset)
-            })
+            }
         }
         
         return assets
@@ -107,7 +128,7 @@ public class PHAssetHelper {
         let options = PHFetchOptions()
         options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
         if #available(iOS 9.0, *) {
-            options.includeAssetSourceTypes = [.TypeUserLibrary, .TypeiTunesSynced, .TypeCloudShared]
+            options.includeAssetSourceTypes = assetSourceTypes
         }
         
         let startAndEndDates = startAndEndDatesForDateInYears(date, fromYear: earliestAssetYear(), toYear: NSDate().year)

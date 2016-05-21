@@ -8,6 +8,8 @@
 
 import UIKit
 import MessageUI
+import PHAssetHelper
+import Photos
 
 class SettingsViewController: UITableViewController, MFMailComposeViewControllerDelegate {
 
@@ -20,7 +22,24 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
     @IBOutlet weak var upgradeButton: UIButton!
     @IBOutlet weak var restoreButton: UIButton!
     @IBOutlet weak var thankYouLabel: UILabel!
+    @IBOutlet weak var sourcePhotoLibrarySwitch: UISwitch!
+    @IBOutlet weak var sourceICloudSharedSwitch: UISwitch!
+    @IBOutlet weak var sourceITunesSwitch: UISwitch!
 
+    let assetHelper = PHAssetHelper()
+    let hideSourcesSection: Bool = {
+        if #available(iOS 9.0, *) {
+            return false
+        }
+        return true
+    }()
+    
+    let sourcesSection = 2
+    
+    func shouldHideSection(section: Int) -> Bool {
+        return section == sourcesSection && hideSourcesSection
+    }
+    
     var viewModel : SettingsViewModel? {
         willSet {
             if let model = viewModel where newValue == nil {
@@ -30,6 +49,9 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
                 model.userHasUpgraded.bind(nil)
                 model.upgradeButtonText.bind(nil)
                 model.storeAvailable.bind(nil)
+                model.sourcePhotoLibrary.bind(nil)
+                model.sourceICloudShare.bind(nil)
+                model.sourceITunes.bind(nil)
             }
         }
         
@@ -63,6 +85,21 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
                     self.timePicker.date = self.timePicker.calendar.dateWithEra(1, year: 1970, month: 1, day: 1, hour: hour, minute: minute, second: 0, nanosecond: 0)!
                 }
                 
+                model.sourcePhotoLibrary.bindAndFire {
+                    [unowned self] in
+                    self.sourcePhotoLibrarySwitch.on = $0
+                }
+                
+                model.sourceICloudShare.bindAndFire {
+                    [unowned self] in
+                    self.sourceICloudSharedSwitch.on = $0
+                }
+
+                model.sourceITunes.bindAndFire {
+                    [unowned self] in
+                    self.sourceITunesSwitch.on = $0
+                }
+                
                 model.userHasUpgraded.bindAndFire {
                     [unowned self] in
                     let value = $0
@@ -94,7 +131,23 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
     override func viewWillAppear(animated: Bool) {
         let notificationTime = NotificationManager.notificationTime()
         let notificationsEnabled = NotificationManager.notificationsEnabled() && NotificationManager.notificationsAllowed()
-        viewModel = SettingsViewModel(notificationsEnabled: notificationsEnabled, notificationHour: notificationTime.hour, notificationMinute: notificationTime.minute)
+        if #available(iOS 9.0, *) {
+            let sources = assetHelper.assetSourceTypes
+            viewModel = SettingsViewModel(notificationsEnabled: notificationsEnabled,
+                                          notificationHour: notificationTime.hour,
+                                          notificationMinute: notificationTime.minute,
+                                          sourcePhotoLibrary: sources.contains(.TypeUserLibrary),
+                                          sourceICloudShare: sources.contains(.TypeCloudShared),
+                                          sourceITunes: sources.contains(.TypeiTunesSynced))
+        } else {
+            viewModel = SettingsViewModel(notificationsEnabled: notificationsEnabled,
+                                          notificationHour: notificationTime.hour,
+                                          notificationMinute: notificationTime.minute,
+                                          sourcePhotoLibrary: false,
+                                          sourceICloudShare: false,
+                                          sourceITunes: false)
+        }
+        
     }
     
     override func viewWillDisappear(animated: Bool) {
@@ -114,6 +167,21 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
         } else {
             NotificationManager.disableNotifications()
         }
+        
+        // save the chosen source types
+        if #available(iOS 9.0, *) {
+            var sources = PHAssetSourceType(rawValue: 0)
+            
+            if viewModel!.sourcePhotoLibrary.value { sources.insert(.TypeUserLibrary) }
+            if viewModel!.sourceICloudShare.value { sources.insert(.TypeCloudShared) }
+            if viewModel!.sourceITunes.value { sources.insert(.TypeiTunesSynced) }
+            
+            if sources != assetHelper.assetSourceTypes {
+                assetHelper.assetSourceTypes = sources
+                assetHelper.refreshDatesMapCache()
+                NSNotificationCenter.defaultCenter().postNotificationName(PHAssetHelper.sourceTypesChangedNotification, object: self)
+            }
+        }
     }
     
     // MARK: UITableViewDelegate
@@ -130,6 +198,10 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
     }
     
     override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        guard !shouldHideSection(indexPath.section) else {
+            	return 0.1
+        }
+        
         let timePickerIndexPath = NSIndexPath(forRow: 1, inSection: 1)
         let upgradeIndexPath = NSIndexPath(forRow: 0, inSection: 0)
         
@@ -137,7 +209,6 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
         switch indexPath {
         case timePickerIndexPath:
             height = 162
-            break
         case upgradeIndexPath:
             let attributedString = NSAttributedString(string: upgradeLabel.text!, attributes: [NSFontAttributeName : UIFont.systemFontOfSize(14)])
             let rect = attributedString.boundingRectWithSize(CGSize(width: tableView.bounds.width - 32, height: CGFloat.max)
@@ -145,12 +216,34 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
                 , context: nil)
             
             height = rect.height + 44 // space for the buttons etc
-            break
         default:
             height = 44
         }
         
         return height
+    }
+
+    // the following methods overridden merely to be able to 
+    // hide the Photo Sources section pre iOS 9 where this featur
+    // is not supported
+    override func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return shouldHideSection(section) ? 0.1 : super.tableView(tableView, heightForHeaderInSection: section)
+    }
+    
+    override func tableView(tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return shouldHideSection(section) ? 0.1 : super.tableView(tableView, heightForFooterInSection: section)
+    }
+    
+    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return shouldHideSection(section) ? 0 : super.tableView(tableView, numberOfRowsInSection: section)
+    }
+
+    override func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        return shouldHideSection(section) ? UIView.init(frame: CGRect.zero) : nil
+    }
+    
+    override func tableView(tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        return shouldHideSection(section) ? UIView.init(frame: CGRect.zero) : nil
     }
     
     // MARK: Actions
@@ -168,6 +261,19 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
         viewModel?.notificationMinute.value = minute
     }
 
+    @IBAction func sourceSwitchValueChanged(sender: UISwitch) {
+        switch sender {
+        case sourcePhotoLibrarySwitch:
+            viewModel?.sourcePhotoLibrary.value = sender.on
+        case sourceICloudSharedSwitch:
+            viewModel?.sourceICloudShare.value = sender.on
+        case sourceITunesSwitch:
+            viewModel?.sourceITunes.value = sender.on
+        default:
+            break;
+        }
+    }
+    
     @IBAction func upgradeTapped(sender: UIButton) {
         UpgradeManager.upgrade {
             self.viewModel?.userHasUpgraded.value = $0
