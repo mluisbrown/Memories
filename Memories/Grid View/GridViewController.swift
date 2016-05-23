@@ -525,9 +525,9 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
     }
     
     func assetsAtIndexPaths(indexPaths : [NSIndexPath]) -> [PHAsset] {
-        return indexPaths.map() {
-            self.model.assetAtIndexPath($0)!
-        }
+        return indexPaths.flatMap() {
+            self.model.assetAtIndexPath($0)
+        }        
     }
     
     // MARK: - Helpers
