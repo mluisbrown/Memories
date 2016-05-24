@@ -141,8 +141,10 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
     @IBAction func close(sender: UIButton) {
         if let navController = presentingViewController as? UINavigationController,
             gridViewController = navController.topViewController as? GridViewController {
+            cancelAllImageRequests()
+            PHPhotoLibrary.sharedPhotoLibrary().unregisterChangeObserver(self)
+
             gridViewController.setSelectedIndex(model.selectedIndex)
-            
             if traitCollection.verticalSizeClass == .Regular {
                 hideStatusBar(false)
             }
@@ -268,7 +270,7 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
         options.deliveryMode = .HighQualityFormat
         options.synchronous = false
         
-        let requestId = PHImageManager.defaultManager().requestImageForAsset(asset, targetSize: PHImageManagerMaximumSize, contentMode: .AspectFit, options: options) { (result, userInfo) -> Void in
+        pageView.imageRequestId = PHImageManager.defaultManager().requestImageForAsset(asset, targetSize: PHImageManagerMaximumSize, contentMode: .AspectFit, options: options) { (result, userInfo) -> Void in
             if let image = result {
                 UpgradeManager.highQualityViewCount += 1
                 pageView.image = image
@@ -289,8 +291,6 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
                 pageView.fullImageUnavailable = true
             }
         }
-        
-        pageView.imageRequestId = requestId
     }
     
     func purgePage(page: Int) {
@@ -302,10 +302,24 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
         if let pageView = pageViews[page] {
             if let requestId = pageView.imageRequestId {
                 PHImageManager.defaultManager().cancelImageRequest(requestId)
+                pageView.imageRequestId = nil
             }
             pageView.image = nil
             pageView.removeFromSuperview()
             pageViews[page] = nil
+        }
+    }
+    
+    func cancelPageImageRequest(page: Int) {
+        guard page >= 0 && page < pageViews.count else {
+            return
+        }
+        
+        if let pageView = pageViews[page] {
+            if let requestId = pageView.imageRequestId {
+                PHImageManager.defaultManager().cancelImageRequest(requestId)
+                pageView.imageRequestId = nil
+            }
         }
     }
     
@@ -341,6 +355,10 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
         
         // Purge anything after the last page
         model.assets.count.stride(to: lastPage, by: -1).forEach(purgePage)
+    }
+    
+    func cancelAllImageRequests() {
+        pageViews.indices.forEach(cancelPageImageRequest)
     }
     
     func purgeAllViews() {
