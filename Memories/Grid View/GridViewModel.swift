@@ -12,13 +12,7 @@ import PHAssetHelper
 
 class GridViewModel {
     private let assetHelper = PHAssetHelper()
-    private var assetFetchResults = [PHFetchResult]() {
-        didSet {
-            dispatch_async(dispatch_get_main_queue()) { [unowned self] in
-                self.onDataChanged(self.date.value)
-            }
-        }
-    }
+    private var assetFetchResults = [PHFetchResult]()
     
     let date : Dynamic<NSDate>
     let onDataChanged: (NSDate) -> ()
@@ -33,10 +27,7 @@ class GridViewModel {
         self.onDataChanged = onDataChanged
         self.date = Dynamic(NSDate())
         self.date.bind {
-            let date = $0
-            dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0)) { [unowned self] in
-                self.assetFetchResults = self.assetHelper.fetchResultsForDateInAllYears(date)
-            }
+            self.fetchDataAndNotify($0)
         }
     }
     
@@ -44,13 +35,19 @@ class GridViewModel {
         self.onDataChanged = onDataChanged
         self.date = Dynamic(date)
         self.date.bindAndFire {
-            let date = $0
-            dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0)) { [unowned self] in
-                self.assetFetchResults = self.assetHelper.fetchResultsForDateInAllYears(date)
-            }
+            self.fetchDataAndNotify($0)
         }
     }
 
+    private func fetchDataAndNotify(date: NSDate) {
+        dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0)) { [unowned self] in
+            self.assetFetchResults = self.assetHelper.fetchResultsForDateInAllYears(date)
+            dispatch_async(dispatch_get_main_queue()) { [unowned self] in
+                self.onDataChanged(self.date.value)
+            }
+        }
+    }
+    
     // MARK: - API
     func goToNextDay() {
         date.value = date.value.nextDay()
