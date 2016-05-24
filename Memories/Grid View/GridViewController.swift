@@ -59,6 +59,7 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
 
     let RELEASE_THRESHOLD : CGFloat = 100.0
     let dateFormatter = NSDateFormatter()
+    let assetHelper = PHAssetHelper()
     
     required init?(coder aDecoder: NSCoder) {
         noPhotosLabel = UILabel()
@@ -104,8 +105,10 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
             }
             
             PHPhotoLibrary.sharedPhotoLibrary().registerChangeObserver(self);
-            NSNotificationCenter.defaultCenter().addObserver(self, selector:#selector(GridViewController.appDidBecomeActive), name:
-                UIApplicationDidBecomeActiveNotification, object: nil)
+            NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(GridViewController.appDidBecomeActive),
+                name: UIApplicationDidBecomeActiveNotification, object: nil)
+            NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(GridViewController.reloadPhotos),
+                name: PHAssetHelper.sourceTypesChangedNotification, object: nil)
         }
     }
 
@@ -134,12 +137,6 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
         
         get {
             return super.title
-        }
-    }
-    
-    func appDidBecomeActive() {
-        if let date = NotificationManager.launchDate() where self.photosAllowed {
-            self.model.date.value = date
         }
     }
     
@@ -184,6 +181,19 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
+    }
+
+    // MARK: - Notification handlers
+    func appDidBecomeActive() {
+        if let date = NotificationManager.launchDate() where self.photosAllowed {
+            self.model.date.value = date
+        }
+    }
+    
+    func reloadPhotos() {
+        // force the date change to fire, but
+        // with the same date, to reload the data
+        model.date.value = model.date.value
     }
 
     // MARK: - Actions
@@ -436,7 +446,7 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
             
             if (cacheNeedsReset) {
                 self.resetCachedAssets()
-                PHAssetHelper().refreshDatesMapCache()
+                self.assetHelper.refreshDatesMapCache()
             }
         }
     }
@@ -515,9 +525,9 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
     }
     
     func assetsAtIndexPaths(indexPaths : [NSIndexPath]) -> [PHAsset] {
-        return indexPaths.map() {
-            self.model.assetAtIndexPath($0)!
-        }
+        return indexPaths.flatMap() {
+            self.model.assetAtIndexPath($0)
+        }        
     }
     
     // MARK: - Helpers

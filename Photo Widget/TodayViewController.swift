@@ -25,6 +25,13 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     let photoViewHeight = CGFloat(integerLiteral: 200)
     let cacheSize = CGSize(width: 256, height: 256)
     let dateFormatter = NSDateFormatter()
+    let requestOptions: PHImageRequestOptions = {
+        let options = PHImageRequestOptions()
+        options.networkAccessAllowed = false
+        options.deliveryMode = .Opportunistic
+        options.synchronous = false
+        return options
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -43,7 +50,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
             model = TodayViewModel(date: date) { [weak self] in
                 guard let `self` = self else { return }
                 
-                self.imageManager.startCachingImagesForAssets(self.model!.assets, targetSize: self.cacheSize, contentMode: .AspectFill, options: nil)
+                self.imageManager.startCachingImagesForAssets(self.model!.assets, targetSize: self.cacheSize, contentMode: .AspectFill, options: self.requestOptions)
                 if self.readyForDisplay && !self.assetDisplayed {
                     self.displayAsset(self.model!.currentAsset())
                 }
@@ -98,18 +105,12 @@ class TodayViewController: UIViewController, NCWidgetProviding {
         }
         
         assetDisplayed = true
-        
-        let options = PHImageRequestOptions()
-        options.networkAccessAllowed = false
-        options.deliveryMode = .Opportunistic
-        options.synchronous = false
-        
-        imageManager.requestImageForAsset(asset, targetSize: cacheSize, contentMode: .AspectFill, options: nil) { (result, userInfo) -> Void in
+        imageManager.requestImageForAsset(asset, targetSize: cacheSize, contentMode: .AspectFill, options: requestOptions) { result, userInfo in
             if let image = result, assetDate = asset.creationDate {
                 self.hidePhotoView(false) {
-                    let newImageWider = image.size.width > self.photoView.image?.size.width
+                    let imageWider = image.size.width > self.photoView.image?.size.width
                     let newAsset = asset != self.currentAsset
-                    let newData = newAsset || newImageWider
+                    let newData = newAsset || imageWider
                     
                     if newData {
                         self.currentAsset = asset

@@ -13,7 +13,7 @@ class PhotoViewDismissTransition: NSObject, UIViewControllerAnimatedTransitionin
     
     let destImageView: UIImageView
     let sourceImageView: UIImageView
-    let duration = NSTimeInterval(0.5)
+    let duration = NSTimeInterval(0.25)
 
     init(destImageView: UIImageView, sourceImageView: UIImageView) {
         self.destImageView = destImageView
