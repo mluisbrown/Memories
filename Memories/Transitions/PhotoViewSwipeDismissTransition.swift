@@ -1,19 +1,22 @@
-//
-//  PhotoViewDismissTransition.swift
+
+//  PhotoViewSwipeDismissTransition.swift
 //  Memories
 //
-//  Created by Michael Brown on 11/12/2015.
-//  Copyright © 2015 Michael Brown. All rights reserved.
+//  Created by Michael Brown on 11/06/2016.
+//  Copyright © 2016 Michael Brown. All rights reserved.
 //
 
 import UIKit
 
-class PhotoViewDismissTransition: NSObject, UIViewControllerAnimatedTransitioning {
-    
+class PhotoViewSwipeDismissTransition:
+    UIPercentDrivenInteractiveTransition,
+    UIViewControllerAnimatedTransitioning {
     let destImageView: UIImageView
     let sourceImageView: UIImageView
-    let duration = NSTimeInterval(0.25)
-
+    let transitionDuration = NSTimeInterval(0.25)
+    
+    var panHeight = CGFloat(0)
+    
     init(destImageView: UIImageView, sourceImageView: UIImageView) {
         self.destImageView = destImageView
         self.sourceImageView = sourceImageView
@@ -21,7 +24,7 @@ class PhotoViewDismissTransition: NSObject, UIViewControllerAnimatedTransitionin
     
     // MARK: UIViewControllerAnimatedTransitioning
     func transitionDuration(transitionContext: UIViewControllerContextTransitioning?) -> NSTimeInterval {
-        return duration
+        return transitionDuration
     }
     
     func animateTransition(transitionContext: UIViewControllerContextTransitioning) {
@@ -43,13 +46,14 @@ class PhotoViewDismissTransition: NSObject, UIViewControllerAnimatedTransitionin
         imageView.clipsToBounds = true
         transitionView.addSubview(imageView)
         
+        let fromBackgroundColor = fromView.backgroundColor
         fromView.backgroundColor = UIColor.clearColor()
         self.destImageView.hidden = true
         self.sourceImageView.hidden = true
         
         let newImageFrame = CGRectIntegral(transitionView.convertRect(self.destImageView.bounds, fromView: self.destImageView))
         
-        UIView.animateKeyframesWithDuration(duration, delay: 0, options: .CalculationModeLinear, animations: {
+        UIView.animateKeyframesWithDuration(transitionDuration, delay: 0, options: .CalculationModeLinear, animations: {
             UIView.addKeyframeWithRelativeStartTime(0.0, relativeDuration: 0.25) {
                 fromView.alpha = 0.0
             }
@@ -60,10 +64,42 @@ class PhotoViewDismissTransition: NSObject, UIViewControllerAnimatedTransitionin
             }
         }) { finished in
             self.destImageView.hidden = false
-            fromView.removeFromSuperview()
+            
+            let cancelled = transitionContext.transitionWasCancelled()
+            
+            if cancelled {
+                fromView.backgroundColor = fromBackgroundColor
+                self.destImageView.hidden = false
+                self.sourceImageView.hidden = false
+            }
+            else {
+                fromView.removeFromSuperview()
+            }
             
             transitionView.removeFromSuperview()
-            transitionContext.completeTransition(!transitionContext.transitionWasCancelled())
-        }        
-    }    
+            transitionContext.completeTransition(!cancelled)
+        }
+    }
+    
+    // MARK: gesture handling
+    func handlePan(panRecognizer gr: UIPanGestureRecognizer) {
+        switch gr.state {
+        case .Began:
+            let startPoint = gr.locationInView(gr.view)
+            panHeight = gr.view!.bounds.height - startPoint.y
+        case .Changed:
+            let percent = gr.translationInView(gr.view).y / panHeight
+            updateInteractiveTransition(percent <= 0 ? 0 : percent)
+        case .Ended, .Cancelled:
+            let velocity = gr.velocityInView(gr.view)
+            if velocity.y < 0 || gr.state == .Cancelled {
+                cancelInteractiveTransition()
+            }
+            else {
+                finishInteractiveTransition()
+            }
+        default:
+            break
+        }
+    }
 }

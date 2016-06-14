@@ -26,6 +26,7 @@
 		4C8594CD1BB33D4C005CCFAC /* DACircularProgress.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C8594C91BB33D02005CCFAC /* DACircularProgress.framework */; };
 		4C8594D11BB33E27005CCFAC /* Cartography.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4C8594D01BB33E27005CCFAC /* Cartography.framework.dSYM */; };
 		4C8594D31BB33E2F005CCFAC /* DACircularProgress.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4C8594D21BB33E2F005CCFAC /* DACircularProgress.framework.dSYM */; };
+		4C8774E21D0C4D4500F523DC /* PhotoViewSwipeDismissTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C8774E11D0C4D4500F523DC /* PhotoViewSwipeDismissTransition.swift */; };
 		4C91432C1BA958CC001B30A9 /* notification.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 4C91432B1BA958CC001B30A9 /* notification.mp3 */; };
 		4C921FD21C1A038800F0411D /* PhotoViewPresentTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C921FD11C1A038800F0411D /* PhotoViewPresentTransition.swift */; };
 		4C989BDF1BA7806E00D4C13F /* Dynamic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C989BDE1BA7806E00D4C13F /* Dynamic.swift */; };
@@ -129,6 +130,7 @@
 		4C8594C91BB33D02005CCFAC /* DACircularProgress.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DACircularProgress.framework; path = Carthage/Build/iOS/DACircularProgress.framework; sourceTree = "<group>"; };
 		4C8594D01BB33E27005CCFAC /* Cartography.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = Cartography.framework.dSYM; path = Carthage/Build/iOS/Cartography.framework.dSYM; sourceTree = "<group>"; };
 		4C8594D21BB33E2F005CCFAC /* DACircularProgress.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = DACircularProgress.framework.dSYM; path = Carthage/Build/iOS/DACircularProgress.framework.dSYM; sourceTree = "<group>"; };
+		4C8774E11D0C4D4500F523DC /* PhotoViewSwipeDismissTransition.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoViewSwipeDismissTransition.swift; sourceTree = "<group>"; };
 		4C91432B1BA958CC001B30A9 /* notification.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = notification.mp3; sourceTree = "<group>"; };
 		4C921FD11C1A038800F0411D /* PhotoViewPresentTransition.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoViewPresentTransition.swift; sourceTree = "<group>"; };
 		4C989BDE1BA7806E00D4C13F /* Dynamic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Dynamic.swift; sourceTree = "<group>"; };
@@ -267,6 +269,7 @@
 			children = (
 				4C00A4F41C1B7ED30078A43F /* PhotoViewDismissTransition.swift */,
 				4C921FD11C1A038800F0411D /* PhotoViewPresentTransition.swift */,
+				4C8774E11D0C4D4500F523DC /* PhotoViewSwipeDismissTransition.swift */,
 			);
 			path = Transitions;
 			sourceTree = "<group>";
@@ -558,6 +561,7 @@
 				4C6F48EF1B69850F00CF7E67 /* DismissSegue.swift in Sources */,
 				4C6299AD1B4CB0AD00B8795E /* PhotoViewController.swift in Sources */,
 				4CB674B51BA1EBC7001F401A /* SettingsViewController.swift in Sources */,
+				4C8774E21D0C4D4500F523DC /* PhotoViewSwipeDismissTransition.swift in Sources */,
 				4C989BE11BA780BB00D4C13F /* SettingsViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -36,6 +36,7 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
     
     var presentTransition: PhotoViewPresentTransition?
     var dismissTransition: PhotoViewDismissTransition?
+    var swipeDismissTransition: PhotoViewSwipeDismissTransition?
     
     required init?(coder aDecoder: NSCoder) {
         self.imageManager = PHCachingImageManager()
@@ -64,11 +65,22 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
         initialPage = model.selectedIndex
         imageManager.startCachingImagesForAssets(model.assets, targetSize: cacheSize, contentMode: .AspectFill, options: nil)
         PHPhotoLibrary.sharedPhotoLibrary().registerChangeObserver(self);
+        
+        let panRecognizer = UIPanGestureRecognizer(target: self, action: #selector(PhotoViewController.viewDidPan))
+        view.addGestureRecognizer(panRecognizer)
     }
 
     override func viewDidAppear(animated: Bool) {
         hideStatusBar(true)
     }
+    
+    override func viewDidDisappear(animated: Bool) {
+        NSLog("PhotoViewController.viewDidDisappear")
+
+        PHPhotoLibrary.sharedPhotoLibrary().unregisterChangeObserver(self)
+        self.cancelAllImageRequests()
+        self.purgeAllViews()
+}
     
     override func viewDidLayoutSubviews() {
         setupViews()
@@ -138,22 +150,44 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
         }, completionHandler: nil)
     }
     
-    @IBAction func close(sender: UIButton) {
+    func doClose(interactive: Bool) {
         if let navController = presentingViewController as? UINavigationController,
             gridViewController = navController.topViewController as? GridViewController {
-            cancelAllImageRequests()
-            PHPhotoLibrary.sharedPhotoLibrary().unregisterChangeObserver(self)
-
             gridViewController.setSelectedIndex(model.selectedIndex)
+            let imageView = gridViewController.imageViewForIndex(model.selectedIndex)!
+            let pageView = pageViews[model.selectedIndex]!
+            
             if traitCollection.verticalSizeClass == .Regular {
                 hideStatusBar(false)
             }
-            let imageView = gridViewController.imageViewForIndex(model.selectedIndex)
-            let pageView = pageViews[model.selectedIndex]
-            dismissTransition = PhotoViewDismissTransition(destImageView: imageView!, sourceImageView: pageView!.imageView)
-
-            navController.dismissViewControllerAnimated(true) { self.purgeAllViews() }
+            
+            if interactive {
+                swipeDismissTransition = PhotoViewSwipeDismissTransition(destImageView: imageView, sourceImageView: pageView.imageView)
+            }
+            else {
+                dismissTransition = PhotoViewDismissTransition(destImageView: imageView, sourceImageView: pageView.imageView)
+                swipeDismissTransition = nil
+            }
+            
+            navController.dismissViewControllerAnimated(true) {
+                NSLog("dismissViewControllerAnimated completion block")
+            }
         }
+    }
+    
+    @IBAction func close(sender: UIButton) {
+        doClose(false)
+    }
+    
+    func viewDidPan(gr: UIPanGestureRecognizer) {
+        switch gr.state {
+        case .Began:
+            doClose(true)
+        default:
+            break
+        }
+        
+        swipeDismissTransition?.handlePan(panRecognizer: gr)
     }
     
     // MARK: Internal implementation
@@ -385,7 +419,15 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
     }
     
     func animationControllerForDismissedController(dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        if swipeDismissTransition != nil {
+            return swipeDismissTransition
+        }
+        
         return dismissTransition
+    }
+    
+    func interactionControllerForDismissal(animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+        return swipeDismissTransition
     }
     
     // MARK: PHPhotoLibraryChangeObserver
