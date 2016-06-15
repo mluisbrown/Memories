@@ -11,7 +11,7 @@ import AVFoundation
 
 class PhotoViewPresentTransition: NSObject, UIViewControllerAnimatedTransitioning {
     let sourceImageView : UIImageView
-    let duration = NSTimeInterval(0.25)
+    let duration = TimeInterval(0.25)
     let buttonOffset = CGFloat(50)
     
     init(sourceImageView: UIImageView) {
@@ -19,24 +19,23 @@ class PhotoViewPresentTransition: NSObject, UIViewControllerAnimatedTransitionin
     }
     
     // MARK: UIViewControllerAnimatedTransitioning
-    func transitionDuration(transitionContext: UIViewControllerContextTransitioning?) -> NSTimeInterval {
+    func transitionDuration(_ transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
         return duration
     }
     
-    func animateTransition(transitionContext: UIViewControllerContextTransitioning) {
-        guard let container = transitionContext.containerView(),
-            toViewController = transitionContext.viewControllerForKey(UITransitionContextToViewControllerKey),
-            toView = transitionContext.viewForKey(UITransitionContextToViewKey) else {
+    func animateTransition(_ transitionContext: UIViewControllerContextTransitioning) {
+        guard let toViewController = transitionContext.viewController(forKey: UITransitionContextToViewControllerKey),
+            toView = transitionContext.view(forKey: UITransitionContextToViewKey) else {
             return
         }
+        let container = transitionContext.containerView()
+        toView.autoresizingMask = [.flexibleHeight, .flexibleWidth]
         
-        toView.autoresizingMask = [.FlexibleHeight, .FlexibleWidth]
-        
-        let transitionView = UIView(frame: transitionContext.finalFrameForViewController(toViewController))
-        transitionView.backgroundColor = UIColor.clearColor()
+        let transitionView = UIView(frame: transitionContext.finalFrame(for: toViewController))
+        transitionView.backgroundColor = UIColor.clear()
         container.addSubview(transitionView)
         
-        let imageViewFrameInOurCoordinateSystem = CGRectIntegral(transitionView.convertRect(self.sourceImageView.bounds, fromView: self.sourceImageView))
+        let imageViewFrameInOurCoordinateSystem = transitionView.convert(self.sourceImageView.bounds, from: self.sourceImageView).integral
         let imageView = UIImageView(frame: imageViewFrameInOurCoordinateSystem)
         imageView.image = sourceImageView.image
         imageView.contentMode = container.thumbnailContentMode
@@ -45,29 +44,29 @@ class PhotoViewPresentTransition: NSObject, UIViewControllerAnimatedTransitionin
 
         container.addSubview(toView)
         toView.alpha = 0.0
-        self.sourceImageView.hidden = true
+        self.sourceImageView.isHidden = true
         
-        let fullImageViewSize = AVMakeRectWithAspectRatioInsideRect(sourceImageView.image!.size, CGRect(origin: CGPointZero, size: transitionView.frame.size)).size
+        let fullImageViewSize = AVMakeRect(aspectRatio: sourceImageView.image!.size, insideRect: CGRect(origin: CGPoint.zero, size: transitionView.frame.size)).size
         let newImageViewSize = adjustImageBoundsForButtons(fullImageViewSize, vcViewSize: transitionView.frame.size)
         
-        UIView.animateKeyframesWithDuration(duration, delay: 0, options: .CalculationModeLinear, animations: {
-            UIView.addKeyframeWithRelativeStartTime(0, relativeDuration: 0.75) {
-                transitionView.backgroundColor = UIColor.blackColor()
-                imageView.bounds = CGRect(origin: CGPointZero, size: newImageViewSize)
+        UIView.animateKeyframes(withDuration: duration, delay: 0, options: UIViewKeyframeAnimationOptions(), animations: {
+            UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.75) {
+                transitionView.backgroundColor = UIColor.black()
+                imageView.bounds = CGRect(origin: CGPoint.zero, size: newImageViewSize)
                 imageView.center = transitionView.center
             }
             
-            UIView.addKeyframeWithRelativeStartTime(0.75, relativeDuration: 0.25) {
+            UIView.addKeyframe(withRelativeStartTime: 0.75, relativeDuration: 0.25) {
                 toView.alpha = 1.0
             }
         }) { finished in
-            self.sourceImageView.hidden = false
+            self.sourceImageView.isHidden = false
             transitionView.removeFromSuperview()
             transitionContext.completeTransition(!transitionContext.transitionWasCancelled())
         }        
     }
     
-    private func adjustImageBoundsForButtons(imageViewSize: CGSize, vcViewSize: CGSize) -> CGSize {
+    private func adjustImageBoundsForButtons(_ imageViewSize: CGSize, vcViewSize: CGSize) -> CGSize {
         let hPadding = floor((vcViewSize.width - imageViewSize.width) / 2)
         let vPadding = floor((vcViewSize.height - imageViewSize.height) / 2)
         
@@ -94,7 +93,7 @@ class PhotoViewPresentTransition: NSObject, UIViewControllerAnimatedTransitionin
             
             scale = (imageDim - ((buttonOffset - padDim) * 2)) / imageDim
             
-            return CGSizeApplyAffineTransform(imageViewSize, CGAffineTransformMakeScale(scale, scale))
+            return imageViewSize.apply(transform: CGAffineTransform(scaleX: scale, y: scale))
         }
         
         return imageViewSize

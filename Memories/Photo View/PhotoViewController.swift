@@ -19,8 +19,8 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
 
     let PADDING : CGFloat = 10.0;
     
-    let heartFullImg = UIImage(named: "heart-full")!.imageWithRenderingMode(.AlwaysTemplate)
-    let heartEmptyImg = UIImage(named: "heart-empty")!.imageWithRenderingMode(.AlwaysTemplate)
+    let heartFullImg = UIImage(named: "heart-full")!.withRenderingMode(.alwaysTemplate)
+    let heartEmptyImg = UIImage(named: "heart-empty")!.withRenderingMode(.alwaysTemplate)
     
     var upgradePromptShown = false
     var initialOffsetSet = false
@@ -44,7 +44,7 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
     }
     
     deinit {
-        PHPhotoLibrary.sharedPhotoLibrary().unregisterChangeObserver(self)
+        PHPhotoLibrary.shared().unregisterChangeObserver(self)
     }
 
     var controlsHidden: Bool {
@@ -53,7 +53,7 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
         }
     }
     
-    private func buttonImageForFavorite(favorite: Bool) -> UIImage {
+    private func buttonImageForFavorite(_ favorite: Bool) -> UIImage {
         return favorite ? heartFullImg : heartEmptyImg
     }
     
@@ -63,42 +63,44 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
         super.viewDidLoad()
 
         initialPage = model.selectedIndex
-        imageManager.startCachingImagesForAssets(model.assets, targetSize: cacheSize, contentMode: .AspectFill, options: nil)
-        PHPhotoLibrary.sharedPhotoLibrary().registerChangeObserver(self);
+        imageManager.startCachingImages(for: model.assets, targetSize: cacheSize, contentMode: .aspectFill, options: nil)
+        PHPhotoLibrary.shared().register(self);
         
         let panRecognizer = UIPanGestureRecognizer(target: self, action: #selector(PhotoViewController.viewDidPan))
         view.addGestureRecognizer(panRecognizer)
     }
 
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         hideStatusBar(true)
     }
     
-    override func viewDidDisappear(animated: Bool) {
-        NSLog("PhotoViewController.viewDidDisappear")
-
-        PHPhotoLibrary.sharedPhotoLibrary().unregisterChangeObserver(self)
+    override func viewDidDisappear(_ animated: Bool) {
+        PHPhotoLibrary.shared().unregisterChangeObserver(self)
         self.cancelAllImageRequests()
         self.purgeAllViews()
-}
+    }
     
     override func viewDidLayoutSubviews() {
         setupViews()
     }
     
-    override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
-        super.viewWillTransitionToSize(size, withTransitionCoordinator: coordinator)
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
         initialPage = model.selectedIndex
         initialOffsetSet = false
     }
     
-    override func prefersStatusBarHidden() -> Bool {
-        return hideStatusBar || traitCollection.verticalSizeClass == .Compact
+    override func preferredStatusBarStyle() -> UIStatusBarStyle {
+        return .default
     }
     
-    func hideStatusBar(hide: Bool) {
+    override func prefersStatusBarHidden() -> Bool {
+        return hideStatusBar || traitCollection.verticalSizeClass == .compact
+    }
+    
+    func hideStatusBar(_ hide: Bool) {
         hideStatusBar = hide
-        UIView.animateWithDuration(0.25) {
+        UIView.animate(withDuration: 0.25) {
             self.setNeedsStatusBarAppearanceUpdate()
         }
     }
@@ -108,14 +110,14 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
     }
 
     // MARK: Actions
-    @IBAction func sharePhoto(sender: UIButton) {
+    @IBAction func sharePhoto(_ sender: UIButton) {
         let page = model.selectedIndex
         
         let asset = model.assets[page]
         let options = PHImageRequestOptions()
-        options.version = .Current
-        options.networkAccessAllowed = false
-        PHImageManager.defaultManager().requestImageDataForAsset(asset, options: options) {
+        options.version = .current
+        options.isNetworkAccessAllowed = false
+        PHImageManager.default().requestImageData(for: asset, options: options) {
             [weak self] imageData, dataUTI, orientation, info in
             guard let `self` = self else { return }
 
@@ -124,40 +126,40 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
                 if let popover = avc.popoverPresentationController {
                     popover.sourceView = sender
                     popover.sourceRect = sender.bounds
-                    popover.permittedArrowDirections = .Down
+                    popover.permittedArrowDirections = .down
                 }
                 
-                self.presentViewController(avc, animated: true, completion: nil)
+                self.present(avc, animated: true, completion: nil)
             }
         }
     }
     
-    @IBAction func deletePhoto(sender: UIButton) {
+    @IBAction func deletePhoto(_ sender: UIButton) {
         let asset = model.selectedAsset
         
-        PHPhotoLibrary.sharedPhotoLibrary().performChanges({
+        PHPhotoLibrary.shared().performChanges({
             PHAssetChangeRequest.deleteAssets([asset])
         }, completionHandler: nil)
     }
     
-    @IBAction func toggleFavorite(sender: UIButton) {
+    @IBAction func toggleFavorite(_ sender: UIButton) {
         let asset = model.selectedAsset
-        let newState = !asset.favorite
+        let newState = !asset.isFavorite
         
-        PHPhotoLibrary.sharedPhotoLibrary().performChanges({
-            let request = PHAssetChangeRequest(forAsset: asset)
-            request.favorite = newState
+        PHPhotoLibrary.shared().performChanges({
+            let request = PHAssetChangeRequest(for: asset)
+            request.isFavorite = newState
         }, completionHandler: nil)
     }
     
-    func doClose(interactive: Bool) {
+    func doClose(_ interactive: Bool) {
         if let navController = presentingViewController as? UINavigationController,
             gridViewController = navController.topViewController as? GridViewController {
             gridViewController.setSelectedIndex(model.selectedIndex)
             let imageView = gridViewController.imageViewForIndex(model.selectedIndex)!
             let pageView = pageViews[model.selectedIndex]!
             
-            if traitCollection.verticalSizeClass == .Regular {
+            if traitCollection.verticalSizeClass == .regular {
                 hideStatusBar(false)
             }
             
@@ -169,19 +171,17 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
                 swipeDismissTransition = nil
             }
             
-            navController.dismissViewControllerAnimated(true) {
-                NSLog("dismissViewControllerAnimated completion block")
-            }
+            navController.dismiss(animated: true, completion: nil)
         }
     }
     
-    @IBAction func close(sender: UIButton) {
+    @IBAction func close(_ sender: UIButton) {
         doClose(false)
     }
     
-    func viewDidPan(gr: UIPanGestureRecognizer) {
+    func viewDidPan(_ gr: UIPanGestureRecognizer) {
         switch gr.state {
-        case .Began:
+        case .began:
             doClose(true)
         default:
             break
@@ -209,7 +209,7 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
         loadVisiblePages()
     }
     
-    func loadPage(page: Int, requestFullImage: Bool) {
+    func loadPage(_ page: Int, requestFullImage: Bool) {
         guard page >= 0 && page < model.assets.count else {
             return
         }
@@ -223,7 +223,7 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
 
         let asset = model.assets[page]
         if page == self.model.selectedIndex {
-            heartButton.setImage(buttonImageForFavorite(asset.favorite), forState: .Normal)
+            heartButton.setImage(buttonImageForFavorite(asset.isFavorite), for: UIControlState())
             yearLabel.text = String("  \(asset.creationDate!.year)  ")
         }
         
@@ -234,9 +234,9 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
             if !requestFullImage || !pageView.imageIsDegraded {
                 pageView.frame = frame
                 if requestFullImage {
-                    shareButton.enabled = true
-                    deleteButton.enabled = true
-                    heartButton.enabled = true
+                    shareButton.isEnabled = true
+                    deleteButton.isEnabled = true
+                    heartButton.isEnabled = true
                 }
                 return
             }
@@ -256,14 +256,14 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
 
         // always get a thumbnail first
         pageView.imageIsDegraded = true
-        imageManager.requestImageForAsset(asset, targetSize: cacheSize, contentMode: .AspectFill, options: nil, resultHandler: { (result, userInfo) -> Void in
+        imageManager.requestImage(for: asset, targetSize: cacheSize, contentMode: .aspectFill, options: nil, resultHandler: { (result, userInfo) -> Void in
             if let image = result {
                 // NSLog("Cache Result with image for page \(page) requestFullImage: \(requestFullImage) iamgeSize: \(image.size.width), \(image.size.height)");
                 pageView.image = image
                 if page == self.model.selectedIndex {
-                    self.shareButton.enabled = false
-                    self.deleteButton.enabled = false
-                    self.heartButton.enabled = false
+                    self.shareButton.isEnabled = false
+                    self.deleteButton.isEnabled = false
+                    self.heartButton.isEnabled = false
                 }
             }
         })
@@ -286,12 +286,12 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
         }
     }
     
-    func loadHighQualityImageForAsset(asset: PHAsset, page: Int) {
+    func loadHighQualityImageForAsset(_ asset: PHAsset, page: Int) {
         let options = PHImageRequestOptions()
         let pageView = pageViews[page]!
         
         options.progressHandler  = {(progress : Double, error: NSError?, stop: UnsafeMutablePointer<ObjCBool>, userInfo: [NSObject : AnyObject]?) -> Void in
-            dispatch_async(dispatch_get_main_queue()) {
+            DispatchQueue.main.async {
                 pageView.updateProgress(progress)
                 
                 if error != nil {
@@ -300,23 +300,23 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
             }
         }
         
-        options.networkAccessAllowed = true
-        options.deliveryMode = .HighQualityFormat
-        options.synchronous = false
+        options.isNetworkAccessAllowed = true
+        options.deliveryMode = .highQualityFormat
+        options.isSynchronous = false
         
-        pageView.imageRequestId = PHImageManager.defaultManager().requestImageForAsset(asset, targetSize: PHImageManagerMaximumSize, contentMode: .AspectFit, options: options) { (result, userInfo) -> Void in
+        pageView.imageRequestId = PHImageManager.default().requestImage(for: asset, targetSize: PHImageManagerMaximumSize, contentMode: .aspectFit, options: options) { (result, userInfo) -> Void in
             if let image = result {
                 UpgradeManager.highQualityViewCount += 1
                 pageView.image = image
                 pageView.imageIsDegraded = false
                 if page == self.model.selectedIndex {
-                    self.shareButton.enabled = true
-                    self.heartButton.enabled = true
+                    self.shareButton.isEnabled = true
+                    self.heartButton.isEnabled = true
 
                     if #available(iOS 9.0, *) {
-                        self.deleteButton.enabled = !asset.sourceType.contains(.TypeiTunesSynced)
+                        self.deleteButton.isEnabled = !asset.sourceType.contains(.typeiTunesSynced)
                     } else {
-                        self.deleteButton.enabled = true
+                        self.deleteButton.isEnabled = true
                     }
                 }
             }
@@ -327,7 +327,7 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
         }
     }
     
-    func purgePage(page: Int) {
+    func purgePage(_ page: Int) {
         guard page >= 0 && page < pageViews.count else {
             return
         }
@@ -335,7 +335,7 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
         // Remove a page from the scroll view and reset the container array
         if let pageView = pageViews[page] {
             if let requestId = pageView.imageRequestId {
-                PHImageManager.defaultManager().cancelImageRequest(requestId)
+                PHImageManager.default().cancelImageRequest(requestId)
                 pageView.imageRequestId = nil
             }
             pageView.image = nil
@@ -344,14 +344,14 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
         }
     }
     
-    func cancelPageImageRequest(page: Int) {
+    func cancelPageImageRequest(_ page: Int) {
         guard page >= 0 && page < pageViews.count else {
             return
         }
         
         if let pageView = pageViews[page] {
             if let requestId = pageView.imageRequestId {
-                PHImageManager.defaultManager().cancelImageRequest(requestId)
+                PHImageManager.default().cancelImageRequest(requestId)
                 pageView.imageRequestId = nil
             }
         }
@@ -382,13 +382,13 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
         let lastPage = page + 1
         
         // Purge anything before the first page
-        0.stride(to: firstPage, by: 1).forEach(purgePage)
+        stride(from: 0, to: firstPage, by: 1).forEach(purgePage)
         
         // Load pages in our range
         (firstPage...lastPage).forEach { loadPage($0, requestFullImage: $0 == page) }
         
         // Purge anything after the last page
-        model.assets.count.stride(to: lastPage, by: -1).forEach(purgePage)
+        stride(from: model.assets.count, to: lastPage, by: -1).forEach(purgePage)
     }
     
     func cancelAllImageRequests() {
@@ -399,26 +399,26 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
         pageViews.indices.forEach(purgePage)
     }
     
-    func contentOffsetForPageAtIndex(index : Int) -> CGPoint {
+    func contentOffsetForPageAtIndex(_ index : Int) -> CGPoint {
         let pageWidth = scrollView.bounds.size.width;
         let newOffset = CGFloat(index) * pageWidth;
-        return CGPointMake(newOffset, 0);
+        return CGPoint(x: newOffset, y: 0);
     }
     
     // MARK: UIScrollViewDelegate
     
-    func scrollViewDidScroll(scrollView: UIScrollView) {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if scrollView == self.scrollView {
             loadVisiblePages()
         }
     }
 
     // MARK: UIViewControllerTransitioningDelegate
-    func animationControllerForPresentedController(presented: UIViewController, presentingController presenting: UIViewController, sourceController source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+    func animationController(forPresentedController presented: UIViewController, presenting: UIViewController, sourceController source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         return presentTransition
     }
     
-    func animationControllerForDismissedController(dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+    func animationController(forDismissedController dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         if swipeDismissTransition != nil {
             return swipeDismissTransition
         }
@@ -426,21 +426,21 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
         return dismissTransition
     }
     
-    func interactionControllerForDismissal(animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+    func interactionController(forDismissal animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
         return swipeDismissTransition
     }
     
     // MARK: PHPhotoLibraryChangeObserver
     
-    func photoLibraryDidChange(changeInstance: PHChange) {
-        dispatch_async(dispatch_get_main_queue()) {
+    func photoLibraryDidChange(_ changeInstance: PHChange) {
+        DispatchQueue.main.async {
             self.processLibraryChange(changeInstance)
         }
     }
     
-    private func processLibraryChange(changeInstance: PHChange) {
+    private func processLibraryChange(_ changeInstance: PHChange) {
         let newAssets:[PHAsset] = model.assets.flatMap {
-            if let changeDetails = changeInstance.changeDetailsForObject($0) {
+            if let changeDetails = changeInstance.changeDetails(for: $0) {
                 return changeDetails.objectWasDeleted ? nil : changeDetails.objectAfterChanges as? PHAsset
             }
             else {
@@ -449,7 +449,7 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
         }
         
         if newAssets.isEmpty {
-            presentingViewController?.dismissViewControllerAnimated(true, completion: nil);
+            presentingViewController?.dismiss(animated: true, completion: nil);
             return
         }
         
@@ -465,12 +465,12 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
         }
         else {
             let asset = model.selectedAsset
-            heartButton.setImage(buttonImageForFavorite(asset.favorite), forState: .Normal)
+            heartButton.setImage(buttonImageForFavorite(asset.isFavorite), for: UIControlState())
         }
     }
     
     // MARK: ZoomingPhotoViewDelegate
-    func hideControls(hide: Bool) {
+    func hideControls(_ hide: Bool) {
         guard hide != controlsHidden else {
             return
         }

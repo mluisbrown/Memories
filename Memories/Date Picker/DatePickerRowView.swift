@@ -13,7 +13,7 @@ class DatePickerRowView: UIView {
 
     let dateLabel = UILabel()
     let countLabel = UILabel()
-    let dateFormatter = NSDateFormatter()
+    let dateFormatter = DateFormatter()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -21,10 +21,10 @@ class DatePickerRowView: UIView {
         dateFormatter.dateFormat = "MMMM dd"
         
         dateLabel.translatesAutoresizingMaskIntoConstraints = false
-        dateLabel.textColor = UIColor.whiteColor()
+        dateLabel.textColor = UIColor.white()
         addSubview(dateLabel)
         countLabel.translatesAutoresizingMaskIntoConstraints = false
-        countLabel.textColor = UIColor.whiteColor()
+        countLabel.textColor = UIColor.white()
         addSubview(countLabel)
         
         constrain(self, dateLabel) {view, dateLabel in
@@ -41,11 +41,11 @@ class DatePickerRowView: UIView {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        super.init(frame: CGRectZero)
+        super.init(frame: CGRect.zero)
     }
     
-    func setData(date: NSDate, count: Int) {
-        dateLabel.text = dateFormatter.stringFromDate(date).uppercaseString
+    func setData(_ date: Date, count: Int) {
+        dateLabel.text = dateFormatter.string(from: date).uppercased()
         countLabel.text = "\(count)"
     }
 }

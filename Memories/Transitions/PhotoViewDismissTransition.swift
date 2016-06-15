@@ -12,7 +12,7 @@ class PhotoViewDismissTransition: NSObject, UIViewControllerAnimatedTransitionin
     
     let destImageView: UIImageView
     let sourceImageView: UIImageView
-    let duration = NSTimeInterval(0.25)
+    let duration = TimeInterval(0.25)
 
     init(destImageView: UIImageView, sourceImageView: UIImageView) {
         self.destImageView = destImageView
@@ -20,46 +20,46 @@ class PhotoViewDismissTransition: NSObject, UIViewControllerAnimatedTransitionin
     }
     
     // MARK: UIViewControllerAnimatedTransitioning
-    func transitionDuration(transitionContext: UIViewControllerContextTransitioning?) -> NSTimeInterval {
+    func transitionDuration(_ transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
         return duration
     }
     
-    func animateTransition(transitionContext: UIViewControllerContextTransitioning) {
-        guard let container = transitionContext.containerView(),
-            fromViewController = transitionContext.viewControllerForKey(UITransitionContextFromViewControllerKey),
-            fromView = transitionContext.viewForKey(UITransitionContextFromViewKey) else {
+    func animateTransition(_ transitionContext: UIViewControllerContextTransitioning) {
+        guard let fromViewController = transitionContext.viewController(forKey: UITransitionContextFromViewControllerKey),
+            fromView = transitionContext.view(forKey: UITransitionContextFromViewKey) else {
                 transitionContext.completeTransition(false)
                 return
         }
         
-        let transitionView = UIView(frame: transitionContext.initialFrameForViewController(fromViewController))
-        transitionView.backgroundColor = UIColor.blackColor()
+        let container = transitionContext.containerView()
+        let transitionView = UIView(frame: transitionContext.initialFrame(for: fromViewController))
+        transitionView.backgroundColor = UIColor.black()
         container.insertSubview(transitionView, belowSubview: fromView)
         
-        let startImageFrame = CGRectIntegral(transitionView.convertRect(self.sourceImageView.bounds, fromView: self.sourceImageView))
+        let startImageFrame = transitionView.convert(self.sourceImageView.bounds, from: self.sourceImageView).integral
         let imageView = UIImageView(frame: startImageFrame)
         imageView.image = destImageView.image
         imageView.contentMode = container.thumbnailContentMode
         imageView.clipsToBounds = true
         transitionView.addSubview(imageView)
         
-        fromView.backgroundColor = UIColor.clearColor()
-        self.destImageView.hidden = true
-        self.sourceImageView.hidden = true
+        fromView.backgroundColor = UIColor.clear()
+        self.destImageView.isHidden = true
+        self.sourceImageView.isHidden = true
         
-        let newImageFrame = CGRectIntegral(transitionView.convertRect(self.destImageView.bounds, fromView: self.destImageView))
+        let newImageFrame = transitionView.convert(self.destImageView.bounds, from: self.destImageView).integral
         
-        UIView.animateKeyframesWithDuration(duration, delay: 0, options: .CalculationModeLinear, animations: {
-            UIView.addKeyframeWithRelativeStartTime(0.0, relativeDuration: 0.25) {
+        UIView.animateKeyframes(withDuration: duration, delay: 0, options: UIViewKeyframeAnimationOptions(), animations: {
+            UIView.addKeyframe(withRelativeStartTime: 0.0, relativeDuration: 0.25) {
                 fromView.alpha = 0.0
             }
             
-            UIView.addKeyframeWithRelativeStartTime(0, relativeDuration: 1) {
+            UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 1) {
                 imageView.frame = newImageFrame
-                transitionView.backgroundColor = UIColor.clearColor()
+                transitionView.backgroundColor = UIColor.clear()
             }
         }) { finished in
-            self.destImageView.hidden = false
+            self.destImageView.isHidden = false
             fromView.removeFromSuperview()
             
             transitionView.removeFromSuperview()

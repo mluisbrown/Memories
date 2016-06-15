@@ -11,7 +11,7 @@ import Cartography
 
 class PullView: UIView {
 
-    let dateFormatter = NSDateFormatter()
+    let dateFormatter = DateFormatter()
     var label: UILabel!
     var dateString: String = ""
     var willRelease = false {
@@ -20,7 +20,7 @@ class PullView: UIView {
         }
     }
     
-    var date : NSDate? {
+    var date : Date? {
         didSet {
             configureLabel()
         }
@@ -30,13 +30,13 @@ class PullView: UIView {
         super.init(frame: frame)
         dateFormatter.dateFormat = "MMMM dd"
 
-        backgroundColor = UIColor.whiteColor().colorWithAlphaComponent(0.08)
+        backgroundColor = UIColor.white().withAlphaComponent(0.08)
         alpha = 0
         clipsToBounds = true
         
         label = UILabel()
-        label.font = UIFont.systemFontOfSize(16)
-        label.textColor = UIColor.whiteColor()
+        label.font = UIFont.systemFont(ofSize: 16)
+        label.textColor = UIColor.white()
         
         // center the label in the pull view
         addSubview(label)
@@ -50,15 +50,15 @@ class PullView: UIView {
         self.label = UILabel()
     }
     
-    convenience init(frame: CGRect, date: NSDate?) {
+    convenience init(frame: CGRect, date: Date?) {
         self.init(frame: frame)
         self.date = date
     }
     
     private func configureLabel() {
         if (date != nil) {
-            dateString = dateFormatter.stringFromDate(date!)
-            label.text = (willRelease ? NSLocalizedString("RELEASE FOR ", comment: "") : NSLocalizedString("PULL FOR ", comment: "")) + dateString.uppercaseString
+            dateString = dateFormatter.string(from: date!)
+            label.text = (willRelease ? NSLocalizedString("RELEASE FOR ", comment: "") : NSLocalizedString("PULL FOR ", comment: "")) + dateString.uppercased()
         }
     }
     

@@ -13,7 +13,7 @@ class PhotoViewSwipeDismissTransition:
     UIViewControllerAnimatedTransitioning {
     let destImageView: UIImageView
     let sourceImageView: UIImageView
-    let transitionDuration = NSTimeInterval(0.25)
+    let transitionDuration = TimeInterval(0.25)
     
     var panHeight = CGFloat(0)
     
@@ -23,23 +23,22 @@ class PhotoViewSwipeDismissTransition:
     }
     
     // MARK: UIViewControllerAnimatedTransitioning
-    func transitionDuration(transitionContext: UIViewControllerContextTransitioning?) -> NSTimeInterval {
+    func transitionDuration(_ transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
         return transitionDuration
     }
     
-    func animateTransition(transitionContext: UIViewControllerContextTransitioning) {
-        guard let container = transitionContext.containerView(),
-            fromViewController = transitionContext.viewControllerForKey(UITransitionContextFromViewControllerKey),
-            fromView = transitionContext.viewForKey(UITransitionContextFromViewKey) else {
+    func animateTransition(_ transitionContext: UIViewControllerContextTransitioning) {
+        guard let fromViewController = transitionContext.viewController(forKey: UITransitionContextFromViewControllerKey),
+            fromView = transitionContext.view(forKey: UITransitionContextFromViewKey) else {
                 transitionContext.completeTransition(false)
                 return
         }
-        
-        let transitionView = UIView(frame: transitionContext.initialFrameForViewController(fromViewController))
-        transitionView.backgroundColor = UIColor.blackColor()
+        let container = transitionContext.containerView()
+        let transitionView = UIView(frame: transitionContext.initialFrame(for: fromViewController))
+        transitionView.backgroundColor = UIColor.black()
         container.insertSubview(transitionView, belowSubview: fromView)
         
-        let startImageFrame = CGRectIntegral(transitionView.convertRect(self.sourceImageView.bounds, fromView: self.sourceImageView))
+        let startImageFrame = transitionView.convert(self.sourceImageView.bounds, from: self.sourceImageView).integral
         let imageView = UIImageView(frame: startImageFrame)
         imageView.image = destImageView.image
         imageView.contentMode = container.thumbnailContentMode
@@ -47,30 +46,30 @@ class PhotoViewSwipeDismissTransition:
         transitionView.addSubview(imageView)
         
         let fromBackgroundColor = fromView.backgroundColor
-        fromView.backgroundColor = UIColor.clearColor()
-        self.destImageView.hidden = true
-        self.sourceImageView.hidden = true
+        fromView.backgroundColor = UIColor.clear()
+        self.destImageView.isHidden = true
+        self.sourceImageView.isHidden = true
         
-        let newImageFrame = CGRectIntegral(transitionView.convertRect(self.destImageView.bounds, fromView: self.destImageView))
+        let newImageFrame = transitionView.convert(self.destImageView.bounds, from: self.destImageView).integral
         
-        UIView.animateKeyframesWithDuration(transitionDuration, delay: 0, options: .CalculationModeLinear, animations: {
-            UIView.addKeyframeWithRelativeStartTime(0.0, relativeDuration: 0.25) {
+        UIView.animateKeyframes(withDuration: transitionDuration, delay: 0, options: UIViewKeyframeAnimationOptions(), animations: {
+            UIView.addKeyframe(withRelativeStartTime: 0.0, relativeDuration: 0.25) {
                 fromView.alpha = 0.0
             }
             
-            UIView.addKeyframeWithRelativeStartTime(0, relativeDuration: 1) {
+            UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 1) {
                 imageView.frame = newImageFrame
-                transitionView.backgroundColor = UIColor.clearColor()
+                transitionView.backgroundColor = UIColor.clear()
             }
         }) { finished in
-            self.destImageView.hidden = false
+            self.destImageView.isHidden = false
             
             let cancelled = transitionContext.transitionWasCancelled()
             
             if cancelled {
                 fromView.backgroundColor = fromBackgroundColor
-                self.destImageView.hidden = false
-                self.sourceImageView.hidden = false
+                self.destImageView.isHidden = false
+                self.sourceImageView.isHidden = false
             }
             else {
                 fromView.removeFromSuperview()
@@ -84,19 +83,19 @@ class PhotoViewSwipeDismissTransition:
     // MARK: gesture handling
     func handlePan(panRecognizer gr: UIPanGestureRecognizer) {
         switch gr.state {
-        case .Began:
-            let startPoint = gr.locationInView(gr.view)
+        case .began:
+            let startPoint = gr.location(in: gr.view)
             panHeight = gr.view!.bounds.height - startPoint.y
-        case .Changed:
-            let percent = gr.translationInView(gr.view).y / panHeight
-            updateInteractiveTransition(percent <= 0 ? 0 : percent)
-        case .Ended, .Cancelled:
-            let velocity = gr.velocityInView(gr.view)
-            if velocity.y < 0 || gr.state == .Cancelled {
-                cancelInteractiveTransition()
+        case .changed:
+            let percent = gr.translation(in: gr.view).y / panHeight
+            update(percent <= 0 ? 0 : percent)
+        case .ended, .cancelled:
+            let velocity = gr.velocity(in: gr.view)
+            if velocity.y < 0 || gr.state == .cancelled {
+                cancel()
             }
             else {
-                finishInteractiveTransition()
+                finish()
             }
         default:
             break
