@@ -22,7 +22,8 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     var readyForDisplay = false
     var assetDisplayed = false
     
-    let photoViewHeight = CGFloat(integerLiteral: 200)
+    let expandedWidgetHeight = CGFloat(integerLiteral: 245)
+    let photoViewExpandedHeight = CGFloat(integerLiteral: 200)
     let cacheSize = CGSize(width: 256, height: 256)
     let dateFormatter = DateFormatter()
     let requestOptions: PHImageRequestOptions = {
@@ -35,6 +36,10 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        if #available(iOSApplicationExtension 10.0, *) {
+            extensionContext?.widgetLargestAvailableDisplayMode = .expanded
+        }
         
         dateFormatter.dateFormat = "YYYY"
         yearLabel.text = "No Memories Today :("
@@ -128,10 +133,19 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     }
 
     private func hidePhotoView(_ hide: Bool, completion: ((Void) -> Void)?) {
-        let constant = hide ? 0 : photoViewHeight
+        let constant: CGFloat
+        if #available(iOSApplicationExtension 10.0, *) {
+            constant = hide ? 0 : photoViewHeightFor(activeDisplayMode: extensionContext!.widgetActiveDisplayMode)
+        } else {
+            constant = hide ? 0 : photoViewExpandedHeight
+        }
         
-        if photoHeightConstraint.constant != constant {
-            photoHeightConstraint.constant = constant
+        setPhotoViewHeight(constant, completion: completion)
+    }
+    
+    private func setPhotoViewHeight(_ height: CGFloat, completion: ((Void) -> Void)? = nil) {
+        if photoHeightConstraint.constant != height {
+            photoHeightConstraint.constant = height
             
             UIView.animate(withDuration: 0.25, animations: {
                 self.view.layoutIfNeeded()
@@ -142,6 +156,20 @@ class TodayViewController: UIViewController, NCWidgetProviding {
         else {
             completion?()
         }
+    }
+    
+    @available(iOSApplicationExtension 10.0, *)
+    private func photoViewHeightFor(activeDisplayMode: NCWidgetDisplayMode) -> CGFloat {
+        let photoViewHeight: CGFloat
+        
+        switch activeDisplayMode {
+        case .compact:
+            photoViewHeight = extensionContext!.widgetMaximumSize(for: activeDisplayMode).height
+        case .expanded:
+            photoViewHeight = photoViewExpandedHeight
+        }
+        
+        return photoViewHeight
     }
     
     // MARK: NCWidgetProviding
@@ -166,6 +194,19 @@ class TodayViewController: UIViewController, NCWidgetProviding {
                 completionHandler(NCUpdateResult.noData)
             }
         }
+    }
+    
+    @available(iOSApplicationExtension 10.0, *)
+    func widgetActiveDisplayModeDidChange(_ activeDisplayMode: NCWidgetDisplayMode, withMaximumSize maxSize: CGSize) {
+        switch activeDisplayMode {
+        case .compact:
+            preferredContentSize = maxSize
+        case .expanded:
+            preferredContentSize = CGSize(width: maxSize.width, height: expandedWidgetHeight)
+        }
+        
+        let height = photoHeightConstraint.constant == 0 ? 0 : photoViewHeightFor(activeDisplayMode: activeDisplayMode)
+        setPhotoViewHeight(height)
     }
     
 }
