@@ -144,11 +144,14 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     }
     
     private func setPhotoViewHeight(_ height: CGFloat, completion: ((Void) -> Void)? = nil) {
+        let showYearLabel = height == photoViewExpandedHeight || height == 0
+        
         if photoHeightConstraint.constant != height {
             photoHeightConstraint.constant = height
             
             UIView.animate(withDuration: 0.25, animations: {
                 self.view.layoutIfNeeded()
+                self.yearLabel.alpha = showYearLabel ? 1.0 : 0.0
             }) { Bool in
                 completion?()
             }
@@ -198,6 +201,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     
     @available(iOSApplicationExtension 10.0, *)
     func widgetActiveDisplayModeDidChange(_ activeDisplayMode: NCWidgetDisplayMode, withMaximumSize maxSize: CGSize) {
+        
         switch activeDisplayMode {
         case .compact:
             preferredContentSize = maxSize
@@ -205,7 +209,8 @@ class TodayViewController: UIViewController, NCWidgetProviding {
             preferredContentSize = CGSize(width: maxSize.width, height: expandedWidgetHeight)
         }
         
-        let height = photoHeightConstraint.constant == 0 ? 0 : photoViewHeightFor(activeDisplayMode: activeDisplayMode)
+        let showingPhoto = photoHeightConstraint.constant != 0
+        let height = showingPhoto ? photoViewHeightFor(activeDisplayMode: activeDisplayMode) : 0
         setPhotoViewHeight(height)
     }
     
