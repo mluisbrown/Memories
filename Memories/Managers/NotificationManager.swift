@@ -142,7 +142,10 @@ class NotificationManager {
         let currentYear = todayComps.year!
         let time = notificationTime()
         
-        let notifications : [UILocalNotification] = datesMap.map { (date: Date, count: Int) -> (date: Date, count: Int) in
+        // have to force result of prefix() to Array
+        // due to bug in Swift 3.0: https://bugs.swift.org/browse/SR-1856
+        
+        let notifications : [UILocalNotification] = Array(datesMap.map { (date: Date, count: Int) -> (date: Date, count: Int) in
             // adjust dates so that any date earlier than today has the
             // following year as its notification date
             let comps = gregorian.components([.month, .day], from: date)
@@ -154,7 +157,7 @@ class NotificationManager {
         }.sorted {
             // sort in ascending order of date
             $0.date.compare($1.date) == .orderedAscending
-        }.prefix(upTo: 64).map {
+        }.prefix(64)).map {
             // get first 64 items and transform to array of UILocalNotification
             let notification = UILocalNotification()
             notification.fireDate = $0.date
