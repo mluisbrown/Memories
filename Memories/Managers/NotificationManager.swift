@@ -12,10 +12,12 @@ import Photos
 import PHAssetHelper
 
 class NotificationManager {
-    static let HAS_PROMPTED_KEY = "HasPromptedForUserNotifications"
-    static let NOTIFICATION_TIME_KEY = "NotificationTime"
-    static let NOTIFICATIONS_ENABLED_KEY = "NotificationsEnabled"
-    static let NOTIFICATION_LANUCH_DATE_KEY = "NotificationLaunchDate"
+    struct Key {
+        static let hasPromptedForUserNotifications = "HasPromptedForUserNotifications"
+        static let notificationTime = "NotificationTime"
+        static let notificationsEnabled = "NotificationsEnabled"
+        static let notificationLaunchDate = "NotificationLaunchDate"
+    }    
     
     /// registers the notification types the app would like. If the user has allowed 
     /// notifications this will result in scheduleNotifications() being called from 
@@ -37,7 +39,7 @@ class NotificationManager {
     }
     
     static func launchDate() -> Date? {
-        if let date = UserDefaults.standard().object(forKey: NOTIFICATION_LANUCH_DATE_KEY) as? Date {
+        if let date = UserDefaults.standard.object(forKey: Key.notificationLaunchDate) as? Date {
             // clear the date as soon as it's read
             setLaunchDate(nil)
             return date
@@ -48,27 +50,27 @@ class NotificationManager {
     
     static func setLaunchDate(_ launchDate: Date?) {
         if let date = launchDate {
-            UserDefaults.standard().set(date, forKey: NOTIFICATION_LANUCH_DATE_KEY)
+            UserDefaults.standard.set(date, forKey: Key.notificationLaunchDate)
         } else {
-            UserDefaults.standard().removeObject(forKey: NOTIFICATION_LANUCH_DATE_KEY)
+            UserDefaults.standard.removeObject(forKey: Key.notificationLaunchDate)
         }
         
-        UserDefaults.standard().synchronize()
+        UserDefaults.standard.synchronize()
     }
     
     /// returns whether the user has been prompted with the system "Allow Notifications" prompt
     static func hasPromptedForUserNotification() -> Bool {
-        return UserDefaults.standard().bool(forKey: HAS_PROMPTED_KEY)
+        return UserDefaults.standard.bool(forKey: Key.hasPromptedForUserNotifications)
     }
     
     /// returns whether the user has requested notifications to be enabled
     static func notificationsEnabled() -> Bool {
-        return UserDefaults.standard().bool(forKey: NOTIFICATIONS_ENABLED_KEY)
+        return UserDefaults.standard.bool(forKey: Key.notificationsEnabled)
     }
     
     /// returns the current notification time from the user defaults
     static func notificationTime() -> (hour: Int, minute: Int) {
-        let notificationTime = UserDefaults.standard().integer(forKey: NOTIFICATION_TIME_KEY)
+        let notificationTime = UserDefaults.standard.integer(forKey: Key.notificationTime)
         let notificationHour = notificationTime / 100
         let notificationMinute = notificationTime - notificationHour * 100
         
@@ -77,14 +79,14 @@ class NotificationManager {
     
     /// sets the current notification time in the user defaults
     static func setNotificationTime(_ hour: Int, _ minute: Int) {
-        UserDefaults.standard().set(hour * 100 + minute, forKey: NOTIFICATION_TIME_KEY)
-        UserDefaults.standard().synchronize()
+        UserDefaults.standard.set(hour * 100 + minute, forKey: Key.notificationTime)
+        UserDefaults.standard.synchronize()
     }
     
     /// attempts to enable notifications, prompting the user for authorization if required
     static func enableNotifications() {
-        UserDefaults.standard().set(true, forKey: NOTIFICATIONS_ENABLED_KEY)
-        UserDefaults.standard().synchronize()
+        UserDefaults.standard.set(true, forKey: Key.notificationsEnabled)
+        UserDefaults.standard.synchronize()
         
         // if the user has never been prompted for allowing notifications
         // register for notifications to force the prompt
@@ -115,8 +117,8 @@ class NotificationManager {
     static func disableNotifications() {
         UIApplication.shared().cancelAllLocalNotifications()
         
-        UserDefaults.standard().set(false, forKey: NOTIFICATIONS_ENABLED_KEY)
-        UserDefaults.standard().synchronize()
+        UserDefaults.standard.set(false, forKey: Key.notificationsEnabled)
+        UserDefaults.standard.synchronize()
     }
     
     /// schedules notifications, runs on a background thread
@@ -132,7 +134,7 @@ class NotificationManager {
     }
     
     private static func scheduleNotificationsWithDatesMap(_ datesMap: [Date:Int]) {
-        let timeZone = TimeZone.system()
+        let timeZone = TimeZone.system
         let bodyFormatString = NSLocalizedString("You have %lu photo memories for today", comment: "")
         let titleFormatString = NSLocalizedString("%lu Photo Memories", comment: "")
 

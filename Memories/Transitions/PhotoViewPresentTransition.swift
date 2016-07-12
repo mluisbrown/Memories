@@ -19,11 +19,11 @@ class PhotoViewPresentTransition: NSObject, UIViewControllerAnimatedTransitionin
     }
     
     // MARK: UIViewControllerAnimatedTransitioning
-    func transitionDuration(_ transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
+    func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
         return duration
     }
     
-    func animateTransition(_ transitionContext: UIViewControllerContextTransitioning) {
+    func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
         guard let toViewController = transitionContext.viewController(forKey: UITransitionContextToViewControllerKey),
             toView = transitionContext.view(forKey: UITransitionContextToViewKey) else {
             return

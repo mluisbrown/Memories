@@ -179,7 +179,7 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
             if sources != assetHelper.assetSourceTypes {
                 assetHelper.assetSourceTypes = sources
                 assetHelper.refreshDatesMapCache()
-                NotificationCenter.default().post(name: Notification.Name(rawValue: PHAssetHelper.sourceTypesChangedNotification), object: self)
+                NotificationCenter.default.post(name: Notification.Name(rawValue: PHAssetHelper.sourceTypesChangedNotification), object: self)
             }
         }
     }
@@ -292,8 +292,8 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
             composer.mailComposeDelegate = self;
             
             let device = UIDevice.current()
-            let appVersion = Bundle.main().infoDictionary?["CFBundleShortVersionString"]
-            let appBuild = Bundle.main().infoDictionary?["CFBundleVersion"]
+            let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"]
+            let appBuild = Bundle.main.infoDictionary?["CFBundleVersion"]
             
             let body = "<div><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><hr><center>Developer Support Information</center><ul><li>Device Version: \(device.systemVersion)</li><li>Device Type: \(device.modelName)</li><li>App Version: \(appVersion!), Build: \(appBuild!)</li></ul><hr></div>"
             composer.setToRecipients(["memories@michael-brown.net"]);

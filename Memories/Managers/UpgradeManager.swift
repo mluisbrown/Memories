@@ -11,14 +11,17 @@ import Security
 import RMStore
 
 class UpgradeManager {
-    static let UpgradeProductId = "com.luacheia.memories.Upgrade"
-    static let HighQualityViewCountKey = "HighQualityViewCount"
-    static let ViewCountDateKey = "ViewCountDate"
-    static let UpgradePromptShownKey = "UpgradePromptShown"
+    static let upgradeProductId = "com.luacheia.memories.Upgrade"
+    
+    struct Key {
+        static let highQualityViewCount = "HighQualityViewCount"
+        static let viewCountDate = "ViewCountDate"
+        static let upgradePromptShown = "UpgradePromptShown"
+    }
     
     static let MaxHighQualityViewCount = 5
     
-    static private let userDefaults = UserDefaults.standard()
+    static private let userDefaults = UserDefaults.standard
     
     static private var priceFormatter : NumberFormatter = {
         var formatter = NumberFormatter()
@@ -38,11 +41,11 @@ class UpgradeManager {
     /// flag to indicate if the user been shown the upgrade prompt since starting the app
     static private var upgradePromptShown : Bool {
         get {
-            return userDefaults.bool(forKey: UpgradePromptShownKey)
+            return userDefaults.bool(forKey: Key.upgradePromptShown)
         }
         
         set {
-            userDefaults.set(newValue, forKey: UpgradePromptShownKey)
+            userDefaults.set(newValue, forKey: Key.upgradePromptShown)
             userDefaults.synchronize()
         }
     }
@@ -52,13 +55,13 @@ class UpgradeManager {
     
     /// flag to indicate if the user upgraded the app
     static var upgraded : Bool = {
-        return transactionPersistor.isPurchasedProduct(ofIdentifier: UpgradeProductId)
+        return transactionPersistor.isPurchasedProduct(ofIdentifier: upgradeProductId)
         }() {
         
         didSet {
             if upgraded {
-                userDefaults.removeObject(forKey: ViewCountDateKey)
-                userDefaults.removeObject(forKey: HighQualityViewCountKey)
+                userDefaults.removeObject(forKey: Key.viewCountDate)
+                userDefaults.removeObject(forKey: Key.highQualityViewCount)
                 userDefaults.synchronize()
             }
         }
@@ -74,21 +77,21 @@ class UpgradeManager {
             var count = 0
             let today = Date()
         
-            if let date = userDefaults.object(forKey: ViewCountDateKey) as? Date {
-                let day = Calendar.current().ordinality(of: .day, in: .era, for: date)
-                let now = Calendar.current().ordinality(of: .day, in: .era, for: today)
+            if let date = userDefaults.object(forKey: Key.viewCountDate) as? Date {
+                let day = Calendar.current.ordinality(of: .day, in: .era, for: date)
+                let now = Calendar.current.ordinality(of: .day, in: .era, for: today)
         
                 if day != now {
-                    userDefaults.set(today, forKey: ViewCountDateKey)
-                    userDefaults.set(0, forKey: HighQualityViewCountKey)
-                    userDefaults.set(false, forKey: UpgradePromptShownKey)
+                    userDefaults.set(today, forKey: Key.viewCountDate)
+                    userDefaults.set(0, forKey: Key.highQualityViewCount)
+                    userDefaults.set(false, forKey: Key.upgradePromptShown)
                 } else {
-                    count = userDefaults.integer(forKey: HighQualityViewCountKey)
+                    count = userDefaults.integer(forKey: Key.highQualityViewCount)
                 }
             } else {
-                userDefaults.set(today, forKey: ViewCountDateKey)
-                userDefaults.set(0, forKey: HighQualityViewCountKey)
-                userDefaults.set(false, forKey: UpgradePromptShownKey)
+                userDefaults.set(today, forKey: Key.viewCountDate)
+                userDefaults.set(0, forKey: Key.highQualityViewCount)
+                userDefaults.set(false, forKey: Key.upgradePromptShown)
             }
             
             userDefaults.synchronize()
@@ -100,18 +103,18 @@ class UpgradeManager {
                 return
             }
             
-            userDefaults.set(newValue, forKey: HighQualityViewCountKey)
+            userDefaults.set(newValue, forKey: Key.highQualityViewCount)
             userDefaults.synchronize()
         }
     }
 
-    static func getUpgradePrice(_ completion: ((price: String?) -> ())?) {
+    static func getUpgradePrice(_ completion: ( @noescape (price: String?) -> ())?) {
         if let price = upgradePrice {
             completion?(price: price)
             return
         }
         
-        store.requestProducts(Set([UpgradeProductId]), success: { (products, invalidIds) -> Void in
+        store.requestProducts(Set([upgradeProductId]), success: { (products, invalidIds) -> Void in
             if products?.count > 0 {
                 let product = products?.first as! SKProduct
                 priceFormatter.locale = product.priceLocale
@@ -162,7 +165,7 @@ class UpgradeManager {
     }
     
     static func upgrade(_ completion: ((success: Bool) -> ())?) {
-        store.addPayment(UpgradeProductId, success: { (transaction) -> Void in
+        store.addPayment(upgradeProductId, success: { (transaction) -> Void in
             upgraded = true
             completion?(success: true)
         }) { (transaction, error) -> Void in
@@ -174,7 +177,7 @@ class UpgradeManager {
         store.restoreTransactions( onSuccess: { (transactions) -> Void in
             guard transactions?.count > 0,
                 let transaction = transactions?[0] as? SKPaymentTransaction
-                where transaction.payment.productIdentifier == UpgradeProductId else {
+                where transaction.payment.productIdentifier == upgradeProductId else {
                     completion?(success: false)
                     return
             }

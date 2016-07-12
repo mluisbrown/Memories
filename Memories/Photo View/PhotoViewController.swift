@@ -418,7 +418,7 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
         return presentTransition
     }
     
-    func animationController(forDismissedController dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+    func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         if swipeDismissTransition != nil {
             return swipeDismissTransition
         }
@@ -426,7 +426,7 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
         return dismissTransition
     }
     
-    func interactionController(forDismissal animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+    func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
         return swipeDismissTransition
     }
     

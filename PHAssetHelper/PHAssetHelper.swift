@@ -84,7 +84,7 @@ public class PHAssetHelper {
         let currentYear = Date().year
         let gregorian = Date.gregorianCalendar
         
-        fetchResult.enumerateObjects({ (asset, index, stop) -> Void in
+        fetchResult.enumerateObjects( { (asset, index, stop) -> Void in
             let comps = gregorian.components([.month, .day], from: asset.creationDate!)
             let date = gregorian.date(era: 1, year: currentYear, month: comps.month!, day: comps.day!, hour: 12, minute: 0, second: 0, nanosecond: 0)!
             

@@ -23,11 +23,11 @@ class PhotoViewSwipeDismissTransition:
     }
     
     // MARK: UIViewControllerAnimatedTransitioning
-    func transitionDuration(_ transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
+    func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
         return transitionDuration
     }
     
-    func animateTransition(_ transitionContext: UIViewControllerContextTransitioning) {
+    func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
         guard let fromViewController = transitionContext.viewController(forKey: UITransitionContextFromViewControllerKey),
             fromView = transitionContext.view(forKey: UITransitionContextFromViewKey) else {
                 transitionContext.completeTransition(false)

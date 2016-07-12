@@ -11,13 +11,10 @@ import UIKit
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-    var window: UIWindow?
-
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-        UserDefaults.standard().register([NotificationManager.NOTIFICATION_TIME_KEY : 1000,
-            NotificationManager.HAS_PROMPTED_KEY : false,
-            NotificationManager.NOTIFICATIONS_ENABLED_KEY: false])
+        UserDefaults.standard.register([NotificationManager.Key.notificationTime : 1000,
+            NotificationManager.Key.hasPromptedForUserNotifications : false,
+            NotificationManager.Key.notificationsEnabled: false])
 
         // store the date of the notification that launched the app (if any)
         // so that we start the view controller with that date
@@ -40,8 +37,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // MARK: Notification Settings
     
     func application(_ application: UIApplication, didRegister notificationSettings: UIUserNotificationSettings) {
-        UserDefaults.standard().set(true, forKey: NotificationManager.HAS_PROMPTED_KEY)
-        UserDefaults.standard().synchronize()
+        UserDefaults.standard.set(true, forKey: NotificationManager.Key.hasPromptedForUserNotifications)
+        UserDefaults.standard.synchronize()
     }
 
 }

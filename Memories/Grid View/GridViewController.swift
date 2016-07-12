@@ -34,8 +34,11 @@ extension UICollectionView {
 }
 
 class GridViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, PHPhotoLibraryChangeObserver, UIPopoverPresentationControllerDelegate {
-    let reuseIdentifier = "PhotoCell"
-    let headerIdentifier = "YearHeader"
+    struct CellIdentifier {
+        static let photoCell = "PhotoCell"
+        static let yearHeader = "YearHeader"
+    }
+    
     // If the size is too large then PhotoKit doesn't return an optimal image size
     // see rdar://25181601 (https://openradar.appspot.com/radar?id=6158824289337344)
     let gridThumbnailSize = CGSize(width: 256, height: 256)
@@ -72,10 +75,10 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
     
     deinit {
         PHPhotoLibrary.shared().unregisterChangeObserver(self)
-        NotificationCenter.default().removeObserver(self)
+        NotificationCenter.default.removeObserver(self)
     }
     
-    // MARK: - UIView
+    // MARK: - UIViewController
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -105,10 +108,10 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
             }
             
             PHPhotoLibrary.shared().register(self);
-            NotificationCenter.default().addObserver(self, selector: #selector(GridViewController.appDidBecomeActive),
+            NotificationCenter.default.addObserver(self, selector: #selector(GridViewController.appDidBecomeActive),
                 name: NSNotification.Name.UIApplicationDidBecomeActive, object: nil)
-            NotificationCenter.default().addObserver(self, selector: #selector(GridViewController.reloadPhotos),
-                name: PHAssetHelper.sourceTypesChangedNotification, object: nil)
+            NotificationCenter.default.addObserver(self, selector: #selector(GridViewController.reloadPhotos),
+                name: NSNotification.Name(rawValue: PHAssetHelper.sourceTypesChangedNotification), object: nil)
         }
     }
 
@@ -277,7 +280,7 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! GridViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CellIdentifier.photoCell, for: indexPath) as! GridViewCell
     
         // Increment the cell's tag
         let currentTag = cell.tag + 1
@@ -298,7 +301,7 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
     }
 
     override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: headerIdentifier, for: indexPath) as! GridHeaderView
+        let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: CellIdentifier.yearHeader, for: indexPath) as! GridHeaderView
         headerView.label.text = String(model.yearForSection((indexPath as NSIndexPath).section))
         
         return headerView
