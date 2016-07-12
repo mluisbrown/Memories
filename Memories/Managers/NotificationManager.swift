@@ -54,8 +54,6 @@ class NotificationManager {
         } else {
             UserDefaults.standard.removeObject(forKey: Key.notificationLaunchDate)
         }
-        
-        UserDefaults.standard.synchronize()
     }
     
     /// returns whether the user has been prompted with the system "Allow Notifications" prompt
@@ -80,13 +78,11 @@ class NotificationManager {
     /// sets the current notification time in the user defaults
     static func setNotificationTime(_ hour: Int, _ minute: Int) {
         UserDefaults.standard.set(hour * 100 + minute, forKey: Key.notificationTime)
-        UserDefaults.standard.synchronize()
     }
     
     /// attempts to enable notifications, prompting the user for authorization if required
     static func enableNotifications() {
         UserDefaults.standard.set(true, forKey: Key.notificationsEnabled)
-        UserDefaults.standard.synchronize()
         
         // if the user has never been prompted for allowing notifications
         // register for notifications to force the prompt
@@ -118,7 +114,6 @@ class NotificationManager {
         UIApplication.shared().cancelAllLocalNotifications()
         
         UserDefaults.standard.set(false, forKey: Key.notificationsEnabled)
-        UserDefaults.standard.synchronize()
     }
     
     /// schedules notifications, runs on a background thread
