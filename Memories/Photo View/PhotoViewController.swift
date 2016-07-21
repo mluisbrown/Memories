@@ -32,8 +32,6 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
     // see rdar://25181601 (https://openradar.appspot.com/radar?id=6158824289337344)
     let cacheSize = CGSize(width: 256, height: 256)
     
-    var hideStatusBar = false
-    
     var presentTransition: PhotoViewPresentTransition?
     var dismissTransition: PhotoViewDismissTransition?
     var swipeDismissTransition: PhotoViewSwipeDismissTransition?
@@ -70,10 +68,6 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
         view.addGestureRecognizer(panRecognizer)
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        hideStatusBar(true)
-    }
-    
     override func viewDidDisappear(_ animated: Bool) {
         PHPhotoLibrary.shared().unregisterChangeObserver(self)
         self.cancelAllImageRequests()
@@ -88,21 +82,6 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
         super.viewWillTransition(to: size, with: coordinator)
         initialPage = model.selectedIndex
         initialOffsetSet = false
-    }
-    
-    override func preferredStatusBarStyle() -> UIStatusBarStyle {
-        return .default
-    }
-    
-    override func prefersStatusBarHidden() -> Bool {
-        return hideStatusBar || traitCollection.verticalSizeClass == .compact
-    }
-    
-    func hideStatusBar(_ hide: Bool) {
-        hideStatusBar = hide
-        UIView.animate(withDuration: 0.25) {
-            self.setNeedsStatusBarAppearanceUpdate()
-        }
     }
     
     override func didReceiveMemoryWarning() {
@@ -154,14 +133,10 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
     
     func doClose(_ interactive: Bool) {
         if let navController = presentingViewController as? UINavigationController,
-            gridViewController = navController.topViewController as? GridViewController {
+            let gridViewController = navController.topViewController as? GridViewController {
             gridViewController.setSelectedIndex(model.selectedIndex)
             let imageView = gridViewController.imageViewForIndex(model.selectedIndex)!
             let pageView = pageViews[model.selectedIndex]!
-            
-            if traitCollection.verticalSizeClass == .regular {
-                hideStatusBar(false)
-            }
             
             if interactive {
                 swipeDismissTransition = PhotoViewSwipeDismissTransition(destImageView: imageView, sourceImageView: pageView.imageView)
@@ -171,7 +146,7 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
                 swipeDismissTransition = nil
             }
             
-            navController.dismiss(animated: true, completion: nil)
+            gridViewController.dismiss(animated: true, completion: nil)
         }
     }
     

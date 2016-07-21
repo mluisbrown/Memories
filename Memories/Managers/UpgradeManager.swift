@@ -135,7 +135,7 @@ class UpgradeManager {
     
     /// prompts the user if they want to upgrade
     static func promptForUpgradeInViewController(_ viewController: UIViewController, completion: ((upgraded: Bool) -> ())?) {
-        guard let price = upgradePrice where !upgradePromptShown else {
+        guard let price = upgradePrice , !upgradePromptShown else {
             completion?(upgraded: false)
             return
         }
@@ -177,7 +177,7 @@ class UpgradeManager {
         store.restoreTransactions( onSuccess: { (transactions) -> Void in
             guard transactions?.count > 0,
                 let transaction = transactions?[0] as? SKPaymentTransaction
-                where transaction.payment.productIdentifier == upgradeProductId else {
+                , transaction.payment.productIdentifier == upgradeProductId else {
                     completion?(success: false)
                     return
             }

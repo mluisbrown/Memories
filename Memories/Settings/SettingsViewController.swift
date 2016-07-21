@@ -42,7 +42,7 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
     
     var viewModel : SettingsViewModel? {
         willSet {
-            if let model = viewModel where newValue == nil {
+            if let model = viewModel, newValue == nil {
                 model.notificationsEnabled.bind(nil)
                 model.notificationHour.bind(nil)
                 model.notificationMinute.bind(nil)

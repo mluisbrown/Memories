@@ -29,7 +29,7 @@ class PhotoViewSwipeDismissTransition:
     
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
         guard let fromViewController = transitionContext.viewController(forKey: UITransitionContextFromViewControllerKey),
-            fromView = transitionContext.view(forKey: UITransitionContextFromViewKey) else {
+            let fromView = transitionContext.view(forKey: UITransitionContextFromViewKey) else {
                 transitionContext.completeTransition(false)
                 return
         }
@@ -54,7 +54,7 @@ class PhotoViewSwipeDismissTransition:
         
         UIView.animateKeyframes(withDuration: transitionDuration, delay: 0, options: UIViewKeyframeAnimationOptions(), animations: {
             UIView.addKeyframe(withRelativeStartTime: 0.0, relativeDuration: 0.25) {
-                fromView.alpha = 0.0
+                fromView.alpha = 0.001
             }
             
             UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 1) {
@@ -88,7 +88,7 @@ class PhotoViewSwipeDismissTransition:
             panHeight = gr.view!.bounds.height - startPoint.y
         case .changed:
             let percent = gr.translation(in: gr.view).y / panHeight
-            update(percent <= 0 ? 0 : percent)
+            update (percent <= 0 ? 0 : percent)
         case .ended, .cancelled:
             let velocity = gr.velocity(in: gr.view)
             if velocity.y < 0 || gr.state == .cancelled {

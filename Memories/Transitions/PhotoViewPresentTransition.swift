@@ -9,6 +9,10 @@
 import UIKit
 import AVFoundation
 
+protocol ViewControllerStatusBar {
+    var statusBarVisible: Bool { get set }
+}
+
 class PhotoViewPresentTransition: NSObject, UIViewControllerAnimatedTransitioning {
     let sourceImageView : UIImageView
     let duration = TimeInterval(0.25)
@@ -25,7 +29,8 @@ class PhotoViewPresentTransition: NSObject, UIViewControllerAnimatedTransitionin
     
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
         guard let toViewController = transitionContext.viewController(forKey: UITransitionContextToViewControllerKey),
-            toView = transitionContext.view(forKey: UITransitionContextToViewKey) else {
+            let fromViewController = transitionContext.viewController(forKey: UITransitionContextFromViewControllerKey),
+            let toView = transitionContext.view(forKey: UITransitionContextToViewKey) else {
             return
         }
         let container = transitionContext.containerView()
@@ -49,8 +54,13 @@ class PhotoViewPresentTransition: NSObject, UIViewControllerAnimatedTransitionin
         let fullImageViewSize = AVMakeRect(aspectRatio: sourceImageView.image!.size, insideRect: CGRect(origin: CGPoint.zero, size: transitionView.frame.size)).size
         let newImageViewSize = adjustImageBoundsForButtons(fullImageViewSize, vcViewSize: transitionView.frame.size)
         
+//        if var vcStatusBar = fromViewController as? ViewControllerStatusBar {
+//            vcStatusBar.statusBarVisible = false
+//        }
+        
         UIView.animateKeyframes(withDuration: duration, delay: 0, options: UIViewKeyframeAnimationOptions(), animations: {
             UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.75) {
+                fromViewController.setNeedsStatusBarAppearanceUpdate()
                 transitionView.backgroundColor = UIColor.black()
                 imageView.bounds = CGRect(origin: CGPoint.zero, size: newImageViewSize)
                 imageView.center = transitionView.center

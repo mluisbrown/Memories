@@ -33,7 +33,7 @@ extension UICollectionView {
     }
 }
 
-class GridViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, PHPhotoLibraryChangeObserver, UIPopoverPresentationControllerDelegate {
+class GridViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, PHPhotoLibraryChangeObserver, UIPopoverPresentationControllerDelegate, ViewControllerStatusBar {
     struct CellIdentifier {
         static let photoCell = "PhotoCell"
         static let yearHeader = "YearHeader"
@@ -46,6 +46,7 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
     var model : GridViewModel!
 
     var titleView : UILabel!
+    var statusBarVisible = true
     
     var imageManager : PHCachingImageManager!
     var previousPreheatRect : CGRect = .zero
@@ -182,13 +183,31 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
             }, completion: nil)
     }
     
+    override func prefersStatusBarHidden() -> Bool {
+        return !statusBarVisible || traitCollection.verticalSizeClass == .compact
+    }
+    
+    override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
+        if traitCollection.verticalSizeClass == .regular {
+            hideStatusBar(false)
+        }
+        super.dismiss(animated: flag, completion: completion)
+    }
+    
+    func hideStatusBar(_ hide: Bool) {
+        statusBarVisible = !hide
+        UIView.animate(withDuration: 0.25) {
+            self.setNeedsStatusBarAppearanceUpdate()
+        }
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
 
     // MARK: - Notification handlers
     func appDidBecomeActive() {
-        if let date = NotificationManager.launchDate() where self.photosAllowed {
+        if let date = NotificationManager.launchDate() , self.photosAllowed {
             self.model.date.value = date
         }
     }
@@ -228,7 +247,7 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
     func popoverPresentationControllerDidDismissPopover(_ popoverPresentationController: UIPopoverPresentationController) {
         let datePickerVC = popoverPresentationController.presentedViewController as! DatePickerViewController
         
-        if let selectedDate = datePickerVC.selectedDate where (selectedDate != model.date.value) {
+        if let selectedDate = datePickerVC.selectedDate, (selectedDate != model.date.value) {
             model.date.value = datePickerVC.selectedDate!
         }        
     }
@@ -246,12 +265,14 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if let photoViewController = storyboard?.instantiateViewController(withIdentifier: "photoViewController") as? PhotoViewController {
             photoViewController.model = model.photoViewModelForIndexPath(indexPath)
-            if let cell = collectionView.cellForItem(at: indexPath) as? GridViewCell, imageView = cell.imageView {
+            if let cell = collectionView.cellForItem(at: indexPath) as? GridViewCell, let imageView = cell.imageView {
                 photoViewController.presentTransition = PhotoViewPresentTransition(sourceImageView: imageView)
                 photoViewController.transitioningDelegate = photoViewController
                 photoViewController.modalPresentationStyle = .custom
                 
-                present(photoViewController, animated: true, completion: nil)
+                present(photoViewController, animated: true) {
+                    self.hideStatusBar(true)
+                }
             }
         }
     }
@@ -290,7 +311,7 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
         
         if let asset = model.assetAtIndexPath(indexPath) {
             imageManager.requestImage(for: asset, targetSize: gridThumbnailSize, contentMode: .aspectFill, options: nil) { (result : UIImage?, info : [NSObject : AnyObject]?) -> Void in
-                if let image = result where cell.tag == currentTag {
+                if let image = result, cell.tag == currentTag {
                     // Only update the thumbnail if the cell tag hasn't changed. Otherwise, the cell has been re-used.
                     cell.thumbnailImage = image
                 }
@@ -323,7 +344,7 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
     }
     
     override func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-        guard let tpv = topPullView, bpv = bottomPullView where decelerate else {
+        guard let tpv = topPullView, let bpv = bottomPullView, decelerate else {
             return
         }
         
@@ -356,7 +377,7 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
     // MARK: - Scroll to Change Date
     
     func createOrUpdatePullViews(_ date: Date) {
-        if let tpv = topPullView, bpv = bottomPullView {
+        if let tpv = topPullView, let bpv = bottomPullView {
             tpv.date = date.previousDay()
             bpv.date = date.nextDay()
         } else {
@@ -369,7 +390,7 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
     }
     
     func adjustPullViewPositions() {
-        guard let tpv = topPullView, bpv = bottomPullView else {
+        guard let tpv = topPullView, let bpv = bottomPullView else {
             return
         }
         
@@ -414,7 +435,7 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
             
             for section in (0..<self.model.sectionCount).reversed() {
                 if let fetchResult = self.model.fetchResultForSection(section),
-                    collectionChanges = changeInstance.changeDetails(for: fetchResult as! PHFetchResult<AnyObject>) {
+                    let collectionChanges = changeInstance.changeDetails(for: fetchResult as! PHFetchResult<AnyObject>) {
                     // get the new fetch result
                     self.model.setFetchResultForSection(section, fetchResult: collectionChanges.fetchResultAfterChanges as! PHFetchResult<PHAsset>)
                     

@@ -111,7 +111,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
         
         assetDisplayed = true
         imageManager.requestImage(for: asset, targetSize: cacheSize, contentMode: .aspectFill, options: requestOptions) { result, userInfo in
-            if let image = result, assetDate = asset.creationDate {
+            if let image = result, let assetDate = asset.creationDate {
                 self.hidePhotoView(false) {
                     let imageWider = image.size.width > self.photoView.image?.size.width
                     let newAsset = asset != self.currentAsset
