@@ -188,10 +188,13 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
     }
     
     override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
-        if traitCollection.verticalSizeClass == .regular {
-            hideStatusBar(false)
+        super.dismiss(animated: flag) {
+            if self.traitCollection.verticalSizeClass == .regular {
+                self.hideStatusBar(false)
+            }
+
+            completion?()
         }
-        super.dismiss(animated: flag, completion: completion)
     }
     
     func hideStatusBar(_ hide: Bool) {

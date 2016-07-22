@@ -140,6 +140,9 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
             
             if interactive {
                 swipeDismissTransition = PhotoViewSwipeDismissTransition(destImageView: imageView, sourceImageView: pageView.imageView)
+                if #available(iOS 10.0, *) {
+                    swipeDismissTransition?.wantsInteractiveStart = true
+                }
             }
             else {
                 dismissTransition = PhotoViewDismissTransition(destImageView: imageView, sourceImageView: pageView.imageView)
@@ -401,7 +404,7 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
         return dismissTransition
     }
     
-    func interactionControllerForPresentation(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+    func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
         return swipeDismissTransition
     }
     
