@@ -29,10 +29,14 @@ class PhotoViewSwipeDismissTransition:
     
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
         guard let fromViewController = transitionContext.viewController(forKey: UITransitionContextFromViewControllerKey),
+            let toViewController = transitionContext.viewController(forKey: UITransitionContextToViewControllerKey),
             let fromView = transitionContext.view(forKey: UITransitionContextFromViewKey) else {
                 transitionContext.completeTransition(false)
                 return
         }
+        
+        let statusBarVc = toViewController.statusBarContoller()
+        
         let container = transitionContext.containerView()
         let transitionView = UIView(frame: transitionContext.initialFrame(for: fromViewController))
         transitionView.backgroundColor = UIColor.black()
@@ -48,11 +52,12 @@ class PhotoViewSwipeDismissTransition:
         let fromBackgroundColor = fromView.backgroundColor
         fromView.backgroundColor = UIColor.clear()
         self.destImageView.isHidden = true
-        self.sourceImageView.isHidden = true
-        
-        let newImageFrame = transitionView.convert(self.destImageView.bounds, from: self.destImageView).integral
+        self.sourceImageView.isHidden = true        
         
         UIView.animateKeyframes(withDuration: transitionDuration, delay: 0, options: UIViewKeyframeAnimationOptions(), animations: {
+            statusBarVc?.hideStatusBar(false)
+            let newImageFrame = transitionView.convert(self.destImageView.bounds, from: self.destImageView).integral
+
             UIView.addKeyframe(withRelativeStartTime: 0.0, relativeDuration: 0.25) {
                 fromView.alpha = 0.001
             }
@@ -67,6 +72,7 @@ class PhotoViewSwipeDismissTransition:
             let cancelled = transitionContext.transitionWasCancelled()
             
             if cancelled {
+                statusBarVc?.hideStatusBar(true)
                 fromView.backgroundColor = fromBackgroundColor
                 self.destImageView.isHidden = false
                 self.sourceImageView.isHidden = false

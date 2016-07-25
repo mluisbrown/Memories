@@ -33,7 +33,11 @@ extension UICollectionView {
     }
 }
 
-class GridViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, PHPhotoLibraryChangeObserver, UIPopoverPresentationControllerDelegate, ViewControllerStatusBar {
+class GridViewController: UICollectionViewController,
+    UICollectionViewDelegateFlowLayout,
+    PHPhotoLibraryChangeObserver,
+    UIPopoverPresentationControllerDelegate,
+    StatusBarViewController {
     struct CellIdentifier {
         static let photoCell = "PhotoCell"
         static let yearHeader = "YearHeader"
@@ -187,16 +191,6 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
         return !statusBarVisible || traitCollection.verticalSizeClass == .compact
     }
     
-    override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
-        super.dismiss(animated: flag) {
-            if self.traitCollection.verticalSizeClass == .regular {
-                self.hideStatusBar(false)
-            }
-
-            completion?()
-        }
-    }
-    
     func hideStatusBar(_ hide: Bool) {
         statusBarVisible = !hide
         UIView.animate(withDuration: 0.25) {
@@ -273,9 +267,7 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
                 photoViewController.transitioningDelegate = photoViewController
                 photoViewController.modalPresentationStyle = .custom
                 
-                present(photoViewController, animated: true) {
-                    self.hideStatusBar(true)
-                }
+                present(photoViewController, animated: true, completion: nil)
             }
         }
     }

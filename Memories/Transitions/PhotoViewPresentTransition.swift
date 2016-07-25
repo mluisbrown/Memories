@@ -9,10 +9,6 @@
 import UIKit
 import AVFoundation
 
-protocol ViewControllerStatusBar {
-    var statusBarVisible: Bool { get set }
-}
-
 class PhotoViewPresentTransition: NSObject, UIViewControllerAnimatedTransitioning {
     let sourceImageView : UIImageView
     let duration = TimeInterval(0.25)
@@ -54,11 +50,9 @@ class PhotoViewPresentTransition: NSObject, UIViewControllerAnimatedTransitionin
         let fullImageViewSize = AVMakeRect(aspectRatio: sourceImageView.image!.size, insideRect: CGRect(origin: CGPoint.zero, size: transitionView.frame.size)).size
         let newImageViewSize = adjustImageBoundsForButtons(fullImageViewSize, vcViewSize: transitionView.frame.size)
         
-//        if var vcStatusBar = fromViewController as? ViewControllerStatusBar {
-//            vcStatusBar.statusBarVisible = false
-//        }
-        
         UIView.animateKeyframes(withDuration: duration, delay: 0, options: UIViewKeyframeAnimationOptions(), animations: {
+            fromViewController.statusBarContoller()?.hideStatusBar(true)
+            
             UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.75) {
                 fromViewController.setNeedsStatusBarAppearanceUpdate()
                 transitionView.backgroundColor = UIColor.black()

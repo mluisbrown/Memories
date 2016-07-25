@@ -26,11 +26,12 @@ class PhotoViewDismissTransition: NSObject, UIViewControllerAnimatedTransitionin
     
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
         guard let fromViewController = transitionContext.viewController(forKey: UITransitionContextFromViewControllerKey),
+            let toViewController = transitionContext.viewController(forKey: UITransitionContextToViewControllerKey),
             let fromView = transitionContext.view(forKey: UITransitionContextFromViewKey) else {
                 transitionContext.completeTransition(false)
                 return
         }
-        
+
         let container = transitionContext.containerView()
         let transitionView = UIView(frame: transitionContext.initialFrame(for: fromViewController))
         transitionView.backgroundColor = UIColor.black()
@@ -47,9 +48,10 @@ class PhotoViewDismissTransition: NSObject, UIViewControllerAnimatedTransitionin
         self.destImageView.isHidden = true
         self.sourceImageView.isHidden = true
         
-        let newImageFrame = transitionView.convert(self.destImageView.bounds, from: self.destImageView).integral
-        
         UIView.animateKeyframes(withDuration: duration, delay: 0, options: UIViewKeyframeAnimationOptions(), animations: {
+            toViewController.statusBarContoller()?.hideStatusBar(false)
+            let newImageFrame = transitionView.convert(self.destImageView.bounds, from: self.destImageView).integral
+
             UIView.addKeyframe(withRelativeStartTime: 0.0, relativeDuration: 0.25) {
                 fromView.alpha = 0.0
             }
