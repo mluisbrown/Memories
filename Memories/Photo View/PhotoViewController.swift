@@ -17,7 +17,7 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
     @IBOutlet weak var heartButton: UIButton!
     @IBOutlet weak var yearLabel: UILabel!
 
-    let PADDING : CGFloat = 10.0;
+    let PADDING = CGFloat(10);
     
     let heartFullImg = UIImage(named: "heart-full")!.withRenderingMode(.alwaysTemplate)
     let heartEmptyImg = UIImage(named: "heart-empty")!.withRenderingMode(.alwaysTemplate)
@@ -32,9 +32,17 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
     // see rdar://25181601 (https://openradar.appspot.com/radar?id=6158824289337344)
     let cacheSize = CGSize(width: 256, height: 256)
     
+    struct PanState {
+        let imageView: UIImageView?
+        let transform: CGAffineTransform
+        let center: CGPoint
+        let panHeight: CGFloat
+    }
+    
+    var panState = PanState(imageView: nil, transform: CGAffineTransform.identity, center: .zero, panHeight: 0)
+    
     var presentTransition: PhotoViewPresentTransition?
     var dismissTransition: PhotoViewDismissTransition?
-    var swipeDismissTransition: PhotoViewSwipeDismissTransition?
     
     required init?(coder aDecoder: NSCoder) {
         self.imageManager = PHCachingImageManager()
@@ -131,38 +139,63 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
         }, completionHandler: nil)
     }
     
-    func doClose(_ interactive: Bool) {
+    func doClose() {
         if let navController = presentingViewController as? UINavigationController,
             let gridViewController = navController.topViewController as? GridViewController {
             gridViewController.setSelectedIndex(model.selectedIndex)
             let imageView = gridViewController.imageViewForIndex(model.selectedIndex)!
             let pageView = pageViews[model.selectedIndex]!
             
-            if interactive {
-                swipeDismissTransition = PhotoViewSwipeDismissTransition(destImageView: imageView, sourceImageView: pageView.imageView)
-            }
-            else {
-                dismissTransition = PhotoViewDismissTransition(destImageView: imageView, sourceImageView: pageView.imageView)
-                swipeDismissTransition = nil
-            }
-            
+            dismissTransition = PhotoViewDismissTransition(destImageView: imageView, sourceImageView: pageView.imageView)
             gridViewController.dismiss(animated: true, completion: nil)
         }
     }
     
     @IBAction func close(_ sender: UIButton) {
-        doClose(false)
+        doClose()
     }
     
     func viewDidPan(_ gr: UIPanGestureRecognizer) {
         switch gr.state {
         case .began:
-            doClose(true)
+            let startPoint = gr.location(in: gr.view)
+            
+            let imageView = pageViews[model.selectedIndex]!.imageView!
+            panState = PanState(imageView: imageView,
+                                transform: imageView.transform,
+                                center: imageView.center,
+                                panHeight: gr.view!.bounds.height - startPoint.y)
+
+        case .changed:
+            let translation = gr.translation(in: gr.view)
+            let yPercent = translation.y / panState.panHeight
+            let percent = yPercent <= 0 ? 0 : yPercent
+            let alpha = 1 - percent
+            let scale = (1 - percent / 2)
+            
+            panState.imageView?.center = CGPoint(x: panState.center.x + translation.x, y: panState.center.y + translation.y)
+            panState.imageView?.transform = panState.transform.scaleBy(x: scale, y: scale)
+            
+            view.backgroundColor = UIColor.black().withAlphaComponent(alpha)
+            if !controlsHidden { setControls(alpha: alpha) }
+
+        case .ended, .cancelled:
+            let velocity = gr.velocity(in: gr.view)
+            if velocity.y < 0 || gr.state == .cancelled {
+                UIView.animate(withDuration: 0.25) {
+                    self.panState.imageView?.center = self.panState.center
+                    self.panState.imageView?.transform = self.panState.transform
+                    self.view.backgroundColor = UIColor.black()
+                    if !self.controlsHidden { self.setControls(alpha: 1) }
+                }
+            }
+            else {
+                doClose()
+            }
+
         default:
             break
         }
-        
-        swipeDismissTransition?.handlePan(panRecognizer: gr)
     }
     
     // MARK: Internal implementation
@@ -394,15 +427,7 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
     }
 
     func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        if swipeDismissTransition != nil {
-            return swipeDismissTransition
-        }
-        
         return dismissTransition
-    }
-    
-    func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
-        return swipeDismissTransition
     }
     
     // MARK: PHPhotoLibraryChangeObserver
@@ -450,8 +475,12 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
             return
         }
         
+        setControls(alpha: hide ? 0 : 1)
+    }
+    
+    func setControls(alpha: CGFloat) {
         [shareButton, deleteButton, closeButton, heartButton, yearLabel].forEach {
-            $0.alpha = hide ? 0 : 1
+            $0.alpha = alpha
         }
     }
     
