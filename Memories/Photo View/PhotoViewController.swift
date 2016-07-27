@@ -140,9 +140,6 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
             
             if interactive {
                 swipeDismissTransition = PhotoViewSwipeDismissTransition(destImageView: imageView, sourceImageView: pageView.imageView)
-                if #available(iOS 10.0, *) {
-                    swipeDismissTransition?.wantsInteractiveStart = true
-                }
             }
             else {
                 dismissTransition = PhotoViewDismissTransition(destImageView: imageView, sourceImageView: pageView.imageView)
