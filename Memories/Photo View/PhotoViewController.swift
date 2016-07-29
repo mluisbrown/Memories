@@ -9,7 +9,18 @@
 import UIKit
 import Photos
 
-class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControllerTransitioningDelegate, PHPhotoLibraryChangeObserver, ZoomingPhotoViewDelegate {
+protocol PhotoViewControllerDelegate {
+    func setSelected(index index: Int)
+    func imageView(atIndex index: Int) -> UIImageView?
+}
+
+
+class PhotoViewController: UIViewController,
+    UIScrollViewDelegate,
+    UIViewControllerTransitioningDelegate,
+    PHPhotoLibraryChangeObserver,
+    ZoomingPhotoViewDelegate
+{
     @IBOutlet var scrollView: UIScrollView!
     @IBOutlet weak var shareButton: UIButton!
     @IBOutlet weak var deleteButton: UIButton!
@@ -17,7 +28,7 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
     @IBOutlet weak var heartButton: UIButton!
     @IBOutlet weak var yearLabel: UILabel!
 
-    let PADDING : CGFloat = 10.0;
+    let PADDING = CGFloat(10)
     
     let heartFullImg = UIImage(named: "heart-full")!.imageWithRenderingMode(.AlwaysTemplate)
     let heartEmptyImg = UIImage(named: "heart-empty")!.imageWithRenderingMode(.AlwaysTemplate)
@@ -28,15 +39,25 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
     var model : PhotoViewModel!
     var pageViews: [ZoomingPhotoView?] = []
     let imageManager : PHCachingImageManager
+    var delegate: PhotoViewControllerDelegate?
     // If the size is too large then PhotoKit doesn't return an optimal image size
     // see rdar://25181601 (https://openradar.appspot.com/radar?id=6158824289337344)
     let cacheSize = CGSize(width: 256, height: 256)
-    
+
     var hideStatusBar = false
     
+    struct PanState {
+        let imageView: UIImageView?
+        let destImageView: UIImageView?
+        let transform: CGAffineTransform
+        let center: CGPoint
+        let panHeight: CGFloat
+    }
+    
+    var initialPanState = PanState(imageView: nil, destImageView: nil, transform: CGAffineTransformIdentity, center: .zero, panHeight: 0)
+
     var presentTransition: PhotoViewPresentTransition?
     var dismissTransition: PhotoViewDismissTransition?
-    var swipeDismissTransition: PhotoViewSwipeDismissTransition?
     
     required init?(coder aDecoder: NSCoder) {
         self.imageManager = PHCachingImageManager()
@@ -75,8 +96,6 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
     }
     
     override func viewDidDisappear(animated: Bool) {
-        NSLog("PhotoViewController.viewDidDisappear")
-
         PHPhotoLibrary.sharedPhotoLibrary().unregisterChangeObserver(self)
         self.cancelAllImageRequests()
         self.purgeAllViews()
@@ -91,7 +110,7 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
         initialPage = model.selectedIndex
         initialOffsetSet = false
     }
-    
+        
     override func prefersStatusBarHidden() -> Bool {
         return hideStatusBar || traitCollection.verticalSizeClass == .Compact
     }
@@ -102,7 +121,7 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
             self.setNeedsStatusBarAppearanceUpdate()
         }
     }
-    
+
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
@@ -150,44 +169,67 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
         }, completionHandler: nil)
     }
     
-    func doClose(interactive: Bool) {
-        if let navController = presentingViewController as? UINavigationController,
-            gridViewController = navController.topViewController as? GridViewController {
-            gridViewController.setSelectedIndex(model.selectedIndex)
-            let imageView = gridViewController.imageViewForIndex(model.selectedIndex)!
-            let pageView = pageViews[model.selectedIndex]!
-            
-            if traitCollection.verticalSizeClass == .Regular {
-                hideStatusBar(false)
-            }
-            
-            if interactive {
-                swipeDismissTransition = PhotoViewSwipeDismissTransition(destImageView: imageView, sourceImageView: pageView.imageView)
-            }
-            else {
-                dismissTransition = PhotoViewDismissTransition(destImageView: imageView, sourceImageView: pageView.imageView)
-                swipeDismissTransition = nil
-            }
-            
-            navController.dismissViewControllerAnimated(true) {
-                NSLog("dismissViewControllerAnimated completion block")
-            }
+    func doClose() {
+        guard let delegate = delegate else {
+            return
         }
+        
+        delegate.setSelected(index: model.selectedIndex)
+        let imageView = delegate.imageView(atIndex: model.selectedIndex)!
+        let pageView = pageViews[model.selectedIndex]!
+        
+        dismissTransition = PhotoViewDismissTransition(destImageView: imageView, sourceImageView: pageView.imageView)
+        presentingViewController?.dismissViewControllerAnimated(true, completion: nil)
     }
     
     @IBAction func close(sender: UIButton) {
-        doClose(false)
+        doClose()
     }
     
     func viewDidPan(gr: UIPanGestureRecognizer) {
         switch gr.state {
         case .Began:
-            doClose(true)
+            let startPoint = gr.locationInView(gr.view)
+            
+            let imageView = pageViews[model.selectedIndex]!.imageView!
+            initialPanState = PanState(imageView: imageView,
+                                       destImageView: delegate?.imageView(atIndex: model.selectedIndex),
+                                       transform: imageView.transform,
+                                       center: imageView.center,
+                                       panHeight: gr.view!.bounds.height - startPoint.y)
+            initialPanState.destImageView?.hidden = true
+        case .Changed:
+            let translation = gr.translationInView(gr.view)
+            let yPercent = translation.y / initialPanState.panHeight
+            let percent = yPercent <= 0 ? 0 : yPercent
+            let alpha = 1 - percent
+            let scale = (1 - percent / 2)
+            
+            initialPanState.imageView?.center = CGPoint(x: initialPanState.center.x + translation.x, y: initialPanState.center.y + translation.y)
+            initialPanState.imageView?.transform = CGAffineTransformScale(initialPanState.transform,  scale, scale)
+            
+            view.backgroundColor = UIColor.blackColor().colorWithAlphaComponent(alpha)
+            if !controlsHidden { setControls(alpha: alpha) }
+            
+        case .Ended, .Cancelled:
+            let velocity = gr.velocityInView(gr.view)
+            if velocity.y < 0 || gr.state == .Cancelled {
+                UIView.animateWithDuration(0.25, animations: {
+                    self.initialPanState.imageView?.center = self.initialPanState.center
+                    self.initialPanState.imageView?.transform = self.initialPanState.transform
+                    self.view.backgroundColor = UIColor.blackColor()
+                    if !self.controlsHidden { self.setControls(alpha: 1) }
+                }) { finished in
+                    self.initialPanState.destImageView?.hidden = false
+                }
+            }
+            else {
+                doClose()
+            }
+            
         default:
             break
         }
-        
-        swipeDismissTransition?.handlePan(panRecognizer: gr)
     }
     
     // MARK: Internal implementation
@@ -419,15 +461,7 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
     }
     
     func animationControllerForDismissedController(dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        if swipeDismissTransition != nil {
-            return swipeDismissTransition
-        }
-        
         return dismissTransition
-    }
-    
-    func interactionControllerForDismissal(animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
-        return swipeDismissTransition
     }
     
     // MARK: PHPhotoLibraryChangeObserver
@@ -475,8 +509,12 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
             return
         }
         
+        setControls(alpha: hide ? 0 : 1)
+    }
+    
+    func setControls(alpha alpha: CGFloat) {
         [shareButton, deleteButton, closeButton, heartButton, yearLabel].forEach {
-            $0.alpha = hide ? 0 : 1
+            $0.alpha = alpha
         }
     }
     
