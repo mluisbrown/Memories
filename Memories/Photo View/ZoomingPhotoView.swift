@@ -184,7 +184,7 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
             
             // only allow scrolling if the image has been zoomed
             // larger than the window
-            isScrollEnabled = zoomScale >= minZoom
+            isScrollEnabled = zoomScale > minZoom
             
             adjustImageConstraintsForZoomScale(zoomScale)
         }

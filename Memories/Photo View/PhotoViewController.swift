@@ -9,7 +9,17 @@
 import UIKit
 import Photos
 
-class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControllerTransitioningDelegate, PHPhotoLibraryChangeObserver, ZoomingPhotoViewDelegate {
+protocol PhotoViewControllerDelegate {
+    func setSelected(index: Int)
+    func imageView(atIndex: Int) -> UIImageView?
+}
+
+class PhotoViewController: UIViewController,
+    UIScrollViewDelegate,
+    UIViewControllerTransitioningDelegate,
+    PHPhotoLibraryChangeObserver,
+    ZoomingPhotoViewDelegate
+{
     @IBOutlet var scrollView: UIScrollView!
     @IBOutlet weak var shareButton: UIButton!
     @IBOutlet weak var deleteButton: UIButton!
@@ -28,18 +38,20 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
     var model : PhotoViewModel!
     var pageViews: [ZoomingPhotoView?] = []
     let imageManager : PHCachingImageManager
+    var delegate: PhotoViewControllerDelegate?
     // If the size is too large then PhotoKit doesn't return an optimal image size
     // see rdar://25181601 (https://openradar.appspot.com/radar?id=6158824289337344)
     let cacheSize = CGSize(width: 256, height: 256)
     
     struct PanState {
         let imageView: UIImageView?
+        let destImageView: UIImageView?
         let transform: CGAffineTransform
         let center: CGPoint
         let panHeight: CGFloat
     }
     
-    var panState = PanState(imageView: nil, transform: CGAffineTransform.identity, center: .zero, panHeight: 0)
+    var initialPanState = PanState(imageView: nil, destImageView: nil, transform: CGAffineTransform.identity, center: .zero, panHeight: 0)
     
     var presentTransition: PhotoViewPresentTransition?
     var dismissTransition: PhotoViewDismissTransition?
@@ -140,15 +152,16 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
     }
     
     func doClose() {
-        if let navController = presentingViewController as? UINavigationController,
-            let gridViewController = navController.topViewController as? GridViewController {
-            gridViewController.setSelectedIndex(model.selectedIndex)
-            let imageView = gridViewController.imageViewForIndex(model.selectedIndex)!
-            let pageView = pageViews[model.selectedIndex]!
-            
-            dismissTransition = PhotoViewDismissTransition(destImageView: imageView, sourceImageView: pageView.imageView)
-            gridViewController.dismiss(animated: true, completion: nil)
+        guard let delegate = delegate else {
+            return
         }
+        
+        delegate.setSelected(index: model.selectedIndex)
+        let imageView = delegate.imageView(atIndex: model.selectedIndex)!
+        let pageView = pageViews[model.selectedIndex]!
+            
+        dismissTransition = PhotoViewDismissTransition(destImageView: imageView, sourceImageView: pageView.imageView)
+        presentingViewController?.dismiss(animated: true, completion: nil)
     }
     
     @IBAction func close(_ sender: UIButton) {
@@ -161,20 +174,21 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
             let startPoint = gr.location(in: gr.view)
             
             let imageView = pageViews[model.selectedIndex]!.imageView!
-            panState = PanState(imageView: imageView,
-                                transform: imageView.transform,
-                                center: imageView.center,
-                                panHeight: gr.view!.bounds.height - startPoint.y)
-
+            initialPanState = PanState(imageView: imageView,
+                                       destImageView: delegate?.imageView(atIndex: model.selectedIndex),
+                                       transform: imageView.transform,
+                                       center: imageView.center,
+                                       panHeight: gr.view!.bounds.height - startPoint.y)
+            initialPanState.destImageView?.isHidden = true
         case .changed:
             let translation = gr.translation(in: gr.view)
-            let yPercent = translation.y / panState.panHeight
+            let yPercent = translation.y / initialPanState.panHeight
             let percent = yPercent <= 0 ? 0 : yPercent
             let alpha = 1 - percent
             let scale = (1 - percent / 2)
             
-            panState.imageView?.center = CGPoint(x: panState.center.x + translation.x, y: panState.center.y + translation.y)
-            panState.imageView?.transform = panState.transform.scaleBy(x: scale, y: scale)
+            initialPanState.imageView?.center = CGPoint(x: initialPanState.center.x + translation.x, y: initialPanState.center.y + translation.y)
+            initialPanState.imageView?.transform = initialPanState.transform.scaleBy(x: scale, y: scale)
             
             view.backgroundColor = UIColor.black().withAlphaComponent(alpha)
             if !controlsHidden { setControls(alpha: alpha) }
@@ -182,11 +196,13 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
         case .ended, .cancelled:
             let velocity = gr.velocity(in: gr.view)
             if velocity.y < 0 || gr.state == .cancelled {
-                UIView.animate(withDuration: 0.25) {
-                    self.panState.imageView?.center = self.panState.center
-                    self.panState.imageView?.transform = self.panState.transform
+                UIView.animate(withDuration: 0.25, animations: {
+                    self.initialPanState.imageView?.center = self.initialPanState.center
+                    self.initialPanState.imageView?.transform = self.initialPanState.transform
                     self.view.backgroundColor = UIColor.black()
                     if !self.controlsHidden { self.setControls(alpha: 1) }
+                }) { finished in
+                    self.initialPanState.destImageView?.isHidden = false
                 }
             }
             else {
@@ -425,7 +441,7 @@ class PhotoViewController: UIViewController, UIScrollViewDelegate, UIViewControl
     func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         return presentTransition
     }
-
+    
     func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         return dismissTransition
     }

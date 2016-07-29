@@ -37,7 +37,9 @@ class GridViewController: UICollectionViewController,
     UICollectionViewDelegateFlowLayout,
     PHPhotoLibraryChangeObserver,
     UIPopoverPresentationControllerDelegate,
-    StatusBarViewController {
+    StatusBarViewController,
+    PhotoViewControllerDelegate
+{
     struct CellIdentifier {
         static let photoCell = "PhotoCell"
         static let yearHeader = "YearHeader"
@@ -190,7 +192,13 @@ class GridViewController: UICollectionViewController,
     override func prefersStatusBarHidden() -> Bool {
         return !statusBarVisible || traitCollection.verticalSizeClass == .compact
     }
+
     
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+    }
+
+    // MARK: StatusBarViewController
     func hideStatusBar(_ hide: Bool) {
         statusBarVisible = !hide
         UIView.animate(withDuration: 0.25) {
@@ -198,10 +206,6 @@ class GridViewController: UICollectionViewController,
         }
     }
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-    }
-
     // MARK: - Notification handlers
     func appDidBecomeActive() {
         if let date = NotificationManager.launchDate() , self.photosAllowed {
@@ -262,6 +266,7 @@ class GridViewController: UICollectionViewController,
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if let photoViewController = storyboard?.instantiateViewController(withIdentifier: "photoViewController") as? PhotoViewController {
             photoViewController.model = model.photoViewModelForIndexPath(indexPath)
+            photoViewController.delegate = self
             if let cell = collectionView.cellForItem(at: indexPath) as? GridViewCell, let imageView = cell.imageView {
                 photoViewController.presentTransition = PhotoViewPresentTransition(sourceImageView: imageView)
                 photoViewController.transitioningDelegate = photoViewController
@@ -272,11 +277,13 @@ class GridViewController: UICollectionViewController,
         }
     }
     
-    func setSelectedIndex(_ index: Int) {
+    
+    // MARK: - PhotoViewContollerDelegate
+    func setSelected(index: Int) {
         collectionView?.selectItem(at: model.indexPathForSelectedIndex(index), animated: false, scrollPosition: .centeredVertically)
     }
     
-    func imageViewForIndex(_ index: Int) -> UIImageView? {
+    func imageView(atIndex index: Int) -> UIImageView? {
         guard let cell = collectionView?.cellForItem(at: model.indexPathForSelectedIndex(index)) as? GridViewCell else {
             return nil
         }

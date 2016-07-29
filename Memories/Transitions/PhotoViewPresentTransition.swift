@@ -64,6 +64,8 @@ class PhotoViewPresentTransition: NSObject, UIViewControllerAnimatedTransitionin
                 toView.alpha = 1.0
             }
         }) { finished in
+            self.sourceImageView.isHidden = false
+
             transitionView.removeFromSuperview()
             transitionContext.completeTransition(!transitionContext.transitionWasCancelled())
         }        

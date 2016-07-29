@@ -45,6 +45,7 @@ class PhotoViewDismissTransition: NSObject, UIViewControllerAnimatedTransitionin
         transitionView.addSubview(imageView)
         
         fromView.backgroundColor = UIColor.clear()
+        self.destImageView.isHidden = true
         self.sourceImageView.isHidden = true
         
         UIView.animateKeyframes(withDuration: duration, delay: 0, options: UIViewKeyframeAnimationOptions(), animations: {
