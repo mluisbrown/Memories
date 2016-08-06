@@ -19,4 +19,9 @@ class GridViewCell: UICollectionViewCell {
             return imageView?.image
         }
     }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        imageView?.image = nil
+    }
 }

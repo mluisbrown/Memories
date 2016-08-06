@@ -28,6 +28,7 @@
 		4C8594D31BB33E2F005CCFAC /* DACircularProgress.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4C8594D21BB33E2F005CCFAC /* DACircularProgress.framework.dSYM */; };
 		4C91432C1BA958CC001B30A9 /* notification.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 4C91432B1BA958CC001B30A9 /* notification.mp3 */; };
 		4C921FD21C1A038800F0411D /* PhotoViewPresentTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C921FD11C1A038800F0411D /* PhotoViewPresentTransition.swift */; };
+		4C92A9381D4C088E00B3FAAD /* StatusBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C92A9371D4C088E00B3FAAD /* StatusBarViewController.swift */; };
 		4C989BDF1BA7806E00D4C13F /* Dynamic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C989BDE1BA7806E00D4C13F /* Dynamic.swift */; };
 		4C989BE11BA780BB00D4C13F /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C989BE01BA780BB00D4C13F /* SettingsViewModel.swift */; };
 		4CAAF0751B827EAD00AE47C3 /* PullView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CAAF0741B827EAD00AE47C3 /* PullView.swift */; };
@@ -131,6 +132,7 @@
 		4C8594D21BB33E2F005CCFAC /* DACircularProgress.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = DACircularProgress.framework.dSYM; path = Carthage/Build/iOS/DACircularProgress.framework.dSYM; sourceTree = "<group>"; };
 		4C91432B1BA958CC001B30A9 /* notification.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = notification.mp3; sourceTree = "<group>"; };
 		4C921FD11C1A038800F0411D /* PhotoViewPresentTransition.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoViewPresentTransition.swift; sourceTree = "<group>"; };
+		4C92A9371D4C088E00B3FAAD /* StatusBarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatusBarViewController.swift; sourceTree = "<group>"; };
 		4C989BDE1BA7806E00D4C13F /* Dynamic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Dynamic.swift; sourceTree = "<group>"; };
 		4C989BE01BA780BB00D4C13F /* SettingsViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
 		4CAAF0741B827EAD00AE47C3 /* PullView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PullView.swift; sourceTree = "<group>"; };
@@ -209,6 +211,7 @@
 				4C989BDE1BA7806E00D4C13F /* Dynamic.swift */,
 				4C0410E51BC8787200BBB76C /* UIDevice.swift */,
 				4CABEE211CAAF08500A9F23A /* UITraitEnvironment.swift */,
+				4C92A9371D4C088E00B3FAAD /* StatusBarViewController.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -265,8 +268,8 @@
 		4C641B901C3DB30C004B15D7 /* Transitions */ = {
 			isa = PBXGroup;
 			children = (
-				4C00A4F41C1B7ED30078A43F /* PhotoViewDismissTransition.swift */,
 				4C921FD11C1A038800F0411D /* PhotoViewPresentTransition.swift */,
+				4C00A4F41C1B7ED30078A43F /* PhotoViewDismissTransition.swift */,
 			);
 			path = Transitions;
 			sourceTree = "<group>";
@@ -552,6 +555,7 @@
 				4CEAA9101B33462600774FE8 /* GridViewCell.swift in Sources */,
 				4CBA89671BBC926100913336 /* UpgradeManager.swift in Sources */,
 				4CF4105C1C4BB732002FD49A /* DateUtils.swift in Sources */,
+				4C92A9381D4C088E00B3FAAD /* StatusBarViewController.swift in Sources */,
 				4CEAA90E1B3343F700774FE8 /* GridViewController.swift in Sources */,
 				4C00A4F51C1B7ED30078A43F /* PhotoViewDismissTransition.swift in Sources */,
 				4CE8BD971C03BBE500207BE1 /* DatePickerViewController.swift in Sources */,
