@@ -99,7 +99,7 @@ class PhotoViewController: UIViewController,
         PHPhotoLibrary.sharedPhotoLibrary().unregisterChangeObserver(self)
         self.cancelAllImageRequests()
         self.purgeAllViews()
-}
+    }
     
     override func viewDidLayoutSubviews() {
         setupViews()
