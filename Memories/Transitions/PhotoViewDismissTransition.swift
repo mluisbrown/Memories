@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import AVFoundation
 
 class PhotoViewDismissTransition: NSObject, UIViewControllerAnimatedTransitioning {
     
@@ -28,16 +27,17 @@ class PhotoViewDismissTransition: NSObject, UIViewControllerAnimatedTransitionin
     func animateTransition(transitionContext: UIViewControllerContextTransitioning) {
         guard let container = transitionContext.containerView(),
             fromViewController = transitionContext.viewControllerForKey(UITransitionContextFromViewControllerKey),
+            toViewController = transitionContext.viewControllerForKey(UITransitionContextToViewControllerKey),
             fromView = transitionContext.viewForKey(UITransitionContextFromViewKey) else {
                 transitionContext.completeTransition(false)
                 return
         }
         
         let transitionView = UIView(frame: transitionContext.initialFrameForViewController(fromViewController))
-        transitionView.backgroundColor = UIColor.blackColor()
+        transitionView.backgroundColor = fromView.backgroundColor
         container.insertSubview(transitionView, belowSubview: fromView)
         
-        let startImageFrame = CGRectIntegral(transitionView.convertRect(self.sourceImageView.bounds, fromView: self.sourceImageView))
+        let startImageFrame = self.sourceImageView.frame
         let imageView = UIImageView(frame: startImageFrame)
         imageView.image = destImageView.image
         imageView.contentMode = container.thumbnailContentMode
@@ -48,9 +48,10 @@ class PhotoViewDismissTransition: NSObject, UIViewControllerAnimatedTransitionin
         self.destImageView.hidden = true
         self.sourceImageView.hidden = true
         
-        let newImageFrame = CGRectIntegral(transitionView.convertRect(self.destImageView.bounds, fromView: self.destImageView))
-        
         UIView.animateKeyframesWithDuration(duration, delay: 0, options: .CalculationModeLinear, animations: {
+            toViewController.statusBarContoller()?.hideStatusBar(false)
+            let newImageFrame = CGRectIntegral(transitionView.convertRect(self.destImageView.bounds, fromView: self.destImageView))
+
             UIView.addKeyframeWithRelativeStartTime(0.0, relativeDuration: 0.25) {
                 fromView.alpha = 0.0
             }

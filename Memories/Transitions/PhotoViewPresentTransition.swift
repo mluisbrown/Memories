@@ -26,6 +26,7 @@ class PhotoViewPresentTransition: NSObject, UIViewControllerAnimatedTransitionin
     func animateTransition(transitionContext: UIViewControllerContextTransitioning) {
         guard let container = transitionContext.containerView(),
             toViewController = transitionContext.viewControllerForKey(UITransitionContextToViewControllerKey),
+            fromViewController = transitionContext.viewControllerForKey(UITransitionContextFromViewControllerKey),
             toView = transitionContext.viewForKey(UITransitionContextToViewKey) else {
             return
         }
@@ -51,6 +52,8 @@ class PhotoViewPresentTransition: NSObject, UIViewControllerAnimatedTransitionin
         let newImageViewSize = adjustImageBoundsForButtons(fullImageViewSize, vcViewSize: transitionView.frame.size)
         
         UIView.animateKeyframesWithDuration(duration, delay: 0, options: .CalculationModeLinear, animations: {
+            fromViewController.statusBarContoller()?.hideStatusBar(true)
+            
             UIView.addKeyframeWithRelativeStartTime(0, relativeDuration: 0.75) {
                 transitionView.backgroundColor = UIColor.blackColor()
                 imageView.bounds = CGRect(origin: CGPointZero, size: newImageViewSize)

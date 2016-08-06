@@ -33,7 +33,13 @@ extension UICollectionView {
     }
 }
 
-class GridViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, PHPhotoLibraryChangeObserver, UIPopoverPresentationControllerDelegate {
+class GridViewController: UICollectionViewController,
+    UICollectionViewDelegateFlowLayout,
+    PHPhotoLibraryChangeObserver,
+    UIPopoverPresentationControllerDelegate,
+    StatusBarViewController,
+    PhotoViewControllerDelegate
+{
     let reuseIdentifier = "PhotoCell"
     let headerIdentifier = "YearHeader"
     // If the size is too large then PhotoKit doesn't return an optimal image size
@@ -43,6 +49,7 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
     var model : GridViewModel!
 
     var titleView : UILabel!
+    var statusBarVisible = true
     
     var imageManager : PHCachingImageManager!
     var previousPreheatRect : CGRect = .zero
@@ -179,8 +186,20 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
             }, completion: nil)
     }
     
+    override func prefersStatusBarHidden() -> Bool {
+        return !statusBarVisible || traitCollection.verticalSizeClass == .Compact
+    }
+
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
+    }
+
+    // MARK: StatusBarViewController
+    func hideStatusBar(hide: Bool) {
+        statusBarVisible = !hide
+        UIView.animateWithDuration(0.25) {
+            self.setNeedsStatusBarAppearanceUpdate()
+        }
     }
 
     // MARK: - Notification handlers
@@ -216,6 +235,18 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
         }
     }
     
+    // MARK: - PhotoViewContollerDelegate
+    func setSelected(index index: Int) {
+        collectionView?.selectItemAtIndexPath(model.indexPathForSelectedIndex(index), animated: false, scrollPosition: .CenteredVertically)
+    }
+    
+    func imageView(atIndex index: Int) -> UIImageView? {
+        guard let cell = collectionView?.cellForItemAtIndexPath(model.indexPathForSelectedIndex(index)) as? GridViewCell else {
+            return nil
+        }
+        
+        return cell.imageView
+    }
     
     // MARK: - UIPopoverPresentationControllerDelegate
     func popoverPresentationControllerShouldDismissPopover(popoverPresentationController: UIPopoverPresentationController) -> Bool {
@@ -243,6 +274,7 @@ class GridViewController: UICollectionViewController, UICollectionViewDelegateFl
     override func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
         if let photoViewController = storyboard?.instantiateViewControllerWithIdentifier("photoViewController") as? PhotoViewController {
             photoViewController.model = model.photoViewModelForIndexPath(indexPath)
+            photoViewController.delegate = self
             if let cell = collectionView.cellForItemAtIndexPath(indexPath) as? GridViewCell, imageView = cell.imageView {
                 photoViewController.presentTransition = PhotoViewPresentTransition(sourceImageView: imageView)
                 photoViewController.transitioningDelegate = photoViewController
