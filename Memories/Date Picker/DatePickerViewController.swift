@@ -32,13 +32,13 @@ class DatePickerViewController: UIViewController, UIPickerViewDataSource, UIPick
         super.viewDidLoad()
 
         goButton.layer.borderWidth = 1
-        goButton.layer.borderColor = UIColor.white().cgColor
+        goButton.layer.borderColor = UIColor.white.cgColor
         goButton.layer.cornerRadius = 4
         todayButton.layer.borderWidth = 1
-        todayButton.layer.borderColor = UIColor.white().cgColor
+        todayButton.layer.borderColor = UIColor.white.cgColor
         todayButton.layer.cornerRadius = 4
         
-        progressView.trackTintColor = UIColor.clear()
+        progressView.trackTintColor = UIColor.clear
         progressView.thicknessRatio = 0.1
         view.addSubview(progressView)
         
@@ -116,7 +116,7 @@ class DatePickerViewController: UIViewController, UIPickerViewDataSource, UIPick
         
         let diffs: [Int] = datesWithCount.map() {
             let countDay = gregorian.ordinality(of: .day, in: .era, for: $0.date)
-            return abs(countDay - initialDay)
+            return abs(countDay! - initialDay!)
         }
 
         // get the index of the smallest date difference (ie, the closest matching date)
@@ -132,7 +132,7 @@ class DatePickerViewController: UIViewController, UIPickerViewDataSource, UIPick
             return
         }
         
-        DispatchQueue.global(attributes: .qosUserInitiated).async {
+        DispatchQueue.global(qos: .userInitiated).async {
             datesMap = self.assetHelper.datesMap()
 
             DispatchQueue.main.async {

@@ -45,7 +45,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
         yearLabel.text = "No Memories Today :("
         
 #if (arch(i386) || arch(x86_64)) && os(iOS)
-        let date = Calendar(calendarIdentifier: Calendar.Identifier.gregorian)!.date(era: 1, year: 2016, month: 8, day: 8, hour: 0, minute: 0, second: 0, nanosecond: 0)!
+    let date = Calendar(identifier: Calendar.Identifier.gregorian).date(from: DateComponents(era: 1, year: 2016, month: 8, day: 8, hour: 0, minute: 0, second: 0, nanosecond: 0))!
 #else
         let date = Date()
 #endif
@@ -178,7 +178,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     // MARK: NCWidgetProviding
     
     func widgetMarginInsets(forProposedMarginInsets defaultMarginInsets: UIEdgeInsets) -> UIEdgeInsets {
-        return UIEdgeInsetsZero
+        return .zero
     }
     
     func widgetPerformUpdate(completionHandler: (NCUpdateResult) -> Void) {

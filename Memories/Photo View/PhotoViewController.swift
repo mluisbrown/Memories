@@ -188,9 +188,9 @@ class PhotoViewController: UIViewController,
             let scale = (1 - percent / 2)
             
             initialPanState.imageView?.center = CGPoint(x: initialPanState.center.x + translation.x, y: initialPanState.center.y + translation.y)
-            initialPanState.imageView?.transform = initialPanState.transform.scaleBy(x: scale, y: scale)
+            initialPanState.imageView?.transform = initialPanState.transform.scaledBy(x: scale, y: scale)
             
-            view.backgroundColor = UIColor.black().withAlphaComponent(alpha)
+            view.backgroundColor = UIColor.black.withAlphaComponent(alpha)
             if !controlsHidden { setControls(alpha: alpha) }
 
         case .ended, .cancelled:
@@ -199,7 +199,7 @@ class PhotoViewController: UIViewController,
                 UIView.animate(withDuration: 0.25, animations: {
                     self.initialPanState.imageView?.center = self.initialPanState.center
                     self.initialPanState.imageView?.transform = self.initialPanState.transform
-                    self.view.backgroundColor = UIColor.black()
+                    self.view.backgroundColor = UIColor.black
                     if !self.controlsHidden { self.setControls(alpha: 1) }
                 }) { finished in
                     self.initialPanState.destImageView?.isHidden = false
@@ -280,7 +280,7 @@ class PhotoViewController: UIViewController,
 
         // always get a thumbnail first
         pageView.imageIsDegraded = true
-        imageManager.requestImage(for: asset, targetSize: cacheSize, contentMode: .aspectFill, options: nil, resultHandler: { (result, userInfo) -> Void in
+        imageManager.requestImage(for: asset, targetSize: cacheSize, contentMode: .aspectFill, options: nil, resultHandler: { result, userInfo in
             if let image = result {
                 // NSLog("Cache Result with image for page \(page) requestFullImage: \(requestFullImage) iamgeSize: \(image.size.width), \(image.size.height)");
                 pageView.image = image
@@ -314,7 +314,7 @@ class PhotoViewController: UIViewController,
         let options = PHImageRequestOptions()
         let pageView = pageViews[page]!
         
-        options.progressHandler  = {(progress : Double, error: NSError?, stop: UnsafeMutablePointer<ObjCBool>, userInfo: [NSObject : AnyObject]?) -> Void in
+        options.progressHandler  = { progress, error, stop, userInfo in
             DispatchQueue.main.async {
                 pageView.updateProgress(progress)
                 

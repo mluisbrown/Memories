@@ -75,14 +75,14 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
                     [unowned self] in
                     let hour = $0
                     let minute = model.notificationMinute.value
-                    self.timePicker.date = self.timePicker.calendar.date(era: 1, year: 1970, month: 1, day: 1, hour: hour, minute: minute, second: 0, nanosecond: 0)!
+                    self.timePicker.date = self.timePicker.calendar.date(from: DateComponents(era: 1, year: 1970, month: 1, day: 1, hour: hour, minute: minute, second: 0, nanosecond: 0))!
                 }
                 
                 model.notificationMinute.bindAndFire {
                     [unowned self] in
                     let hour = model.notificationHour.value
                     let minute = $0
-                    self.timePicker.date = self.timePicker.calendar.date(era: 1, year: 1970, month: 1, day: 1, hour: hour, minute: minute, second: 0, nanosecond: 0)!
+                    self.timePicker.date = self.timePicker.calendar.date(from: DateComponents(era: 1, year: 1970, month: 1, day: 1, hour: hour, minute: minute, second: 0, nanosecond: 0))!
                 }
                 
                 model.sourcePhotoLibrary.bindAndFire {
@@ -210,7 +210,7 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
         case timePickerIndexPath:
             height = 162
         case upgradeIndexPath:
-            let attributedString = AttributedString(string: upgradeLabel.text!, attributes: [NSFontAttributeName : UIFont.systemFont(ofSize: 14)])
+            let attributedString = NSAttributedString(string: upgradeLabel.text!, attributes: [NSFontAttributeName : UIFont.systemFont(ofSize: 14)])
             let rect = attributedString.boundingRect(with: CGSize(width: tableView.bounds.width - 32, height: CGFloat.greatestFiniteMagnitude)
                 , options: [.usesLineFragmentOrigin, .usesFontLeading]
                 , context: nil)
@@ -291,7 +291,7 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
             let composer = MFMailComposeViewController()
             composer.mailComposeDelegate = self;
             
-            let device = UIDevice.current()
+            let device = UIDevice.current
             let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"]
             let appBuild = Bundle.main.infoDictionary?["CFBundleVersion"]
             
@@ -314,14 +314,14 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
         let appId = 1037130497
         let appStoreURL = URL(string: "itms-apps://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?type=Purple+Software&id=\(appId)&pageNumber=0&sortOrdering=2&mt=8")!
         
-        if UIApplication.shared().canOpenURL(appStoreURL) {
-            UIApplication.shared().openURL(appStoreURL)
+        if UIApplication.shared.canOpenURL(appStoreURL) {
+            UIApplication.shared.openURL(appStoreURL)
         }
     }
     
     // MARK: MFMailComposeViewControllerDelegate
 
-    func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: NSError?) {
+    func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
         self.dismiss(animated: true, completion: nil)
     }
     

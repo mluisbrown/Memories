@@ -21,10 +21,10 @@ class DatePickerRowView: UIView {
         dateFormatter.dateFormat = "MMMM dd"
         
         dateLabel.translatesAutoresizingMaskIntoConstraints = false
-        dateLabel.textColor = UIColor.white()
+        dateLabel.textColor = UIColor.white
         addSubview(dateLabel)
         countLabel.translatesAutoresizingMaskIntoConstraints = false
-        countLabel.textColor = UIColor.white()
+        countLabel.textColor = UIColor.white
         addSubview(countLabel)
         
         constrain(self, dateLabel) {view, dateLabel in

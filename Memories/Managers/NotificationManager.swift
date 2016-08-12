@@ -24,12 +24,12 @@ class NotificationManager {
     /// AppDelegate.application:didRegisterUserNotificationSettings
     static func registerSettings() {
         let settings = UIUserNotificationSettings(types: [.badge, .alert, .sound], categories: nil)
-        UIApplication.shared().registerUserNotificationSettings(settings)
+        UIApplication.shared.registerUserNotificationSettings(settings)
     }
     
     /// returns whether Notifications are allowed for this app at the System level
     static func notificationsAllowed() -> Bool {
-        if let types = UIApplication.shared().currentUserNotificationSettings()?.types {
+        if let types = UIApplication.shared.currentUserNotificationSettings?.types {
             if types.contains(.alert) {
                 return true
             }
@@ -97,7 +97,7 @@ class NotificationManager {
             let alert = UIAlertController(title: NSLocalizedString("Notifications Disabled", comment: ""), message: NSLocalizedString("You have disabled notifications for Memories. If you want to receive notifications you need to enable this access in Settings. Would you like to do this now?", comment: ""), preferredStyle: .alert)
             let settings = UIAlertAction(title: NSLocalizedString("Settings", comment: ""), style: .default, handler: { (action) -> Void in
                 let url = URL(string: UIApplicationOpenSettingsURLString)
-                UIApplication.shared().openURL(url!);
+                UIApplication.shared.openURL(url!);
             })
             let nothanks = UIAlertAction(title: NSLocalizedString("No thanks", comment: ""), style: .cancel, handler: { (action) -> Void in
                 
@@ -105,13 +105,13 @@ class NotificationManager {
             alert.addAction(nothanks)
             alert.addAction(settings)
             
-            UIApplication.shared().keyWindow?.rootViewController?.present(alert, animated: true, completion: nil)
+            UIApplication.shared.keyWindow?.rootViewController?.present(alert, animated: true, completion: nil)
         }
     }
     
     /// disables all notifications
     static func disableNotifications() {
-        UIApplication.shared().cancelAllLocalNotifications()
+        UIApplication.shared.cancelAllLocalNotifications()
         
         UserDefaults.standard.set(false, forKey: Key.notificationsEnabled)
     }
@@ -129,12 +129,12 @@ class NotificationManager {
     }
     
     private static func scheduleNotificationsWithDatesMap(_ datesMap: [Date:Int]) {
-        let timeZone = TimeZone.system
+        let timeZone = TimeZone.current
         let bodyFormatString = NSLocalizedString("You have %lu photo memories for today", comment: "")
         let titleFormatString = NSLocalizedString("%lu Photo Memories", comment: "")
 
         let gregorian = Date.gregorianCalendar
-        let todayComps = gregorian.components([.year, .month, .day], from: Date())
+        let todayComps = gregorian.dateComponents([.year, .month, .day], from: Date())
         let todayKey = todayComps.month! * 100 + todayComps.day!
         let currentYear = todayComps.year!
         let time = notificationTime()
@@ -145,10 +145,10 @@ class NotificationManager {
         let notifications : [UILocalNotification] = Array(datesMap.map { (date: Date, count: Int) -> (date: Date, count: Int) in
             // adjust dates so that any date earlier than today has the
             // following year as its notification date
-            let comps = gregorian.components([.month, .day], from: date)
+            let comps = gregorian.dateComponents([.month, .day], from: date)
             let key = comps.month! * 100 + comps.day!
             let notificationYear = key >= todayKey ? currentYear : currentYear + 1
-            let notificationDate = gregorian.date(era: 1, year: notificationYear, month: comps.month!, day: comps.day!, hour: time.hour, minute: time.minute, second: 0, nanosecond: 0)!
+            let notificationDate = gregorian.date(from: DateComponents(era: 1, year: notificationYear, month: comps.month!, day: comps.day!, hour: time.hour, minute: time.minute, second: 0, nanosecond: 0))!
 
             return (date: notificationDate, count: count)
         }.sorted {
@@ -165,7 +165,7 @@ class NotificationManager {
             return notification
         }
 
-        UIApplication.shared().cancelAllLocalNotifications()
+        UIApplication.shared.cancelAllLocalNotifications()
         guard notifications.count > 0 else {return}
 
 #if (arch(i386) || arch(x86_64)) && os(iOS)
@@ -174,10 +174,10 @@ class NotificationManager {
         let noteTime = now.addingTimeInterval(20)
         testNote?.fireDate = noteTime
 
-        UIApplication.shared().scheduledLocalNotifications = [testNote!]
+        UIApplication.shared.scheduledLocalNotifications = [testNote!]
 #else
         // schedule the new notifications
-        UIApplication.shared().scheduledLocalNotifications = notifications
+        UIApplication.shared.scheduledLocalNotifications = notifications
 #endif
     }
     

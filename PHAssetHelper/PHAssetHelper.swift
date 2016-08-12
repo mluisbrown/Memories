@@ -23,7 +23,7 @@ public class PHAssetHelper {
         userDefaults = UserDefaults.init(suiteName: "group.com.luacheia.memories")!
         if #available(iOS 9.0, *) {
             let types: PHAssetSourceType = [.typeUserLibrary, .typeiTunesSynced, .typeCloudShared]
-            userDefaults.register([assetSourceTypesKey : NSNumber(value: types.rawValue)])
+            userDefaults.register(defaults: [assetSourceTypesKey : NSNumber(value: types.rawValue)])
         }
     }
 
@@ -85,8 +85,8 @@ public class PHAssetHelper {
         let gregorian = Date.gregorianCalendar
         
         fetchResult.enumerateObjects( { (asset, index, stop) -> Void in
-            let comps = gregorian.components([.month, .day], from: asset.creationDate!)
-            let date = gregorian.date(era: 1, year: currentYear, month: comps.month!, day: comps.day!, hour: 12, minute: 0, second: 0, nanosecond: 0)!
+            let comps = gregorian.dateComponents([.month, .day], from: asset.creationDate!)
+            let date = gregorian.date(from: DateComponents(era: 1, year: currentYear, month: comps.month!, day: comps.day!, hour: 12, minute: 0, second: 0, nanosecond: 0))!
             
             if let entry = datesMap[date] {
                 datesMap[date] = entry + 1
@@ -101,7 +101,7 @@ public class PHAssetHelper {
     
     public func allAssetsInDateOrder() -> PHFetchResult<PHAsset> {
         let options = PHFetchOptions()
-        options.sortDescriptors = [SortDescriptor(key: "creationDate", ascending: true)]
+        options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
         if #available(iOS 9.0, *) {
             options.includeAssetSourceTypes = assetSourceTypes
         }
@@ -124,7 +124,7 @@ public class PHAssetHelper {
     
     public func fetchResultsForDateInAllYears(_ date : Date) -> [PHFetchResult<PHAsset>] {
         let options = PHFetchOptions()
-        options.sortDescriptors = [SortDescriptor(key: "creationDate", ascending: true)]
+        options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
         if #available(iOS 9.0, *) {
             options.includeAssetSourceTypes = assetSourceTypes
         }
@@ -132,7 +132,7 @@ public class PHAssetHelper {
         let startAndEndDates = startAndEndDatesForDateInYears(date, fromYear: earliestAssetYear(), toYear: Date().year)
         
         return startAndEndDates.map {
-            Predicate(format: "creationDate >= %@ && creationDate <= %@", argumentArray: [$0.startDate, $0.endDate])
+            NSPredicate(format: "creationDate >= %@ && creationDate <= %@", argumentArray: [$0.startDate, $0.endDate])
         }.map {
             options.predicate = $0
             return PHAsset.fetchAssets(with: .image, options: options)
@@ -143,8 +143,8 @@ public class PHAssetHelper {
     
     private func startAndEndDatesForDateInYears(_ date: Date, fromYear : Int, toYear : Int) -> [(startDate: Date, endDate: Date)] {
         let gregorian = Date.gregorianCalendar
-        var startComps = gregorian.components([.month, .day] , from: date)
-        var endComps = gregorian.components([.month, .day] , from: date)
+        var startComps = gregorian.dateComponents([.month, .day] , from: date)
+        var endComps = gregorian.dateComponents([.month, .day] , from: date)
         
         startComps.hour = 0
         startComps.minute = 0

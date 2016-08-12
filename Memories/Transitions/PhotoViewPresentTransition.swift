@@ -29,11 +29,11 @@ class PhotoViewPresentTransition: NSObject, UIViewControllerAnimatedTransitionin
             let toView = transitionContext.view(forKey: UITransitionContextToViewKey) else {
             return
         }
-        let container = transitionContext.containerView()
+        let container = transitionContext.containerView
         toView.autoresizingMask = [.flexibleHeight, .flexibleWidth]
         
         let transitionView = UIView(frame: transitionContext.finalFrame(for: toViewController))
-        transitionView.backgroundColor = UIColor.clear()
+        transitionView.backgroundColor = UIColor.clear
         container.addSubview(transitionView)
         
         let imageViewFrameInOurCoordinateSystem = transitionView.convert(self.sourceImageView.bounds, from: self.sourceImageView).integral
@@ -55,7 +55,7 @@ class PhotoViewPresentTransition: NSObject, UIViewControllerAnimatedTransitionin
             
             UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.75) {
                 fromViewController.setNeedsStatusBarAppearanceUpdate()
-                transitionView.backgroundColor = UIColor.black()
+                transitionView.backgroundColor = UIColor.black
                 imageView.bounds = CGRect(origin: CGPoint.zero, size: newImageViewSize)
                 imageView.center = transitionView.center
             }
@@ -67,7 +67,7 @@ class PhotoViewPresentTransition: NSObject, UIViewControllerAnimatedTransitionin
             self.sourceImageView.isHidden = false
 
             transitionView.removeFromSuperview()
-            transitionContext.completeTransition(!transitionContext.transitionWasCancelled())
+            transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
         }        
     }
     
@@ -98,7 +98,7 @@ class PhotoViewPresentTransition: NSObject, UIViewControllerAnimatedTransitionin
             
             scale = (imageDim - ((buttonOffset - padDim) * 2)) / imageDim
             
-            return imageViewSize.apply(transform: CGAffineTransform(scaleX: scale, y: scale))
+            return imageViewSize.applying(CGAffineTransform(scaleX: scale, y: scale))
         }
         
         return imageViewSize

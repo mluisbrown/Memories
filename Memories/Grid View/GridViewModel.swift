@@ -40,7 +40,7 @@ class GridViewModel {
     }
 
     private func fetchDataAndNotify(_ date: Date) {
-        DispatchQueue.global(attributes: .qosUserInitiated).async { [unowned self] in
+        DispatchQueue.global(qos: .userInitiated).async { [unowned self] in
             self.assetFetchResults = self.assetHelper.fetchResultsForDateInAllYears(date)
             DispatchQueue.main.async { [unowned self] in
                 self.onDataChanged(self.date.value)

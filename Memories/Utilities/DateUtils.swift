@@ -10,10 +10,10 @@ import Foundation
 
 public extension Date {
     
-    @nonobjc static let gregorianCalendar = Calendar(calendarIdentifier: Calendar.Identifier.gregorian)!
+    @nonobjc static let gregorianCalendar = Calendar(identifier: Calendar.Identifier.gregorian)
     
     func addDays(_ days : Int) -> Date {
-        return Date.gregorianCalendar.date(byAdding: .day, value: days, to: self, options: Calendar.Options(rawValue: 0))!
+        return Date.gregorianCalendar.date(byAdding: .day, value: days, to: self)!
     }
     
     // MARK: API
@@ -26,7 +26,7 @@ public extension Date {
     }
     
     var year: Int {
-        let comps = Date.gregorianCalendar.components(.year, from: self)
+        let comps = Date.gregorianCalendar.dateComponents([.year], from: self)
         return comps.year!
     }
     

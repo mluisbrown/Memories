@@ -20,7 +20,7 @@ class TodayViewModel {
     init(date: Date, onDataReady: () -> ()) {
         self.date = date
         
-        DispatchQueue.global(attributes: .qosUserInitiated).async { [unowned self] in
+        DispatchQueue.global(qos: .userInitiated).async { [unowned self] in
             self.assets = self.assetHelper.allAssetsForDateInAllYears(date)
             DispatchQueue.main.async {
                 onDataReady()

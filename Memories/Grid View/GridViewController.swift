@@ -73,9 +73,9 @@ class GridViewController: UICollectionViewController,
     
     required init?(coder aDecoder: NSCoder) {
         noPhotosLabel = UILabel()
-        noPhotosLabel.backgroundColor = UIColor.clear()
+        noPhotosLabel.backgroundColor = UIColor.clear
         noPhotosLabel.font = UIFont.systemFont(ofSize: 16)
-        noPhotosLabel.textColor = UIColor.white()
+        noPhotosLabel.textColor = UIColor.white
         
         super.init(coder: aDecoder)
     }
@@ -131,9 +131,9 @@ class GridViewController: UICollectionViewController,
                 titleView = aTitleView;
             } else {
                 titleView = UILabel(frame: CGRect.zero);
-                	titleView.backgroundColor = UIColor.clear()
+                	titleView.backgroundColor = UIColor.clear
                 titleView.font = UIFont.systemFont(ofSize: 16)
-                titleView.textColor = UIColor.white()
+                titleView.textColor = UIColor.white
                 titleView.isUserInteractionEnabled = true
                 self.navigationItem.titleView = titleView
                 
@@ -182,15 +182,17 @@ class GridViewController: UICollectionViewController,
         let contentMode: UIViewContentMode = largeScreen ? .scaleAspectFit : .scaleAspectFill
         
         coordinator.animate(alongsideTransition: { (context : UIViewControllerTransitionCoordinatorContext) -> Void in
-            self.collectionView!.visibleCells().forEach {
+            self.collectionView!.visibleCells.forEach {
                 let gridCell = $0 as! GridViewCell
                 gridCell.imageView?.contentMode = contentMode
             }
             }, completion: nil)
     }
     
-    override func prefersStatusBarHidden() -> Bool {
-        return !statusBarVisible || traitCollection.verticalSizeClass == .compact
+    override var prefersStatusBarHidden: Bool   {
+        get {
+            return !statusBarVisible || traitCollection.verticalSizeClass == .compact
+        }
     }
 
     
@@ -231,7 +233,7 @@ class GridViewController: UICollectionViewController,
                 popoverPresentationController.sourceView = sourceView
                 popoverPresentationController.sourceRect = CGRect(x: 0, y: 0, width: sourceView.frame.size.width, height: sourceView.frame.size.height)
                 popoverPresentationController.delegate = self
-                popoverPresentationController.backgroundColor = UIColor.black().withAlphaComponent(0.2)
+                popoverPresentationController.backgroundColor = UIColor.black.withAlphaComponent(0.2)
             }
             
             datePickerVC.initialDate = model.date.value
@@ -489,7 +491,7 @@ class GridViewController: UICollectionViewController,
     }
 
     func updateCachedAssets() {
-        guard isViewLoaded() && view.window != nil && imageManager != nil else {
+        guard isViewLoaded && view.window != nil && imageManager != nil else {
             return
         }
         
@@ -559,7 +561,7 @@ class GridViewController: UICollectionViewController,
     // MARK: - Helpers
     func showHideBlur(_ show: Bool) {
         if show {
-            let window = UIApplication.shared().keyWindow!
+            let window = UIApplication.shared.keyWindow!
             var frame = window.frame
             frame.origin.y += topLayoutGuide.length
             
@@ -628,7 +630,7 @@ class GridViewController: UICollectionViewController,
             alert.addAction(deny)
             alert.addAction(allow)
             
-            UIApplication.shared().keyWindow?.rootViewController?.present(alert, animated: true, completion: nil)
+            UIApplication.shared.keyWindow?.rootViewController?.present(alert, animated: true, completion: nil)
             return
         }
         
@@ -636,7 +638,7 @@ class GridViewController: UICollectionViewController,
             let alert = UIAlertController(title: NSLocalizedString("No Access to Photos", comment: ""), message: NSLocalizedString("You have Denied access to Photos for Memories. In order for Memories to work you must enable this access in Settings. Would you like to do this now?", comment: ""), preferredStyle: .alert)
             let settings = UIAlertAction(title: NSLocalizedString("Settings", comment: ""), style: .default, handler: { (action) -> Void in
                 let url = URL(string: UIApplicationOpenSettingsURLString)
-                UIApplication.shared().openURL(url!);
+                UIApplication.shared.openURL(url!);
             })
             let nothanks = UIAlertAction(title: NSLocalizedString("No thanks", comment: ""), style: .cancel, handler: { (action) -> Void in
                 
@@ -644,7 +646,7 @@ class GridViewController: UICollectionViewController,
             alert.addAction(nothanks)
             alert.addAction(settings)
             
-            UIApplication.shared().keyWindow?.rootViewController?.present(alert, animated: true, completion: nil)
+            UIApplication.shared.keyWindow?.rootViewController?.present(alert, animated: true, completion: nil)
         }
     }
 }

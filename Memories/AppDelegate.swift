@@ -14,7 +14,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-        UserDefaults.standard.register([NotificationManager.Key.notificationTime : 1000,
+        UserDefaults.standard.register(defaults: [NotificationManager.Key.notificationTime : 1000,
             NotificationManager.Key.hasPromptedForUserNotifications : false,
             NotificationManager.Key.notificationsEnabled: false])
 

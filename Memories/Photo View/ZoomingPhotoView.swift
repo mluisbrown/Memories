@@ -66,8 +66,8 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
         progressView = DACircularProgressView()
         progressView.roundedCorners = Int(false)
         progressView.thicknessRatio = 1
-        progressView.trackTintColor = UIColor.clear()
-        progressView.layer.borderColor = UIColor.white().cgColor
+        progressView.trackTintColor = UIColor.clear
+        progressView.layer.borderColor = UIColor.white.cgColor
         progressView.layer.borderWidth = 1
         progressView.layer.cornerRadius = 10;
         progressView.isHidden = true
@@ -87,8 +87,8 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
         errorIndicator.text = "!"
         errorIndicator.textAlignment = .center
         errorIndicator.font = UIFont.boldSystemFont(ofSize: 14)
-        errorIndicator.textColor = UIColor.white()
-        errorIndicator.backgroundColor = UIColor.black().withAlphaComponent(0.1)
+        errorIndicator.textColor = UIColor.white
+        errorIndicator.backgroundColor = UIColor.black.withAlphaComponent(0.1)
         errorIndicator.isHidden = true
         progressView.addSubview(errorIndicator)
         
