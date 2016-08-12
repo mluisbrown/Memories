@@ -88,12 +88,6 @@ class PhotoViewController: UIViewController,
         view.addGestureRecognizer(panRecognizer)
     }
 
-    override func viewDidDisappear(_ animated: Bool) {
-        PHPhotoLibrary.shared().unregisterChangeObserver(self)
-        self.cancelAllImageRequests()
-        self.purgeAllViews()
-    }
-    
     override func viewDidLayoutSubviews() {
         setupViews()
     }
@@ -161,7 +155,11 @@ class PhotoViewController: UIViewController,
         let pageView = pageViews[model.selectedIndex]!
             
         dismissTransition = PhotoViewDismissTransition(destImageView: imageView, sourceImageView: pageView.imageView)
-        presentingViewController?.dismiss(animated: true, completion: nil)
+        presentingViewController?.dismiss(animated: true) {
+            PHPhotoLibrary.shared().unregisterChangeObserver(self)
+            self.cancelAllImageRequests()
+            self.purgeAllViews()
+        }
     }
     
     @IBAction func close(_ sender: UIButton) {
