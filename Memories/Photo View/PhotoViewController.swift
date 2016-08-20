@@ -71,7 +71,7 @@ class PhotoViewController: UIViewController,
         }
     }
     
-    private func buttonImageForFavorite(_ favorite: Bool) -> UIImage {
+    private func buttonImage(forFavorite favorite: Bool) -> UIImage {
         return favorite ? heartFullImg : heartEmptyImg
     }
     
@@ -131,7 +131,7 @@ class PhotoViewController: UIViewController,
         let asset = model.selectedAsset
         
         PHPhotoLibrary.shared().performChanges({
-            PHAssetChangeRequest.deleteAssets([asset])
+            PHAssetChangeRequest.deleteAssets(NSArray(array: [asset]))
         }, completionHandler: nil)
     }
     
@@ -231,7 +231,7 @@ class PhotoViewController: UIViewController,
         loadVisiblePages()
     }
     
-    func loadPage(_ page: Int, requestFullImage: Bool) {
+    func load(page: Int, requestFullImage: Bool) {
         guard page >= 0 && page < model.assets.count else {
             return
         }
@@ -245,7 +245,7 @@ class PhotoViewController: UIViewController,
 
         let asset = model.assets[page]
         if page == self.model.selectedIndex {
-            heartButton.setImage(buttonImageForFavorite(asset.isFavorite), for: UIControlState())
+            heartButton.setImage(buttonImage(forFavorite: asset.isFavorite), for: UIControlState())
             yearLabel.text = String("  \(asset.creationDate!.year)  ")
         }
         
@@ -293,22 +293,22 @@ class PhotoViewController: UIViewController,
         // then get the full size image if required
         if requestFullImage {
             if !UpgradeManager.highQualityViewAllowed() {
-                UpgradeManager.promptForUpgradeInViewController(self) {
+                UpgradeManager.promptForUpgrade(inViewController: self) {
                     if !$0 {
                         pageView.hideProgressView(true)
                     } else {
-                        self.loadHighQualityImageForAsset(asset, page: page)
+                        self.loadHighQualityImage(forAsset: asset, page: page)
                     }
                 }
                 
                 return
             }
             
-            loadHighQualityImageForAsset(asset, page: page)
+            loadHighQualityImage(forAsset: asset, page: page)
         }
     }
     
-    func loadHighQualityImageForAsset(_ asset: PHAsset, page: Int) {
+    func loadHighQualityImage(forAsset asset: PHAsset, page: Int) {
         let options = PHImageRequestOptions()
         let pageView = pageViews[page]!
         
@@ -349,7 +349,7 @@ class PhotoViewController: UIViewController,
         }
     }
     
-    func purgePage(_ page: Int) {
+    func purge(page: Int) {
         guard page >= 0 && page < pageViews.count else {
             return
         }
@@ -383,7 +383,7 @@ class PhotoViewController: UIViewController,
         let initialLoad = !initialOffsetSet
         
         if (!initialOffsetSet) {
-            scrollView.contentOffset = contentOffsetForPageAtIndex(initialPage)
+            scrollView.contentOffset = contentOffsetForPage(atIndex: initialPage)
             initialOffsetSet = true
         }
         
@@ -404,13 +404,13 @@ class PhotoViewController: UIViewController,
         let lastPage = page + 1
         
         // Purge anything before the first page
-        stride(from: 0, to: firstPage, by: 1).forEach(purgePage)
+        stride(from: 0, to: firstPage, by: 1).forEach(purge)
         
         // Load pages in our range
-        (firstPage...lastPage).forEach { loadPage($0, requestFullImage: $0 == page) }
+        (firstPage...lastPage).forEach { load(page: $0, requestFullImage: $0 == page) }
         
         // Purge anything after the last page
-        stride(from: model.assets.count, to: lastPage, by: -1).forEach(purgePage)
+        stride(from: model.assets.count, to: lastPage, by: -1).forEach(purge)
     }
     
     func cancelAllImageRequests() {
@@ -418,10 +418,10 @@ class PhotoViewController: UIViewController,
     }
     
     func purgeAllViews() {
-        pageViews.indices.forEach(purgePage)
+        pageViews.indices.forEach(purge)
     }
     
-    func contentOffsetForPageAtIndex(_ index : Int) -> CGPoint {
+    func contentOffsetForPage(atIndex index : Int) -> CGPoint {
         let pageWidth = scrollView.bounds.size.width;
         let newOffset = CGFloat(index) * pageWidth;
         return CGPoint(x: newOffset, y: 0);
@@ -479,7 +479,7 @@ class PhotoViewController: UIViewController,
         }
         else {
             let asset = model.selectedAsset
-            heartButton.setImage(buttonImageForFavorite(asset.isFavorite), for: UIControlState())
+            heartButton.setImage(buttonImage(forFavorite: asset.isFavorite), for: UIControlState())
         }
     }
     

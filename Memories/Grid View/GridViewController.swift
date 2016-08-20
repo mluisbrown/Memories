@@ -314,7 +314,7 @@ class GridViewController: UICollectionViewController,
         cell.imageView?.contentMode = thumbnailContentMode
         
         if let asset = model.assetAtIndexPath(indexPath) {
-            imageManager.requestImage(for: asset, targetSize: gridThumbnailSize, contentMode: .aspectFill, options: nil) { (result : UIImage?, info : [NSObject : AnyObject]?) -> Void in
+            imageManager.requestImage(for: asset, targetSize: gridThumbnailSize, contentMode: .aspectFill, options: nil) { (result : UIImage?, info : [AnyHashable : Any]?) -> Void in
                 if let image = result, cell.tag == currentTag {
                     // Only update the thumbnail if the cell tag hasn't changed. Otherwise, the cell has been re-used.
                     cell.thumbnailImage = image
@@ -439,7 +439,7 @@ class GridViewController: UICollectionViewController,
             
             for section in (0..<self.model.sectionCount).reversed() {
                 if let fetchResult = self.model.fetchResultForSection(section),
-                    let collectionChanges = changeInstance.changeDetails(for: fetchResult as! PHFetchResult<AnyObject>) {
+                    let collectionChanges = changeInstance.changeDetails(for: fetchResult as! PHFetchResult<PHObject>) {
                     // get the new fetch result
                     self.model.setFetchResultForSection(section, fetchResult: collectionChanges.fetchResultAfterChanges as! PHFetchResult<PHAsset>)
                     
@@ -606,7 +606,7 @@ class GridViewController: UICollectionViewController,
         }
     }
     
-    func checkPhotosPermission(_ handler : () -> ()) {
+    func checkPhotosPermission(_ handler : @escaping () -> ()) {
         let authStatus = PHPhotoLibrary.authorizationStatus();
         
         if authStatus == .authorized {

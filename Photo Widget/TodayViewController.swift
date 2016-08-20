@@ -113,7 +113,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
         imageManager.requestImage(for: asset, targetSize: cacheSize, contentMode: .aspectFill, options: requestOptions) { result, userInfo in
             if let image = result, let assetDate = asset.creationDate {
                 self.hidePhotoView(false) {
-                    let imageWider = image.size.width > self.photoView.image?.size.width
+                    let imageWider = image.size.width > self.photoView.image?.size.width ?? CGFloat.leastNormalMagnitude
                     let newAsset = asset != self.currentAsset
                     let newData = newAsset || imageWider
                     
@@ -181,7 +181,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
         return .zero
     }
     
-    func widgetPerformUpdate(completionHandler: (NCUpdateResult) -> Void) {
+    func widgetPerformUpdate(completionHandler: @escaping (NCUpdateResult) -> Swift.Void) {
         readyForDisplay = true
 
         guard let model = self.model else {

@@ -159,7 +159,7 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
     }
     
     // this is called when the settings view is dismissed via the Done button
-    override func prepare(for segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // schedule or disable notifications
         if viewModel!.notificationsEnabled.value {
             NotificationManager.setNotificationTime(viewModel!.notificationHour.value, viewModel!.notificationMinute.value)

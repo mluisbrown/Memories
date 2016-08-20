@@ -25,9 +25,9 @@ class PhotoViewDismissTransition: NSObject, UIViewControllerAnimatedTransitionin
     }
     
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
-        guard let fromViewController = transitionContext.viewController(forKey: UITransitionContextFromViewControllerKey),
-            let toViewController = transitionContext.viewController(forKey: UITransitionContextToViewControllerKey),
-            let fromView = transitionContext.view(forKey: UITransitionContextFromViewKey) else {
+        guard let fromViewController = transitionContext.viewController(forKey: UITransitionContextViewControllerKey.from),
+            let toViewController = transitionContext.viewController(forKey: UITransitionContextViewControllerKey.to),
+            let fromView = transitionContext.view(forKey: UITransitionContextViewKey.from) else {
                 transitionContext.completeTransition(false)
                 return
         }

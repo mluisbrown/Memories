@@ -13,14 +13,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
     
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey : Any]?) -> Bool {
         UserDefaults.standard.register(defaults: [NotificationManager.Key.notificationTime : 1000,
             NotificationManager.Key.hasPromptedForUserNotifications : false,
             NotificationManager.Key.notificationsEnabled: false])
 
         // store the date of the notification that launched the app (if any)
         // so that we start the view controller with that date
-        if let notification = launchOptions?[UIApplicationLaunchOptionsLocalNotificationKey] as? UILocalNotification {
+        if let notification = launchOptions?[UIApplicationLaunchOptionsKey.localNotification] as? UILocalNotification {
             NotificationManager.setLaunchDate(notification.fireDate)
         }
         

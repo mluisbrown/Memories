@@ -54,14 +54,14 @@ class DatePickerViewController: UIViewController, UIPickerViewDataSource, UIPick
         self.progressView.indeterminateDuration = 1
         self.progressView.indeterminate = 1
         
-        self.buildDatesWithCount(progressView) {
+        self.buildDatesWithCount {
             self.datesWithCount = $0
             self.progressView.indeterminate = 0
             self.progressView.isHidden = true
             self.datePicker.reloadAllComponents()
             
             if let initialDate = self.initialDate {
-                if let initialRow = self.getInitialRow(initialDate) {
+                if let initialRow = self.getInitialRow(forDate: initialDate) {
                     self.datePicker.selectRow(initialRow, inComponent: 0, animated: false)
                 }
             }
@@ -104,14 +104,14 @@ class DatePickerViewController: UIViewController, UIPickerViewDataSource, UIPick
     }
 
     @IBAction func gotoToday(_ sender: UIButton) {
-        if let todayRow = self.getInitialRow(Date()) {
+        if let todayRow = self.getInitialRow(forDate: Date()) {
             self.datePicker.selectRow(todayRow, inComponent: 0, animated: true)
         }
     }
     
     
 // MARK: helpers
-    private func getInitialRow(_ initialDate : Date) -> Int? {
+    private func getInitialRow(forDate initialDate : Date) -> Int? {
         let initialDay = gregorian.ordinality(of: .day, in: .era, for: initialDate)
         
         let diffs: [Int] = datesWithCount.map() {
@@ -123,12 +123,12 @@ class DatePickerViewController: UIViewController, UIPickerViewDataSource, UIPick
         return zip(diffs, diffs.indices).min { $0.0 < $1.0 }.map { $0.1 }
     }
     
-    private func buildDatesWithCount(_ progressView: DACircularProgressView, completion: (datesWithCount: [(date: Date, count: Int)]) -> ()) {
+    private func buildDatesWithCount(withCompletion completion: @escaping (_ datesWithCount: [(date: Date, count: Int)]) -> ()) {
         var datesMap = [Date : Int]()
         
         // don't want to trigger a "Allow Photos?"
         guard PHPhotoLibrary.authorizationStatus() == .authorized else {
-            completion(datesWithCount: [])
+            completion([])
             return
         }
         
@@ -136,7 +136,7 @@ class DatePickerViewController: UIViewController, UIPickerViewDataSource, UIPick
             datesMap = self.assetHelper.datesMap()
 
             DispatchQueue.main.async {
-                completion(datesWithCount: datesMap.map {
+                completion(datesMap.map {
                     (date: $0.0, count: $0.1)
                 }.sorted {
                     $0.date.compare($1.date) == .orderedAscending

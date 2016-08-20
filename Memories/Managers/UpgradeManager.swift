@@ -108,35 +108,35 @@ class UpgradeManager {
         }
     }
 
-    static func getUpgradePrice(_ completion: ( @noescape (price: String?) -> ())?) {
+    static func getUpgradePrice(withCompletion completion: ((String?) -> ())?) {
         if let price = upgradePrice {
-            completion?(price: price)
+            completion?(price)
             return
         }
         
         store.requestProducts(Set([upgradeProductId]), success: { (products, invalidIds) -> Void in
-            if products?.count > 0 {
-                let product = products?.first as! SKProduct
+            if let products = products, products.count > 0 {
+                let product = products.first as! SKProduct
                 priceFormatter.locale = product.priceLocale
                 upgradePrice = priceFormatter.string(from: product.price)!
-                completion?(price: upgradePrice)
+                completion?(upgradePrice)
             }
         }) { (error) -> Void in
             NSLog("Unabled to obtain upgrade price. Error: \(error?.localizedDescription)")
-            completion?(price: nil)
+            completion?(nil)
         }
     }
     
     /// returns whether the user is allowed to view another high quality image
     static func highQualityViewAllowed() -> Bool {
-        if !upgraded { getUpgradePrice(nil) }
+        if !upgraded { getUpgradePrice(withCompletion: nil) }
         return upgraded || highQualityViewCount < MaxHighQualityViewCount
     }
     
     /// prompts the user if they want to upgrade
-    static func promptForUpgradeInViewController(_ viewController: UIViewController, completion: ((upgraded: Bool) -> ())?) {
+    static func promptForUpgrade(inViewController viewController: UIViewController, completion: ((Bool) -> ())?) {
         guard let price = upgradePrice , !upgradePromptShown else {
-            completion?(upgraded: false)
+            completion?(false)
             return
         }
         
@@ -149,13 +149,13 @@ class UpgradeManager {
             , message: NSLocalizedString("You can view 5 full quality photos per day which you can share, favorite or delete. You can Upgrade to remove this restriction. The Upgrade option is also available in the settings page.", comment: "")
             , preferredStyle: .alert)
         let upgrade = UIAlertAction(title: upgradeTitle, style: .default, handler: { (action) -> Void in
-            UpgradeManager.upgrade(completion)
+            UpgradeManager.upgrade(withCompletion: completion)
         })
         let restore = UIAlertAction(title: NSLocalizedString("Restore", comment: ""), style: .default, handler: { (action) -> Void in
-            UpgradeManager.restore(completion)
+            UpgradeManager.restore(withCompletion: completion)
         })
         let notNow = UIAlertAction(title: NSLocalizedString("Not Now", comment: ""), style: .cancel, handler: { (action) -> Void in
-            completion?(upgraded: false)
+            completion?(false)
         })
         alert.addAction(upgrade)
         alert.addAction(restore)
@@ -164,28 +164,29 @@ class UpgradeManager {
         viewController.present(alert, animated: true, completion: nil)
     }
     
-    static func upgrade(_ completion: ((success: Bool) -> ())?) {
+    static func upgrade(withCompletion completion: ((Bool) -> ())?) {
         store.addPayment(upgradeProductId, success: { (transaction) -> Void in
             upgraded = true
-            completion?(success: true)
+            completion?(true)
         }) { (transaction, error) -> Void in
-            completion?(success: false)
+            completion?(false)
         }
     }
     
-    static func restore(_ completion: ((success: Bool) -> ())?) {
+    static func restore(withCompletion completion: ((Bool) -> ())?) {
         store.restoreTransactions( onSuccess: { (transactions) -> Void in
-            guard transactions?.count > 0,
-                let transaction = transactions?[0] as? SKPaymentTransaction
-                , transaction.payment.productIdentifier == upgradeProductId else {
-                    completion?(success: false)
+            guard let transactions = transactions,
+                transactions.count > 0,
+                let transaction = transactions[0] as? SKPaymentTransaction,
+                transaction.payment.productIdentifier == upgradeProductId else {
+                    completion?(false)
                     return
             }
 
             upgraded = true
-            completion?(success: true)
+            completion?(true)
         }) { (error) -> Void in
-            completion?(success: false)
+            completion?(false)
         }
     }
 }

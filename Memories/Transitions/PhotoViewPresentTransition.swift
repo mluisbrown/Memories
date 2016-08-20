@@ -24,9 +24,9 @@ class PhotoViewPresentTransition: NSObject, UIViewControllerAnimatedTransitionin
     }
     
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
-        guard let toViewController = transitionContext.viewController(forKey: UITransitionContextToViewControllerKey),
-            let fromViewController = transitionContext.viewController(forKey: UITransitionContextFromViewControllerKey),
-            let toView = transitionContext.view(forKey: UITransitionContextToViewKey) else {
+        guard let toViewController = transitionContext.viewController(forKey: UITransitionContextViewControllerKey.to),
+            let fromViewController = transitionContext.viewController(forKey: UITransitionContextViewControllerKey.from),
+            let toView = transitionContext.view(forKey: UITransitionContextViewKey.to) else {
             return
         }
         let container = transitionContext.containerView

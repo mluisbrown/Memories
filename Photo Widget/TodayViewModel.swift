@@ -17,7 +17,7 @@ class TodayViewModel {
     var assets = [PHAsset]()
     var index = -1
     
-    init(date: Date, onDataReady: () -> ()) {
+    init(date: Date, onDataReady: @escaping () -> ()) {
         self.date = date
         
         DispatchQueue.global(qos: .userInitiated).async { [unowned self] in

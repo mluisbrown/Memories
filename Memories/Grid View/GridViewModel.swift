@@ -23,7 +23,7 @@ class GridViewModel {
         }
     }
     
-    init(onDataChanged: (date: Date) -> ()) {
+    init(onDataChanged: @escaping (Date) -> ()) {
         self.onDataChanged = onDataChanged
         self.date = Dynamic(Date())
         self.date.bind {
@@ -31,7 +31,7 @@ class GridViewModel {
         }
     }
     
-    init(date: Date, onDataChanged: (date: Date) -> ()) {
+    init(date: Date, onDataChanged: @escaping (Date) -> ()) {
         self.onDataChanged = onDataChanged
         self.date = Dynamic(date)
         self.date.bindAndFire {
