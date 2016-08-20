@@ -86,7 +86,7 @@ class DatePickerViewController: UIViewController, UIPickerViewDataSource, UIPick
             pickerRowView = DatePickerRowView()
         }
 
-        pickerRowView?.setData(datesWithCount[row].date, count: datesWithCount[row].count)
+        pickerRowView?.setData(date: datesWithCount[row].date, count: datesWithCount[row].count)
         return pickerRowView!
     }
     
@@ -123,7 +123,7 @@ class DatePickerViewController: UIViewController, UIPickerViewDataSource, UIPick
         return zip(diffs, diffs.indices).min { $0.0 < $1.0 }.map { $0.1 }
     }
     
-    private func buildDatesWithCount(withCompletion completion: @escaping (_ datesWithCount: [(date: Date, count: Int)]) -> ()) {
+    private func buildDatesWithCount(thenCall completion: @escaping (_ datesWithCount: [(date: Date, count: Int)]) -> ()) {
         var datesMap = [Date : Int]()
         
         // don't want to trigger a "Allow Photos?"

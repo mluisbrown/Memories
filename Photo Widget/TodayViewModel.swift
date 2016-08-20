@@ -21,7 +21,7 @@ class TodayViewModel {
         self.date = date
         
         DispatchQueue.global(qos: .userInitiated).async { [unowned self] in
-            self.assets = self.assetHelper.allAssetsForDateInAllYears(date)
+            self.assets = self.assetHelper.allAssetsForAllYears(with: date)
             DispatchQueue.main.async {
                 onDataReady()
             }

@@ -162,7 +162,7 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
             
             aspectFitZoomScale = minZoom
             
-            let padding = getImagePadding(minZoom)!
+            let padding = getImagePadding(for: minZoom)!
             if padding.hPadding < buttonOffset && padding.vPadding < buttonOffset {
                 let viewDim : CGFloat
                 let imageDim : CGFloat
@@ -186,19 +186,19 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
             // larger than the window
             isScrollEnabled = zoomScale > minZoom
             
-            adjustImageConstraintsForZoomScale(zoomScale)
+            adjustImageConstraints(for: zoomScale)
         }
     }
     
     // MARK: UIView
     
     override func updateConstraints() {
-        adjustImageConstraintsForZoomScale(zoomScale)
+        adjustImageConstraints(for: zoomScale)
     
         super.updateConstraints()
     }
     
-    private func getImagePadding(_ scale: CGFloat) -> (hPadding: CGFloat, vPadding: CGFloat)? {
+    private func getImagePadding(for scale: CGFloat) -> (hPadding: CGFloat, vPadding: CGFloat)? {
         guard let image = imageView.image else {
             return nil
         }
@@ -221,8 +221,8 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
     }
     
     
-    private func adjustImageConstraintsForZoomScale(_ scale: CGFloat) {
-        guard let padding = getImagePadding(scale),
+    private func adjustImageConstraints(for zoomScale: CGFloat) {
+        guard let padding = getImagePadding(for: zoomScale),
                   let image = imageView.image else {
             return
         }
@@ -239,8 +239,8 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
         imageConstraintBottom.constant = vPadding
         
         constrain(self, progressView, replace: progressConstraintGroup) {view, progressView in
-            progressView.top == view.top + vPadding + (scale * imageHeight) - 25
-            progressView.left == view.left + hPadding + (scale * imageWidth) - 25
+            progressView.top == view.top + vPadding + (zoomScale * imageHeight) - 25
+            progressView.left == view.left + hPadding + (zoomScale * imageWidth) - 25
         }
     }
     
@@ -249,14 +249,14 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
         let touchPoint = recognizer.location(ofTouch: 0, in: imageView)
 
         if zoomScale < aspectFitZoomScale {
-            zoomToScale(aspectFitZoomScale, animated: true)
+            zoom(to: aspectFitZoomScale, animated: true)
         }
         else if zoomScale == minimumZoomScale ||
             zoomScale == aspectFitZoomScale {
-            zoomToScale(zoomScale * 3, center: touchPoint, animated: true)
+            zoom(to: zoomScale * 3, center: touchPoint, animated: true)
         }
         else {
-            zoomToScale(minimumZoomScale, animated: true)
+            zoom(to: minimumZoomScale, animated: true)
         }
     }
 
@@ -266,7 +266,7 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
         }
     }
     
-    private func zoomRect(forScale scale: CGFloat, center: CGPoint) -> CGRect {
+    private func zoomRect(for scale: CGFloat, center: CGPoint) -> CGRect {
         let width = frame.size.width  / scale
         let height = frame.size.height / scale
         let originX = center.x - (width / 2.0)
@@ -275,18 +275,18 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
         return CGRect(x: originX, y: originY, width: width, height: height)
     }
     
-    private func zoomToScale(_ scale: CGFloat, center: CGPoint, animated: Bool) {
-        let rect = zoomRect(forScale: scale, center: center)
+    private func zoom(to scale: CGFloat, center: CGPoint, animated: Bool) {
+        let rect = zoomRect(for: scale, center: center)
 
-        adjustImageConstraintsForZoomScale(scale)
+        adjustImageConstraints(for: scale)
         UIView.animate(withDuration: 0.5) {
             self.zoom(to: rect, animated: false)
             self.layoutIfNeeded()
         }
     }
     
-    private func zoomToScale(_ scale: CGFloat, animated: Bool) {
-        adjustImageConstraintsForZoomScale(scale)
+    private func zoom(to scale: CGFloat, animated: Bool) {
+        adjustImageConstraints(for: scale)
         UIView.animate(withDuration: animated ? 0.5 : 0) {
             self.setZoomScale(scale, animated: false)
             self.layoutIfNeeded()
@@ -305,7 +305,7 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
             }
         }
         
-        adjustImageConstraintsForZoomScale(zoomScale)
+        adjustImageConstraints(for: zoomScale)
         layoutIfNeeded()
     }
     

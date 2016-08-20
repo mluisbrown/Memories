@@ -27,7 +27,7 @@ class PhotoViewController: UIViewController,
     @IBOutlet weak var heartButton: UIButton!
     @IBOutlet weak var yearLabel: UILabel!
 
-    let PADDING = CGFloat(10);
+    let padding = CGFloat(10);
     
     let heartFullImg = UIImage(named: "heart-full")!.withRenderingMode(.alwaysTemplate)
     let heartEmptyImg = UIImage(named: "heart-empty")!.withRenderingMode(.alwaysTemplate)
@@ -239,8 +239,8 @@ class PhotoViewController: UIViewController,
         // setup the frame for the view
         let bounds = scrollView.bounds
         var frame = bounds
-        frame.size.width -= (2.0 * PADDING);
-        frame.origin.x = bounds.size.width * CGFloat(page) + PADDING
+        frame.size.width -= (2.0 * padding);
+        frame.origin.x = bounds.size.width * CGFloat(page) + padding
         frame.origin.y = 0.0
 
         let asset = model.assets[page]
@@ -293,22 +293,22 @@ class PhotoViewController: UIViewController,
         // then get the full size image if required
         if requestFullImage {
             if !UpgradeManager.highQualityViewAllowed() {
-                UpgradeManager.promptForUpgrade(inViewController: self) {
+                UpgradeManager.promptForUpgrade(in: self) {
                     if !$0 {
                         pageView.hideProgressView(true)
                     } else {
-                        self.loadHighQualityImage(forAsset: asset, page: page)
+                        self.loadHighQualityImage(for: asset, page: page)
                     }
                 }
                 
                 return
             }
             
-            loadHighQualityImage(forAsset: asset, page: page)
+            loadHighQualityImage(for: asset, page: page)
         }
     }
     
-    func loadHighQualityImage(forAsset asset: PHAsset, page: Int) {
+    func loadHighQualityImage(for asset: PHAsset, page: Int) {
         let options = PHImageRequestOptions()
         let pageView = pageViews[page]!
         
@@ -366,7 +366,7 @@ class PhotoViewController: UIViewController,
         }
     }
     
-    func cancelPageImageRequest(_ page: Int) {
+    func cancelPageImageRequest(for page: Int) {
         guard page >= 0 && page < pageViews.count else {
             return
         }
@@ -383,7 +383,7 @@ class PhotoViewController: UIViewController,
         let initialLoad = !initialOffsetSet
         
         if (!initialOffsetSet) {
-            scrollView.contentOffset = contentOffsetForPage(atIndex: initialPage)
+            scrollView.contentOffset = contentOffsetForPage(at: initialPage)
             initialOffsetSet = true
         }
         
@@ -421,7 +421,7 @@ class PhotoViewController: UIViewController,
         pageViews.indices.forEach(purge)
     }
     
-    func contentOffsetForPage(atIndex index : Int) -> CGPoint {
+    func contentOffsetForPage(at index : Int) -> CGPoint {
         let pageWidth = scrollView.bounds.size.width;
         let newOffset = CGFloat(index) * pageWidth;
         return CGPoint(x: newOffset, y: 0);

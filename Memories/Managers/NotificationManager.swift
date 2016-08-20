@@ -121,14 +121,14 @@ class NotificationManager {
         guard notificationsAllowed() && notificationsEnabled() else { return }
         
         let operation = BlockOperation { () -> Void in
-            scheduleNotificationsWithDatesMap(PHAssetHelper().datesMap())
+            scheduleNotifications(with: PHAssetHelper().datesMap())
         }
 
         let queue = OperationQueue()
         queue.addOperation(operation)
     }
     
-    private static func scheduleNotificationsWithDatesMap(_ datesMap: [Date:Int]) {
+    private static func scheduleNotifications(with datesMap: [Date:Int]) {
         let timeZone = TimeZone.current
         let bodyFormatString = NSLocalizedString("You have %lu photo memories for today", comment: "")
         let titleFormatString = NSLocalizedString("%lu Photo Memories", comment: "")

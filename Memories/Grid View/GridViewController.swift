@@ -12,7 +12,7 @@ import Cartography
 import PHAssetHelper
 
 extension IndexSet {
-    func indexPathsFromIndexes(inSection section : Int) -> [IndexPath] {
+    func indexPathsFromIndexes(in section : Int) -> [IndexPath] {
         var indexPaths = [IndexPath]()
         
         (self as NSIndexSet).enumerate ({index, stop in
@@ -24,7 +24,7 @@ extension IndexSet {
 }
 
 extension UICollectionView {
-    func indexPathsForElements(inRect rect : CGRect) -> [IndexPath] {
+    func indexPathsForElements(in rect : CGRect) -> [IndexPath] {
         if let allLayoutAttributes = self.collectionViewLayout.layoutAttributesForElements(in: rect) {
             return allLayoutAttributes.map() {$0.indexPath}
         }
@@ -98,7 +98,7 @@ class GridViewController: UICollectionViewController,
             self.collectionView!.setContentOffset(CGPoint(x: 0, y: -self.collectionView!.contentInset.top), animated: false)
             self.showHideNoPhotosLabel()
             
-            self.createOrUpdatePullViews(date as Date)
+            self.createOrUpdatePullViews(with: date as Date)
             self.title = self.dateFormatter.string(from: date as Date).uppercased() + " ▾" // ▼
             self.showHideBlur(false)
         }
@@ -152,7 +152,7 @@ class GridViewController: UICollectionViewController,
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        configureCellSizeForViewSize(view.bounds.size)
+        configureCellSize(for: view.bounds.size)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -166,7 +166,7 @@ class GridViewController: UICollectionViewController,
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         
-        configureCellSizeForViewSize(size)
+        configureCellSize(for: size)
         updateCachedAssets()
         
         coordinator.animate(alongsideTransition: { (context : UIViewControllerTransitionCoordinatorContext) -> Void in
@@ -267,7 +267,7 @@ class GridViewController: UICollectionViewController,
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if let photoViewController = storyboard?.instantiateViewController(withIdentifier: "photoViewController") as? PhotoViewController {
-            photoViewController.model = model.photoViewModelForIndexPath(indexPath)
+            photoViewController.model = model.photoViewModel(for: indexPath)
             photoViewController.delegate = self
             if let cell = collectionView.cellForItem(at: indexPath) as? GridViewCell, let imageView = cell.imageView {
                 photoViewController.presentTransition = PhotoViewPresentTransition(sourceImageView: imageView)
@@ -282,11 +282,11 @@ class GridViewController: UICollectionViewController,
     
     // MARK: - PhotoViewContollerDelegate
     func setSelected(index: Int) {
-        collectionView?.selectItem(at: model.indexPathForSelectedIndex(index), animated: false, scrollPosition: .centeredVertically)
+        collectionView?.selectItem(at: model.indexPath(for: index), animated: false, scrollPosition: .centeredVertically)
     }
     
     func imageView(atIndex index: Int) -> UIImageView? {
-        guard let cell = collectionView?.cellForItem(at: model.indexPathForSelectedIndex(index)) as? GridViewCell else {
+        guard let cell = collectionView?.cellForItem(at: model.indexPath(for: index)) as? GridViewCell else {
             return nil
         }
         
@@ -301,7 +301,7 @@ class GridViewController: UICollectionViewController,
 
 
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return model.numberOfItemsInSection(section)
+        return model.numberOfItems(in: section)
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -313,7 +313,7 @@ class GridViewController: UICollectionViewController,
         
         cell.imageView?.contentMode = thumbnailContentMode
         
-        if let asset = model.assetAtIndexPath(indexPath) {
+        if let asset = model.asset(at: indexPath) {
             imageManager.requestImage(for: asset, targetSize: gridThumbnailSize, contentMode: .aspectFill, options: nil) { (result : UIImage?, info : [AnyHashable : Any]?) -> Void in
                 if let image = result, cell.tag == currentTag {
                     // Only update the thumbnail if the cell tag hasn't changed. Otherwise, the cell has been re-used.
@@ -327,7 +327,7 @@ class GridViewController: UICollectionViewController,
 
     override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: CellIdentifier.yearHeader, for: indexPath) as! GridHeaderView
-        headerView.label.text = String(model.yearForSection((indexPath as NSIndexPath).section))
+        headerView.label.text = String(model.year(for: (indexPath as NSIndexPath).section))
         
         return headerView
     }
@@ -380,7 +380,7 @@ class GridViewController: UICollectionViewController,
     
     // MARK: - Scroll to Change Date
     
-    func createOrUpdatePullViews(_ date: Date) {
+    func createOrUpdatePullViews(with date: Date) {
         if let tpv = topPullView, let bpv = bottomPullView {
             tpv.date = date.previousDay()
             bpv.date = date.nextDay()
@@ -438,10 +438,10 @@ class GridViewController: UICollectionViewController,
             var cacheNeedsReset = false
             
             for section in (0..<self.model.sectionCount).reversed() {
-                if let fetchResult = self.model.fetchResultForSection(section),
+                if let fetchResult = self.model.fetchResult(for: section),
                     let collectionChanges = changeInstance.changeDetails(for: fetchResult as! PHFetchResult<PHObject>) {
                     // get the new fetch result
-                    self.model.setFetchResultForSection(section, fetchResult: collectionChanges.fetchResultAfterChanges as! PHFetchResult<PHAsset>)
+                    self.model.setFetchResult(for: section, fetchResult: collectionChanges.fetchResultAfterChanges as! PHFetchResult<PHAsset>)
                     
                     if !collectionChanges.hasIncrementalChanges || collectionChanges.hasMoves {
                         self.collectionView?.reloadData()
@@ -449,17 +449,17 @@ class GridViewController: UICollectionViewController,
                         self.collectionView?.performBatchUpdates({
                             if let removedIndexes = collectionChanges.removedIndexes {
                                 if (removedIndexes.count != 0) {
-                                    self.collectionView?.deleteItems(at: removedIndexes.indexPathsFromIndexes(inSection: section))
+                                    self.collectionView?.deleteItems(at: removedIndexes.indexPathsFromIndexes(in: section))
                                 }
                             }
                             if let insertedIndexes = collectionChanges.insertedIndexes {
                                 if (insertedIndexes.count != 0) {
-                                    self.collectionView?.insertItems(at: insertedIndexes.indexPathsFromIndexes(inSection: section))
+                                    self.collectionView?.insertItems(at: insertedIndexes.indexPathsFromIndexes(in: section))
                                 }
                             }
                             if let changedIndexes = collectionChanges.changedIndexes {
                                 if (changedIndexes.count != 0) {
-                                    self.collectionView?.reloadItems(at: changedIndexes.indexPathsFromIndexes(inSection: section))
+                                    self.collectionView?.reloadItems(at: changedIndexes.indexPathsFromIndexes(in: section))
                                 }
                             }
                             if collectionChanges.fetchResultAfterChanges.count == 0 {
@@ -507,14 +507,14 @@ class GridViewController: UICollectionViewController,
             
             computeDifferenceBetweenRects(previousPreheatRect, preheatRect,
                 removedHandler: {
-                    removedIndexPaths += self.collectionView!.indexPathsForElements(inRect: $0)
+                    removedIndexPaths += self.collectionView!.indexPathsForElements(in: $0)
                 },
                 addedHandler: {
-                    addedIndexPaths += self.collectionView!.indexPathsForElements(inRect: $0)
+                    addedIndexPaths += self.collectionView!.indexPathsForElements(in: $0)
                 })
             
-            let assetsToStartCaching = assetsAtIndexPaths(addedIndexPaths)
-            let assetsToStopCaching = assetsAtIndexPaths(removedIndexPaths)
+            let assetsToStartCaching = assets(at: addedIndexPaths)
+            let assetsToStopCaching = assets(at: removedIndexPaths)
             
             imageManager.startCachingImages(for: assetsToStartCaching, targetSize: gridThumbnailSize, contentMode: .aspectFill, options: nil)
             imageManager.stopCachingImages(for: assetsToStopCaching, targetSize: gridThumbnailSize, contentMode: .aspectFill, options: nil)
@@ -552,9 +552,9 @@ class GridViewController: UICollectionViewController,
         }
     }
     
-    func assetsAtIndexPaths(_ indexPaths : [IndexPath]) -> [PHAsset] {
+    func assets(at indexPaths : [IndexPath]) -> [PHAsset] {
         return indexPaths.flatMap() {
-            self.model.assetAtIndexPath($0)
+            self.model.asset(at: $0)
         }        
     }
     
@@ -573,11 +573,11 @@ class GridViewController: UICollectionViewController,
     }
     
     
-    func configureCellSizeForViewSize(_ viewSize : CGSize) {
-        let MIN_WIDTH = CGFloat(90.0)
+    func configureCellSize(for viewSize : CGSize) {
+        let minWidth = CGFloat(90.0)
         let viewWidth = viewSize.width
         let maxCellsPerRow: CGFloat = viewSize.width < viewSize.height ? 5 : 7
-        let cellsPerRow = min(floor(viewWidth / MIN_WIDTH), maxCellsPerRow)
+        let cellsPerRow = min(floor(viewWidth / minWidth), maxCellsPerRow)
         let cellWidth = floor((viewWidth  - (cellsPerRow - 1)) / cellsPerRow)
         
         let cellSize = CGSize(width: cellWidth, height: cellWidth)
@@ -606,7 +606,7 @@ class GridViewController: UICollectionViewController,
         }
     }
     
-    func checkPhotosPermission(_ handler : @escaping () -> ()) {
+    func checkPhotosPermission(completion handler : @escaping () -> ()) {
         let authStatus = PHPhotoLibrary.authorizationStatus();
         
         if authStatus == .authorized {

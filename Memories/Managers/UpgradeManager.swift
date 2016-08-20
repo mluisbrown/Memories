@@ -108,7 +108,7 @@ class UpgradeManager {
         }
     }
 
-    static func getUpgradePrice(withCompletion completion: ((String?) -> ())?) {
+    static func getUpgradePrice(thenCall completion: ((String?) -> ())?) {
         if let price = upgradePrice {
             completion?(price)
             return
@@ -129,12 +129,12 @@ class UpgradeManager {
     
     /// returns whether the user is allowed to view another high quality image
     static func highQualityViewAllowed() -> Bool {
-        if !upgraded { getUpgradePrice(withCompletion: nil) }
+        if !upgraded { getUpgradePrice(thenCall: nil) }
         return upgraded || highQualityViewCount < MaxHighQualityViewCount
     }
     
     /// prompts the user if they want to upgrade
-    static func promptForUpgrade(inViewController viewController: UIViewController, completion: ((Bool) -> ())?) {
+    static func promptForUpgrade(in viewController: UIViewController, completion: ((Bool) -> ())?) {
         guard let price = upgradePrice , !upgradePromptShown else {
             completion?(false)
             return
@@ -149,10 +149,10 @@ class UpgradeManager {
             , message: NSLocalizedString("You can view 5 full quality photos per day which you can share, favorite or delete. You can Upgrade to remove this restriction. The Upgrade option is also available in the settings page.", comment: "")
             , preferredStyle: .alert)
         let upgrade = UIAlertAction(title: upgradeTitle, style: .default, handler: { (action) -> Void in
-            UpgradeManager.upgrade(withCompletion: completion)
+            UpgradeManager.upgrade(thenCall: completion)
         })
         let restore = UIAlertAction(title: NSLocalizedString("Restore", comment: ""), style: .default, handler: { (action) -> Void in
-            UpgradeManager.restore(withCompletion: completion)
+            UpgradeManager.restore(thenCall: completion)
         })
         let notNow = UIAlertAction(title: NSLocalizedString("Not Now", comment: ""), style: .cancel, handler: { (action) -> Void in
             completion?(false)
@@ -164,7 +164,7 @@ class UpgradeManager {
         viewController.present(alert, animated: true, completion: nil)
     }
     
-    static func upgrade(withCompletion completion: ((Bool) -> ())?) {
+    static func upgrade(thenCall completion: ((Bool) -> ())?) {
         store.addPayment(upgradeProductId, success: { (transaction) -> Void in
             upgraded = true
             completion?(true)
@@ -173,7 +173,7 @@ class UpgradeManager {
         }
     }
     
-    static func restore(withCompletion completion: ((Bool) -> ())?) {
+    static func restore(thenCall completion: ((Bool) -> ())?) {
         store.restoreTransactions( onSuccess: { (transactions) -> Void in
             guard let transactions = transactions,
                 transactions.count > 0,

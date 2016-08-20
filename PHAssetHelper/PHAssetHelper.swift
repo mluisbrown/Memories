@@ -109,8 +109,8 @@ public class PHAssetHelper {
         return PHAsset.fetchAssets(with: .image, options: options)
     }
     
-    public func allAssetsForDateInAllYears(_ date: Date) -> [PHAsset] {
-        let assetFetchResults = fetchResultsForDateInAllYears(date)
+    public func allAssetsForAllYears(with date: Date) -> [PHAsset] {
+        let assetFetchResults = fetchResultsForAllYears(with: date)
         var assets : [PHAsset] = [PHAsset]()
         
         for fetchResult in assetFetchResults {
@@ -122,14 +122,14 @@ public class PHAssetHelper {
         return assets
     }
     
-    public func fetchResultsForDateInAllYears(_ date : Date) -> [PHFetchResult<PHAsset>] {
+    public func fetchResultsForAllYears(with date : Date) -> [PHFetchResult<PHAsset>] {
         let options = PHFetchOptions()
         options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
         if #available(iOS 9.0, *) {
             options.includeAssetSourceTypes = assetSourceTypes
         }
         
-        let startAndEndDates = startAndEndDatesForDateInYears(date, fromYear: earliestAssetYear(), toYear: Date().year)
+        let startAndEndDates = self.startAndEndDates(for: date, fromYear: earliestAssetYear(), toYear: Date().year)
         
         return startAndEndDates.map {
             NSPredicate(format: "creationDate >= %@ && creationDate <= %@", argumentArray: [$0.startDate, $0.endDate])
@@ -141,7 +141,7 @@ public class PHAssetHelper {
         }
     }
     
-    private func startAndEndDatesForDateInYears(_ date: Date, fromYear : Int, toYear : Int) -> [(startDate: Date, endDate: Date)] {
+    private func startAndEndDates(for date: Date, fromYear : Int, toYear : Int) -> [(startDate: Date, endDate: Date)] {
         let gregorian = Date.gregorianCalendar
         var startComps = gregorian.dateComponents([.month, .day] , from: date)
         var endComps = gregorian.dateComponents([.month, .day] , from: date)
