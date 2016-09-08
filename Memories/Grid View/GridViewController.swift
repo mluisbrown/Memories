@@ -475,6 +475,7 @@ class GridViewController: UICollectionViewController,
             if (cacheNeedsReset) {
                 self.resetCachedAssets()
                 self.assetHelper.refreshDatesMapCache()
+                self.showHideNoPhotosLabel()
             }
         }
     }
@@ -615,38 +616,34 @@ class GridViewController: UICollectionViewController,
 
         if authStatus == .notDetermined {
             let alert = UIAlertController(title: NSLocalizedString("Let Memories access Photos?", comment: ""), message: NSLocalizedString("Memories can only work if it has access to your photos. If you tap 'Allow' iOS will ask your permission.", comment: ""), preferredStyle: .alert)
-            let allow = UIAlertAction(title: NSLocalizedString("Allow", comment: ""), style: .default, handler: { (action) -> Void in
-                PHPhotoLibrary.requestAuthorization({ (status) -> Void in
+            let allow = UIAlertAction(title: NSLocalizedString("Allow", comment: ""), style: .default) { (action) -> Void in
+                PHPhotoLibrary.requestAuthorization { status in
                     if status == .authorized {
-                        DispatchQueue.main.async(execute: { () -> Void in
+                        DispatchQueue.main.async {
                             handler()
-                        })
+                        }
                     }
-                })
-            })
-            let deny = UIAlertAction(title: NSLocalizedString("Not Now", comment: ""), style: .cancel, handler: { (action) -> Void in
-                
-            })
+                }
+            }
+            let deny = UIAlertAction(title: NSLocalizedString("Not Now", comment: ""), style: .cancel)
             alert.addAction(deny)
             alert.addAction(allow)
             
-            UIApplication.shared.keyWindow?.rootViewController?.present(alert, animated: true, completion: nil)
+            UIApplication.shared.keyWindow?.rootViewController?.present(alert, animated: true)
             return
         }
         
         if authStatus == .denied {
             let alert = UIAlertController(title: NSLocalizedString("No Access to Photos", comment: ""), message: NSLocalizedString("You have Denied access to Photos for Memories. In order for Memories to work you must enable this access in Settings. Would you like to do this now?", comment: ""), preferredStyle: .alert)
-            let settings = UIAlertAction(title: NSLocalizedString("Settings", comment: ""), style: .default, handler: { (action) -> Void in
+            let settings = UIAlertAction(title: NSLocalizedString("Settings", comment: ""), style: .default) { (action) -> Void in
                 let url = URL(string: UIApplicationOpenSettingsURLString)
                 UIApplication.shared.openURL(url!);
-            })
-            let nothanks = UIAlertAction(title: NSLocalizedString("No thanks", comment: ""), style: .cancel, handler: { (action) -> Void in
-                
-            })
+            }
+            let nothanks = UIAlertAction(title: NSLocalizedString("No thanks", comment: ""), style: .cancel)
             alert.addAction(nothanks)
             alert.addAction(settings)
             
-            UIApplication.shared.keyWindow?.rootViewController?.present(alert, animated: true, completion: nil)
+            UIApplication.shared.keyWindow?.rootViewController?.present(alert, animated: true)
         }
     }
 }
