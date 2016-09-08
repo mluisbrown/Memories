@@ -12,6 +12,7 @@ class SettingsViewModel {
     let notificationsEnabled : Dynamic<Bool>
     let notificationHour : Dynamic<Int>
     let notificationMinute : Dynamic<Int>
+    let sourceIncludeCurrentYear: Dynamic<Bool>
     let sourcePhotoLibrary: Dynamic<Bool>
     let sourceICloudShare: Dynamic<Bool>
     let sourceITunes: Dynamic<Bool>
@@ -20,11 +21,12 @@ class SettingsViewModel {
     let storeAvailable : Dynamic<Bool>
     
     init(notificationsEnabled: Bool, notificationHour: Int, notificationMinute: Int,
-         sourcePhotoLibrary: Bool, sourceICloudShare: Bool, sourceITunes: Bool) {
+         sourceIncludeCurrentYear: Bool, sourcePhotoLibrary: Bool, sourceICloudShare: Bool, sourceITunes: Bool) {
         self.notificationsEnabled = Dynamic(notificationsEnabled)
         self.notificationHour = Dynamic(notificationHour)
         self.notificationMinute = Dynamic(notificationMinute)
         self.userHasUpgraded = Dynamic(UpgradeManager.upgraded)
+        self.sourceIncludeCurrentYear = Dynamic(sourceIncludeCurrentYear)
         self.sourcePhotoLibrary = Dynamic(sourcePhotoLibrary)
         self.sourceICloudShare = Dynamic(sourceICloudShare)
         self.sourceITunes = Dynamic(sourceITunes)

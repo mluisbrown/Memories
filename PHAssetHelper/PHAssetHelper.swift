@@ -15,7 +15,11 @@ public class PHAssetHelper {
     private static var eariestAssetYearCache : Int?
     
     private let userDefaults : UserDefaults
-    private let assetSourceTypesKey = "assetSourceTypes"
+    
+    struct Key {
+        static let assetSourceTypesKey = "assetSourceTypes"
+        static let includeCurrentYearKey = "includeCurrentYear"
+    }
 
     public static let sourceTypesChangedNotification = "PHAssetHelperSourceTypesChangedNotification"
     
@@ -23,18 +27,29 @@ public class PHAssetHelper {
         userDefaults = UserDefaults.init(suiteName: "group.com.luacheia.memories")!
         if #available(iOS 9.0, *) {
             let types: PHAssetSourceType = [.typeUserLibrary, .typeiTunesSynced, .typeCloudShared]
-            userDefaults.register(defaults: [assetSourceTypesKey : NSNumber(value: types.rawValue)])
+            userDefaults.register(defaults: [Key.assetSourceTypesKey : NSNumber(value: types.rawValue),
+                                             Key.includeCurrentYearKey: true])
         }
     }
 
     @available(iOS 9.0, *)
     public var assetSourceTypes: PHAssetSourceType {
         get {
-            return PHAssetSourceType(rawValue: (userDefaults.value(forKey: assetSourceTypesKey) as! NSNumber).uintValue)
+            return PHAssetSourceType(rawValue: (userDefaults.value(forKey: Key.assetSourceTypesKey) as! NSNumber).uintValue)
         }
         
         set {
-            userDefaults.setValue(NSNumber(value: newValue.rawValue), forKey: assetSourceTypesKey)
+            userDefaults.setValue(NSNumber(value: newValue.rawValue), forKey: Key.assetSourceTypesKey)
+        }
+    }
+    
+    public var includeCurrentYear: Bool {
+        get {
+            return userDefaults.bool(forKey: Key.includeCurrentYearKey)
+        }
+         
+        set {
+            userDefaults.set(newValue, forKey: Key.includeCurrentYearKey)
         }
     }
     
@@ -85,7 +100,11 @@ public class PHAssetHelper {
         let gregorian = Date.gregorianCalendar
         
         fetchResult.enumerateObjects( { (asset, index, stop) -> Void in
-            let comps = gregorian.dateComponents([.month, .day], from: asset.creationDate!)
+            let comps = gregorian.dateComponents([.month, .day, .year], from: asset.creationDate!)
+            guard self.includeCurrentYear || comps.year! < currentYear else {
+                return
+            }
+            
             let date = gregorian.date(from: DateComponents(era: 1, year: currentYear, month: comps.month!, day: comps.day!, hour: 12, minute: 0, second: 0, nanosecond: 0))!
             
             if let entry = datesMap[date] {
@@ -99,7 +118,7 @@ public class PHAssetHelper {
         return datesMap
     }
     
-    public func allAssetsInDateOrder() -> PHFetchResult<PHAsset> {
+    private func allAssetsInDateOrder() -> PHFetchResult<PHAsset> {
         let options = PHFetchOptions()
         options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
         if #available(iOS 9.0, *) {
@@ -129,7 +148,8 @@ public class PHAssetHelper {
             options.includeAssetSourceTypes = assetSourceTypes
         }
         
-        let startAndEndDates = self.startAndEndDates(for: date, fromYear: earliestAssetYear(), toYear: Date().year)
+        let currentYear = Date().year - (includeCurrentYear ? 0 : 1)
+        let startAndEndDates = self.startAndEndDates(for: date, fromYear: earliestAssetYear(), toYear: currentYear)
         
         return startAndEndDates.map {
             NSPredicate(format: "creationDate >= %@ && creationDate <= %@", argumentArray: [$0.startDate, $0.endDate])

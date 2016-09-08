@@ -22,6 +22,7 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
     @IBOutlet weak var upgradeButton: UIButton!
     @IBOutlet weak var restoreButton: UIButton!
     @IBOutlet weak var thankYouLabel: UILabel!
+    @IBOutlet weak var sourceIncludeCurrentYearSwitch: UISwitch!
     @IBOutlet weak var sourcePhotoLibrarySwitch: UISwitch!
     @IBOutlet weak var sourceICloudSharedSwitch: UISwitch!
     @IBOutlet weak var sourceITunesSwitch: UISwitch!
@@ -49,6 +50,7 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
                 model.userHasUpgraded.bind(nil)
                 model.upgradeButtonText.bind(nil)
                 model.storeAvailable.bind(nil)
+                model.sourceIncludeCurrentYear.bind(nil)
                 model.sourcePhotoLibrary.bind(nil)
                 model.sourceICloudShare.bind(nil)
                 model.sourceITunes.bind(nil)
@@ -83,6 +85,11 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
                     let hour = model.notificationHour.value
                     let minute = $0
                     self.timePicker.date = self.timePicker.calendar.date(from: DateComponents(era: 1, year: 1970, month: 1, day: 1, hour: hour, minute: minute, second: 0, nanosecond: 0))!
+                }
+                
+                model.sourceIncludeCurrentYear.bindAndFire {
+                    [unowned self] in
+                    self.sourceIncludeCurrentYearSwitch.isOn = $0
                 }
                 
                 model.sourcePhotoLibrary.bindAndFire {
@@ -131,11 +138,13 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
     override func viewWillAppear(_ animated: Bool) {
         let notificationTime = NotificationManager.notificationTime()
         let notificationsEnabled = NotificationManager.notificationsEnabled() && NotificationManager.notificationsAllowed()
+        let includeCurrentYear = assetHelper.includeCurrentYear
         if #available(iOS 9.0, *) {
             let sources = assetHelper.assetSourceTypes
             viewModel = SettingsViewModel(notificationsEnabled: notificationsEnabled,
                                           notificationHour: notificationTime.hour,
                                           notificationMinute: notificationTime.minute,
+                                          sourceIncludeCurrentYear: includeCurrentYear,
                                           sourcePhotoLibrary: sources.contains(.typeUserLibrary),
                                           sourceICloudShare: sources.contains(.typeCloudShared),
                                           sourceITunes: sources.contains(.typeiTunesSynced))
@@ -143,11 +152,11 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
             viewModel = SettingsViewModel(notificationsEnabled: notificationsEnabled,
                                           notificationHour: notificationTime.hour,
                                           notificationMinute: notificationTime.minute,
+                                          sourceIncludeCurrentYear: includeCurrentYear,
                                           sourcePhotoLibrary: false,
                                           sourceICloudShare: false,
                                           sourceITunes: false)
-        }
-        
+        }        
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -176,8 +185,11 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
             if viewModel!.sourceICloudShare.value { _ = sources.insert(.typeCloudShared) }
             if viewModel!.sourceITunes.value { _ = sources.insert(.typeiTunesSynced) }
             
-            if sources != assetHelper.assetSourceTypes {
+            let includeCurrentYear = viewModel!.sourceIncludeCurrentYear.value
+            if sources != assetHelper.assetSourceTypes ||
+                includeCurrentYear != assetHelper.includeCurrentYear {
                 assetHelper.assetSourceTypes = sources
+                assetHelper.includeCurrentYear = includeCurrentYear
                 assetHelper.refreshDatesMapCache()
                 NotificationCenter.default.post(name: Notification.Name(rawValue: PHAssetHelper.sourceTypesChangedNotification), object: self)
             }
@@ -261,6 +273,10 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
         viewModel?.notificationMinute.value = minute
     }
 
+    @IBAction func sourceIncludeCurrentYearValueChanged(_ sender: UISwitch) {
+        viewModel?.sourceIncludeCurrentYear.value = sender.isOn
+    }
+    
     @IBAction func sourceSwitchValueChanged(_ sender: UISwitch) {
         switch sender {
         case sourcePhotoLibrarySwitch:
