@@ -10,10 +10,9 @@ import UIKit
 import Photos
 
 protocol PhotoViewControllerDelegate {
-    func setSelected(index index: Int)
-    func imageView(atIndex index: Int) -> UIImageView?
+    func setSelected(index: Int)
+    func imageView(atIndex: Int) -> UIImageView?
 }
-
 
 class PhotoViewController: UIViewController,
     UIScrollViewDelegate,
@@ -28,10 +27,10 @@ class PhotoViewController: UIViewController,
     @IBOutlet weak var heartButton: UIButton!
     @IBOutlet weak var yearLabel: UILabel!
 
-    let PADDING = CGFloat(10)
+    let padding = CGFloat(10);
     
-    let heartFullImg = UIImage(named: "heart-full")!.imageWithRenderingMode(.AlwaysTemplate)
-    let heartEmptyImg = UIImage(named: "heart-empty")!.imageWithRenderingMode(.AlwaysTemplate)
+    let heartFullImg = UIImage(named: "heart-full")!.withRenderingMode(.alwaysTemplate)
+    let heartEmptyImg = UIImage(named: "heart-empty")!.withRenderingMode(.alwaysTemplate)
     
     var upgradePromptShown = false
     var initialOffsetSet = false
@@ -43,8 +42,6 @@ class PhotoViewController: UIViewController,
     // If the size is too large then PhotoKit doesn't return an optimal image size
     // see rdar://25181601 (https://openradar.appspot.com/radar?id=6158824289337344)
     let cacheSize = CGSize(width: 256, height: 256)
-
-    var hideStatusBar = false
     
     struct PanState {
         let imageView: UIImageView?
@@ -54,8 +51,8 @@ class PhotoViewController: UIViewController,
         let panHeight: CGFloat
     }
     
-    var initialPanState = PanState(imageView: nil, destImageView: nil, transform: CGAffineTransformIdentity, center: .zero, panHeight: 0)
-
+    var initialPanState = PanState(imageView: nil, destImageView: nil, transform: CGAffineTransform.identity, center: .zero, panHeight: 0)
+    
     var presentTransition: PhotoViewPresentTransition?
     var dismissTransition: PhotoViewDismissTransition?
     
@@ -65,7 +62,7 @@ class PhotoViewController: UIViewController,
     }
     
     deinit {
-        PHPhotoLibrary.sharedPhotoLibrary().unregisterChangeObserver(self)
+        PHPhotoLibrary.shared().unregisterChangeObserver(self)
     }
 
     var controlsHidden: Bool {
@@ -74,7 +71,7 @@ class PhotoViewController: UIViewController,
         }
     }
     
-    private func buttonImageForFavorite(favorite: Bool) -> UIImage {
+    private func buttonImage(forFavorite favorite: Bool) -> UIImage {
         return favorite ? heartFullImg : heartEmptyImg
     }
     
@@ -84,57 +81,36 @@ class PhotoViewController: UIViewController,
         super.viewDidLoad()
 
         initialPage = model.selectedIndex
-        imageManager.startCachingImagesForAssets(model.assets, targetSize: cacheSize, contentMode: .AspectFill, options: nil)
-        PHPhotoLibrary.sharedPhotoLibrary().registerChangeObserver(self);
+        imageManager.startCachingImages(for: model.assets, targetSize: cacheSize, contentMode: .aspectFill, options: nil)
+        PHPhotoLibrary.shared().register(self);
         
         let panRecognizer = UIPanGestureRecognizer(target: self, action: #selector(PhotoViewController.viewDidPan))
         view.addGestureRecognizer(panRecognizer)
     }
 
-    override func viewDidAppear(animated: Bool) {
-        hideStatusBar(true)
-    }
-    
-    override func viewDidDisappear(animated: Bool) {
-        PHPhotoLibrary.sharedPhotoLibrary().unregisterChangeObserver(self)
-        self.cancelAllImageRequests()
-        self.purgeAllViews()
-    }
-    
     override func viewDidLayoutSubviews() {
         setupViews()
     }
     
-    override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
-        super.viewWillTransitionToSize(size, withTransitionCoordinator: coordinator)
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
         initialPage = model.selectedIndex
         initialOffsetSet = false
     }
-        
-    override func prefersStatusBarHidden() -> Bool {
-        return hideStatusBar || traitCollection.verticalSizeClass == .Compact
-    }
     
-    func hideStatusBar(hide: Bool) {
-        hideStatusBar = hide
-        UIView.animateWithDuration(0.25) {
-            self.setNeedsStatusBarAppearanceUpdate()
-        }
-    }
-
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
 
     // MARK: Actions
-    @IBAction func sharePhoto(sender: UIButton) {
+    @IBAction func sharePhoto(_ sender: UIButton) {
         let page = model.selectedIndex
         
         let asset = model.assets[page]
         let options = PHImageRequestOptions()
-        options.version = .Current
-        options.networkAccessAllowed = false
-        PHImageManager.defaultManager().requestImageDataForAsset(asset, options: options) {
+        options.version = .current
+        options.isNetworkAccessAllowed = false
+        PHImageManager.default().requestImageData(for: asset, options: options) {
             [weak self] imageData, dataUTI, orientation, info in
             guard let `self` = self else { return }
 
@@ -143,29 +119,29 @@ class PhotoViewController: UIViewController,
                 if let popover = avc.popoverPresentationController {
                     popover.sourceView = sender
                     popover.sourceRect = sender.bounds
-                    popover.permittedArrowDirections = .Down
+                    popover.permittedArrowDirections = .down
                 }
                 
-                self.presentViewController(avc, animated: true, completion: nil)
+                self.present(avc, animated: true, completion: nil)
             }
         }
     }
     
-    @IBAction func deletePhoto(sender: UIButton) {
+    @IBAction func deletePhoto(_ sender: UIButton) {
         let asset = model.selectedAsset
         
-        PHPhotoLibrary.sharedPhotoLibrary().performChanges({
-            PHAssetChangeRequest.deleteAssets([asset])
+        PHPhotoLibrary.shared().performChanges({
+            PHAssetChangeRequest.deleteAssets(NSArray(array: [asset]))
         }, completionHandler: nil)
     }
     
-    @IBAction func toggleFavorite(sender: UIButton) {
+    @IBAction func toggleFavorite(_ sender: UIButton) {
         let asset = model.selectedAsset
-        let newState = !asset.favorite
+        let newState = !asset.isFavorite
         
-        PHPhotoLibrary.sharedPhotoLibrary().performChanges({
-            let request = PHAssetChangeRequest(forAsset: asset)
-            request.favorite = newState
+        PHPhotoLibrary.shared().performChanges({
+            let request = PHAssetChangeRequest(for: asset)
+            request.isFavorite = newState
         }, completionHandler: nil)
     }
     
@@ -177,19 +153,23 @@ class PhotoViewController: UIViewController,
         delegate.setSelected(index: model.selectedIndex)
         let imageView = delegate.imageView(atIndex: model.selectedIndex)!
         let pageView = pageViews[model.selectedIndex]!
-        
+            
         dismissTransition = PhotoViewDismissTransition(destImageView: imageView, sourceImageView: pageView.imageView)
-        presentingViewController?.dismissViewControllerAnimated(true, completion: nil)
+        presentingViewController?.dismiss(animated: true) {
+            PHPhotoLibrary.shared().unregisterChangeObserver(self)
+            self.cancelAllImageRequests()
+            self.purgeAllViews()
+        }
     }
     
-    @IBAction func close(sender: UIButton) {
+    @IBAction func close(_ sender: UIButton) {
         doClose()
     }
     
-    func viewDidPan(gr: UIPanGestureRecognizer) {
+    func viewDidPan(_ gr: UIPanGestureRecognizer) {
         switch gr.state {
-        case .Began:
-            let startPoint = gr.locationInView(gr.view)
+        case .began:
+            let startPoint = gr.location(in: gr.view)
             
             let imageView = pageViews[model.selectedIndex]!.imageView!
             initialPanState = PanState(imageView: imageView,
@@ -197,36 +177,36 @@ class PhotoViewController: UIViewController,
                                        transform: imageView.transform,
                                        center: imageView.center,
                                        panHeight: gr.view!.bounds.height - startPoint.y)
-            initialPanState.destImageView?.hidden = true
-        case .Changed:
-            let translation = gr.translationInView(gr.view)
+            initialPanState.destImageView?.isHidden = true
+        case .changed:
+            let translation = gr.translation(in: gr.view)
             let yPercent = translation.y / initialPanState.panHeight
             let percent = yPercent <= 0 ? 0 : yPercent
             let alpha = 1 - percent
             let scale = (1 - percent / 2)
             
             initialPanState.imageView?.center = CGPoint(x: initialPanState.center.x + translation.x, y: initialPanState.center.y + translation.y)
-            initialPanState.imageView?.transform = CGAffineTransformScale(initialPanState.transform,  scale, scale)
+            initialPanState.imageView?.transform = initialPanState.transform.scaledBy(x: scale, y: scale)
             
-            view.backgroundColor = UIColor.blackColor().colorWithAlphaComponent(alpha)
+            view.backgroundColor = UIColor.black.withAlphaComponent(alpha)
             if !controlsHidden { setControls(alpha: alpha) }
-            
-        case .Ended, .Cancelled:
-            let velocity = gr.velocityInView(gr.view)
-            if velocity.y < 0 || gr.state == .Cancelled {
-                UIView.animateWithDuration(0.25, animations: {
+
+        case .ended, .cancelled:
+            let velocity = gr.velocity(in: gr.view)
+            if velocity.y < 0 || gr.state == .cancelled {
+                UIView.animate(withDuration: 0.25, animations: {
                     self.initialPanState.imageView?.center = self.initialPanState.center
                     self.initialPanState.imageView?.transform = self.initialPanState.transform
-                    self.view.backgroundColor = UIColor.blackColor()
+                    self.view.backgroundColor = UIColor.black
                     if !self.controlsHidden { self.setControls(alpha: 1) }
                 }) { finished in
-                    self.initialPanState.destImageView?.hidden = false
+                    self.initialPanState.destImageView?.isHidden = false
                 }
             }
             else {
                 doClose()
             }
-            
+
         default:
             break
         }
@@ -251,7 +231,7 @@ class PhotoViewController: UIViewController,
         loadVisiblePages()
     }
     
-    func loadPage(page: Int, requestFullImage: Bool) {
+    func load(page: Int, requestFullImage: Bool) {
         guard page >= 0 && page < model.assets.count else {
             return
         }
@@ -259,13 +239,13 @@ class PhotoViewController: UIViewController,
         // setup the frame for the view
         let bounds = scrollView.bounds
         var frame = bounds
-        frame.size.width -= (2.0 * PADDING);
-        frame.origin.x = bounds.size.width * CGFloat(page) + PADDING
+        frame.size.width -= (2.0 * padding);
+        frame.origin.x = bounds.size.width * CGFloat(page) + padding
         frame.origin.y = 0.0
 
         let asset = model.assets[page]
         if page == self.model.selectedIndex {
-            heartButton.setImage(buttonImageForFavorite(asset.favorite), forState: .Normal)
+            heartButton.setImage(buttonImage(forFavorite: asset.isFavorite), for: UIControlState())
             yearLabel.text = String("  \(asset.creationDate!.year)  ")
         }
         
@@ -276,9 +256,9 @@ class PhotoViewController: UIViewController,
             if !requestFullImage || !pageView.imageIsDegraded {
                 pageView.frame = frame
                 if requestFullImage {
-                    shareButton.enabled = true
-                    deleteButton.enabled = true
-                    heartButton.enabled = true
+                    shareButton.isEnabled = true
+                    deleteButton.isEnabled = true
+                    heartButton.isEnabled = true
                 }
                 return
             }
@@ -298,14 +278,14 @@ class PhotoViewController: UIViewController,
 
         // always get a thumbnail first
         pageView.imageIsDegraded = true
-        imageManager.requestImageForAsset(asset, targetSize: cacheSize, contentMode: .AspectFill, options: nil, resultHandler: { (result, userInfo) -> Void in
+        imageManager.requestImage(for: asset, targetSize: cacheSize, contentMode: .aspectFill, options: nil, resultHandler: { result, userInfo in
             if let image = result {
                 // NSLog("Cache Result with image for page \(page) requestFullImage: \(requestFullImage) iamgeSize: \(image.size.width), \(image.size.height)");
                 pageView.image = image
                 if page == self.model.selectedIndex {
-                    self.shareButton.enabled = false
-                    self.deleteButton.enabled = false
-                    self.heartButton.enabled = false
+                    self.shareButton.isEnabled = false
+                    self.deleteButton.isEnabled = false
+                    self.heartButton.isEnabled = false
                 }
             }
         })
@@ -313,27 +293,27 @@ class PhotoViewController: UIViewController,
         // then get the full size image if required
         if requestFullImage {
             if !UpgradeManager.highQualityViewAllowed() {
-                UpgradeManager.promptForUpgradeInViewController(self) {
+                UpgradeManager.promptForUpgrade(in: self) {
                     if !$0 {
                         pageView.hideProgressView(true)
                     } else {
-                        self.loadHighQualityImageForAsset(asset, page: page)
+                        self.loadHighQualityImage(for: asset, page: page)
                     }
                 }
                 
                 return
             }
             
-            loadHighQualityImageForAsset(asset, page: page)
+            loadHighQualityImage(for: asset, page: page)
         }
     }
     
-    func loadHighQualityImageForAsset(asset: PHAsset, page: Int) {
+    func loadHighQualityImage(for asset: PHAsset, page: Int) {
         let options = PHImageRequestOptions()
         let pageView = pageViews[page]!
         
-        options.progressHandler  = {(progress : Double, error: NSError?, stop: UnsafeMutablePointer<ObjCBool>, userInfo: [NSObject : AnyObject]?) -> Void in
-            dispatch_async(dispatch_get_main_queue()) {
+        options.progressHandler  = { progress, error, stop, userInfo in
+            DispatchQueue.main.async {
                 pageView.updateProgress(progress)
                 
                 if error != nil {
@@ -342,23 +322,23 @@ class PhotoViewController: UIViewController,
             }
         }
         
-        options.networkAccessAllowed = true
-        options.deliveryMode = .HighQualityFormat
-        options.synchronous = false
+        options.isNetworkAccessAllowed = true
+        options.deliveryMode = .highQualityFormat
+        options.isSynchronous = false
         
-        pageView.imageRequestId = PHImageManager.defaultManager().requestImageForAsset(asset, targetSize: PHImageManagerMaximumSize, contentMode: .AspectFit, options: options) { (result, userInfo) -> Void in
+        pageView.imageRequestId = PHImageManager.default().requestImage(for: asset, targetSize: PHImageManagerMaximumSize, contentMode: .aspectFit, options: options) { (result, userInfo) -> Void in
             if let image = result {
                 UpgradeManager.highQualityViewCount += 1
                 pageView.image = image
                 pageView.imageIsDegraded = false
                 if page == self.model.selectedIndex {
-                    self.shareButton.enabled = true
-                    self.heartButton.enabled = true
+                    self.shareButton.isEnabled = true
+                    self.heartButton.isEnabled = true
 
                     if #available(iOS 9.0, *) {
-                        self.deleteButton.enabled = !asset.sourceType.contains(.TypeiTunesSynced)
+                        self.deleteButton.isEnabled = !asset.sourceType.contains(.typeiTunesSynced)
                     } else {
-                        self.deleteButton.enabled = true
+                        self.deleteButton.isEnabled = true
                     }
                 }
             }
@@ -369,7 +349,7 @@ class PhotoViewController: UIViewController,
         }
     }
     
-    func purgePage(page: Int) {
+    func purge(page: Int) {
         guard page >= 0 && page < pageViews.count else {
             return
         }
@@ -377,7 +357,7 @@ class PhotoViewController: UIViewController,
         // Remove a page from the scroll view and reset the container array
         if let pageView = pageViews[page] {
             if let requestId = pageView.imageRequestId {
-                PHImageManager.defaultManager().cancelImageRequest(requestId)
+                PHImageManager.default().cancelImageRequest(requestId)
                 pageView.imageRequestId = nil
             }
             pageView.image = nil
@@ -386,14 +366,14 @@ class PhotoViewController: UIViewController,
         }
     }
     
-    func cancelPageImageRequest(page: Int) {
+    func cancelPageImageRequest(for page: Int) {
         guard page >= 0 && page < pageViews.count else {
             return
         }
         
         if let pageView = pageViews[page] {
             if let requestId = pageView.imageRequestId {
-                PHImageManager.defaultManager().cancelImageRequest(requestId)
+                PHImageManager.default().cancelImageRequest(requestId)
                 pageView.imageRequestId = nil
             }
         }
@@ -403,7 +383,7 @@ class PhotoViewController: UIViewController,
         let initialLoad = !initialOffsetSet
         
         if (!initialOffsetSet) {
-            scrollView.contentOffset = contentOffsetForPageAtIndex(initialPage)
+            scrollView.contentOffset = contentOffsetForPage(at: initialPage)
             initialOffsetSet = true
         }
         
@@ -424,13 +404,13 @@ class PhotoViewController: UIViewController,
         let lastPage = page + 1
         
         // Purge anything before the first page
-        0.stride(to: firstPage, by: 1).forEach(purgePage)
+        stride(from: 0, to: firstPage, by: 1).forEach(purge)
         
         // Load pages in our range
-        (firstPage...lastPage).forEach { loadPage($0, requestFullImage: $0 == page) }
+        (firstPage...lastPage).forEach { load(page: $0, requestFullImage: $0 == page) }
         
         // Purge anything after the last page
-        model.assets.count.stride(to: lastPage, by: -1).forEach(purgePage)
+        stride(from: model.assets.count, to: lastPage, by: -1).forEach(purge)
     }
     
     func cancelAllImageRequests() {
@@ -438,43 +418,43 @@ class PhotoViewController: UIViewController,
     }
     
     func purgeAllViews() {
-        pageViews.indices.forEach(purgePage)
+        pageViews.indices.forEach(purge)
     }
     
-    func contentOffsetForPageAtIndex(index : Int) -> CGPoint {
+    func contentOffsetForPage(at index : Int) -> CGPoint {
         let pageWidth = scrollView.bounds.size.width;
         let newOffset = CGFloat(index) * pageWidth;
-        return CGPointMake(newOffset, 0);
+        return CGPoint(x: newOffset, y: 0);
     }
     
     // MARK: UIScrollViewDelegate
     
-    func scrollViewDidScroll(scrollView: UIScrollView) {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if scrollView == self.scrollView {
             loadVisiblePages()
         }
     }
 
     // MARK: UIViewControllerTransitioningDelegate
-    func animationControllerForPresentedController(presented: UIViewController, presentingController presenting: UIViewController, sourceController source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+    func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         return presentTransition
     }
     
-    func animationControllerForDismissedController(dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+    func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         return dismissTransition
     }
     
     // MARK: PHPhotoLibraryChangeObserver
     
-    func photoLibraryDidChange(changeInstance: PHChange) {
-        dispatch_async(dispatch_get_main_queue()) {
+    func photoLibraryDidChange(_ changeInstance: PHChange) {
+        DispatchQueue.main.async {
             self.processLibraryChange(changeInstance)
         }
     }
     
-    private func processLibraryChange(changeInstance: PHChange) {
+    private func processLibraryChange(_ changeInstance: PHChange) {
         let newAssets:[PHAsset] = model.assets.flatMap {
-            if let changeDetails = changeInstance.changeDetailsForObject($0) {
+            if let changeDetails = changeInstance.changeDetails(for: $0) {
                 return changeDetails.objectWasDeleted ? nil : changeDetails.objectAfterChanges as? PHAsset
             }
             else {
@@ -483,7 +463,7 @@ class PhotoViewController: UIViewController,
         }
         
         if newAssets.isEmpty {
-            presentingViewController?.dismissViewControllerAnimated(true, completion: nil);
+            presentingViewController?.dismiss(animated: true, completion: nil);
             return
         }
         
@@ -499,12 +479,12 @@ class PhotoViewController: UIViewController,
         }
         else {
             let asset = model.selectedAsset
-            heartButton.setImage(buttonImageForFavorite(asset.favorite), forState: .Normal)
+            heartButton.setImage(buttonImage(forFavorite: asset.isFavorite), for: UIControlState())
         }
     }
     
     // MARK: ZoomingPhotoViewDelegate
-    func hideControls(hide: Bool) {
+    func hideControls(_ hide: Bool) {
         guard hide != controlsHidden else {
             return
         }
@@ -512,7 +492,7 @@ class PhotoViewController: UIViewController,
         setControls(alpha: hide ? 0 : 1)
     }
     
-    func setControls(alpha alpha: CGFloat) {
+    func setControls(alpha: CGFloat) {
         [shareButton, deleteButton, closeButton, heartButton, yearLabel].forEach {
             $0.alpha = alpha
         }

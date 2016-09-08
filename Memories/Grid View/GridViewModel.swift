@@ -12,10 +12,10 @@ import PHAssetHelper
 
 class GridViewModel {
     private let assetHelper = PHAssetHelper()
-    private var assetFetchResults = [PHFetchResult]()
+    private var assetFetchResults = [PHFetchResult<PHAsset>]()
     
-    let date : Dynamic<NSDate>
-    let onDataChanged: (NSDate) -> ()
+    let date : Dynamic<Date>
+    let onDataChanged: (Date) -> ()
     
     var sectionCount : Int {
         get {
@@ -23,15 +23,15 @@ class GridViewModel {
         }
     }
     
-    init(onDataChanged: (date: NSDate) -> ()) {
+    init(onDataChanged: @escaping (Date) -> ()) {
         self.onDataChanged = onDataChanged
-        self.date = Dynamic(NSDate())
+        self.date = Dynamic(Date())
         self.date.bind {
             self.fetchDataAndNotify($0)
         }
     }
     
-    init(date: NSDate, onDataChanged: (date: NSDate) -> ()) {
+    init(date: Date, onDataChanged: @escaping (Date) -> ()) {
         self.onDataChanged = onDataChanged
         self.date = Dynamic(date)
         self.date.bindAndFire {
@@ -39,10 +39,10 @@ class GridViewModel {
         }
     }
 
-    private func fetchDataAndNotify(date: NSDate) {
-        dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0)) { [unowned self] in
-            self.assetFetchResults = self.assetHelper.fetchResultsForDateInAllYears(date)
-            dispatch_async(dispatch_get_main_queue()) { [unowned self] in
+    private func fetchDataAndNotify(_ date: Date) {
+        DispatchQueue.global(qos: .userInitiated).async { [unowned self] in
+            self.assetFetchResults = self.assetHelper.fetchResultsForAllYears(with: date)
+            DispatchQueue.main.async { [unowned self] in
                 self.onDataChanged(self.date.value)
             }
         }
@@ -57,20 +57,20 @@ class GridViewModel {
         date.value = date.value.previousDay()
     }
     
-    func assetAtIndexPath(indexPath : NSIndexPath) -> PHAsset? {
-        guard indexPath.section < assetFetchResults.count &&
-            indexPath.item < assetFetchResults[indexPath.section].count else {
+    func asset(at indexPath : IndexPath) -> PHAsset? {
+        guard (indexPath as NSIndexPath).section < assetFetchResults.count &&
+            (indexPath as NSIndexPath).item < assetFetchResults[(indexPath as NSIndexPath).section].count else {
             return nil
         }
         
-        return assetFetchResults[indexPath.section][indexPath.item] as? PHAsset
+        return assetFetchResults[(indexPath as NSIndexPath).section][(indexPath as NSIndexPath).item] as PHAsset?
     }
     
     func numberOfSections() -> Int {
         return assetFetchResults.count
     }
     
-    func numberOfItemsInSection(section : Int) -> Int {
+    func numberOfItems(in section : Int) -> Int {
         guard section < assetFetchResults.count else {
             return 0
         }
@@ -78,46 +78,45 @@ class GridViewModel {
         return assetFetchResults[section].count
     }
     
-    func yearForSection(section : Int) -> Int {
+    func year(for section : Int) -> Int {
         guard section < assetFetchResults.count else {
             return 0
         }
         
-        let asset = assetFetchResults[section].firstObject as! PHAsset
+        let asset = assetFetchResults[section].firstObject!
         let creationDate = asset.creationDate!
         
         return creationDate.year
     }
     
-    func fetchResultForSection(section : Int) -> PHFetchResult? {
+    func fetchResult(for section : Int) -> PHFetchResult<PHAsset>? {
         guard section < assetFetchResults.count else {
             return nil
         }
         return assetFetchResults[section]
     }
     
-    func setFetchResultForSection(section : Int, fetchResult : PHFetchResult) {
+    func setFetchResult(for section : Int, fetchResult : PHFetchResult<PHAsset>) {
         guard section < assetFetchResults.count else {
             return
         }
         
         if fetchResult.count == 0 {
-            assetFetchResults.removeAtIndex(section)
+            assetFetchResults.remove(at: section)
         } else {
             assetFetchResults[section] = fetchResult
         }
     }
     
-    func photoViewModelForIndexPath(indexPath: NSIndexPath) -> PhotoViewModel {
+    func photoViewModel(for indexPath: IndexPath) -> PhotoViewModel {
         var assets : [PHAsset] = [PHAsset]()
         var selectedIndex = 0
         var currentIndex = 0
         
-        for (section, fetchResult) in assetFetchResults.enumerate() {
-            fetchResult.enumerateObjectsUsingBlock({ (object, index, stop) -> Void in
-                let asset : PHAsset = object as! PHAsset
+        for (section, fetchResult) in assetFetchResults.enumerated() {
+            fetchResult.enumerateObjects({ (asset, index, stop) -> Void in
                 assets.append(asset)
-                if (section == indexPath.section && index == indexPath.item) {
+                if (section == (indexPath as NSIndexPath).section && index == (indexPath as NSIndexPath).item) {
                     selectedIndex = currentIndex
                 }
                 currentIndex += 1
@@ -127,16 +126,16 @@ class GridViewModel {
         return PhotoViewModel(assets: assets, selectedAsset: selectedIndex)
     }
     
-    func indexPathForSelectedIndex(selectedIndex: Int) -> NSIndexPath {
+    func indexPath(for selectedIndex: Int) -> IndexPath {
         var sectionTotal = 0
         
-        for (section, fetchResult) in assetFetchResults.enumerate() {
+        for (section, fetchResult) in assetFetchResults.enumerated() {
             if sectionTotal + fetchResult.count > selectedIndex {
-                return NSIndexPath(forItem: selectedIndex - sectionTotal, inSection: section)
+                return IndexPath(item: selectedIndex - sectionTotal, section: section)
             }
             sectionTotal += fetchResult.count
         }
         
-        return NSIndexPath()
+        return IndexPath()
     }
 }

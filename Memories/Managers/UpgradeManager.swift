@@ -11,38 +11,41 @@ import Security
 import RMStore
 
 class UpgradeManager {
-    static let UpgradeProductId = "com.luacheia.memories.Upgrade"
-    static let HighQualityViewCountKey = "HighQualityViewCount"
-    static let ViewCountDateKey = "ViewCountDate"
-    static let UpgradePromptShownKey = "UpgradePromptShown"
+    static let upgradeProductId = "com.luacheia.memories.Upgrade"
+    
+    struct Key {
+        static let highQualityViewCount = "HighQualityViewCount"
+        static let viewCountDate = "ViewCountDate"
+        static let upgradePromptShown = "UpgradePromptShown"
+    }
     
     static let MaxHighQualityViewCount = 5
     
-    static private let userDefaults = NSUserDefaults.standardUserDefaults()
+    static private let userDefaults = UserDefaults.standard
     
-    static private var priceFormatter : NSNumberFormatter = {
-        var formatter = NSNumberFormatter()
-        formatter.formatterBehavior = .Behavior10_4
-        formatter.numberStyle = .CurrencyStyle
+    static private var priceFormatter : NumberFormatter = {
+        var formatter = NumberFormatter()
+        formatter.formatterBehavior = .behavior10_4
+        formatter.numberStyle = .currency
         return formatter
     }()
     
     static private var transactionPersistor: RMStoreKeychainPersistence = RMStoreKeychainPersistence()
     
     static private var store : RMStore = {
-        var rmstore = RMStore.defaultStore()
-        rmstore.transactionPersistor = transactionPersistor
-        return rmstore
+        var rmstore = RMStore.default()
+        rmstore?.transactionPersistor = transactionPersistor
+        return rmstore!
     }()
     
     /// flag to indicate if the user been shown the upgrade prompt since starting the app
     static private var upgradePromptShown : Bool {
         get {
-            return userDefaults.boolForKey(UpgradePromptShownKey)
+            return userDefaults.bool(forKey: Key.upgradePromptShown)
         }
         
         set {
-            userDefaults.setBool(newValue, forKey: UpgradePromptShownKey)
+            userDefaults.set(newValue, forKey: Key.upgradePromptShown)
             userDefaults.synchronize()
         }
     }
@@ -52,13 +55,13 @@ class UpgradeManager {
     
     /// flag to indicate if the user upgraded the app
     static var upgraded : Bool = {
-        return transactionPersistor.isPurchasedProductOfIdentifier(UpgradeProductId)
+        return transactionPersistor.isPurchasedProduct(ofIdentifier: upgradeProductId)
         }() {
         
         didSet {
             if upgraded {
-                userDefaults.removeObjectForKey(ViewCountDateKey)
-                userDefaults.removeObjectForKey(HighQualityViewCountKey)
+                userDefaults.removeObject(forKey: Key.viewCountDate)
+                userDefaults.removeObject(forKey: Key.highQualityViewCount)
                 userDefaults.synchronize()
             }
         }
@@ -72,23 +75,23 @@ class UpgradeManager {
             }
         
             var count = 0
-            let today = NSDate()
+            let today = Date()
         
-            if let date = userDefaults.objectForKey(ViewCountDateKey) as? NSDate {
-                let day = NSCalendar.currentCalendar().ordinalityOfUnit(.Day, inUnit: .Era, forDate: date)
-                let now = NSCalendar.currentCalendar().ordinalityOfUnit(.Day, inUnit: .Era, forDate: today)
+            if let date = userDefaults.object(forKey: Key.viewCountDate) as? Date {
+                let day = Calendar.current.ordinality(of: .day, in: .era, for: date)
+                let now = Calendar.current.ordinality(of: .day, in: .era, for: today)
         
                 if day != now {
-                    userDefaults.setObject(today, forKey: ViewCountDateKey)
-                    userDefaults.setInteger(0, forKey: HighQualityViewCountKey)
-                    userDefaults.setBool(false, forKey: UpgradePromptShownKey)
+                    userDefaults.set(today, forKey: Key.viewCountDate)
+                    userDefaults.set(0, forKey: Key.highQualityViewCount)
+                    userDefaults.set(false, forKey: Key.upgradePromptShown)
                 } else {
-                    count = userDefaults.integerForKey(HighQualityViewCountKey)
+                    count = userDefaults.integer(forKey: Key.highQualityViewCount)
                 }
             } else {
-                userDefaults.setObject(today, forKey: ViewCountDateKey)
-                userDefaults.setInteger(0, forKey: HighQualityViewCountKey)
-                userDefaults.setBool(false, forKey: UpgradePromptShownKey)
+                userDefaults.set(today, forKey: Key.viewCountDate)
+                userDefaults.set(0, forKey: Key.highQualityViewCount)
+                userDefaults.set(false, forKey: Key.upgradePromptShown)
             }
             
             userDefaults.synchronize()
@@ -100,40 +103,40 @@ class UpgradeManager {
                 return
             }
             
-            userDefaults.setInteger(newValue, forKey: HighQualityViewCountKey)
+            userDefaults.set(newValue, forKey: Key.highQualityViewCount)
             userDefaults.synchronize()
         }
     }
 
-    static func getUpgradePrice(completion: ((price: String?) -> ())?) {
+    static func getUpgradePrice(thenCall completion: ((String?) -> ())?) {
         if let price = upgradePrice {
-            completion?(price: price)
+            completion?(price)
             return
         }
         
-        store.requestProducts(Set([UpgradeProductId]), success: { (products, invalidIds) -> Void in
-            if products.count > 0 {
+        store.requestProducts(Set([upgradeProductId]), success: { (products, invalidIds) -> Void in
+            if let products = products, products.count > 0 {
                 let product = products.first as! SKProduct
                 priceFormatter.locale = product.priceLocale
-                upgradePrice = priceFormatter.stringFromNumber(product.price)!
-                completion?(price: upgradePrice)
+                upgradePrice = priceFormatter.string(from: product.price)!
+                completion?(upgradePrice)
             }
         }) { (error) -> Void in
-            NSLog("Unabled to obtain upgrade price. Error: \(error.localizedDescription)")
-            completion?(price: nil)
+            NSLog("Unabled to obtain upgrade price. Error: \(error?.localizedDescription)")
+            completion?(nil)
         }
     }
     
     /// returns whether the user is allowed to view another high quality image
     static func highQualityViewAllowed() -> Bool {
-        if !upgraded { getUpgradePrice(nil) }
+        if !upgraded { getUpgradePrice(thenCall: nil) }
         return upgraded || highQualityViewCount < MaxHighQualityViewCount
     }
     
     /// prompts the user if they want to upgrade
-    static func promptForUpgradeInViewController(viewController: UIViewController, completion: ((upgraded: Bool) -> ())?) {
-        guard let price = upgradePrice where !upgradePromptShown else {
-            completion?(upgraded: false)
+    static func promptForUpgrade(in viewController: UIViewController, completion: ((Bool) -> ())?) {
+        guard let price = upgradePrice , !upgradePromptShown else {
+            completion?(false)
             return
         }
         
@@ -144,45 +147,46 @@ class UpgradeManager {
         
         let alert = UIAlertController(title: NSLocalizedString("Five a Day Limit", comment: "")
             , message: NSLocalizedString("You can view 5 full quality photos per day which you can share, favorite or delete. You can Upgrade to remove this restriction. The Upgrade option is also available in the settings page.", comment: "")
-            , preferredStyle: .Alert)
-        let upgrade = UIAlertAction(title: upgradeTitle, style: .Default, handler: { (action) -> Void in
-            UpgradeManager.upgrade(completion)
+            , preferredStyle: .alert)
+        let upgrade = UIAlertAction(title: upgradeTitle, style: .default, handler: { (action) -> Void in
+            UpgradeManager.upgrade(thenCall: completion)
         })
-        let restore = UIAlertAction(title: NSLocalizedString("Restore", comment: ""), style: .Default, handler: { (action) -> Void in
-            UpgradeManager.restore(completion)
+        let restore = UIAlertAction(title: NSLocalizedString("Restore", comment: ""), style: .default, handler: { (action) -> Void in
+            UpgradeManager.restore(thenCall: completion)
         })
-        let notNow = UIAlertAction(title: NSLocalizedString("Not Now", comment: ""), style: .Cancel, handler: { (action) -> Void in
-            completion?(upgraded: false)
+        let notNow = UIAlertAction(title: NSLocalizedString("Not Now", comment: ""), style: .cancel, handler: { (action) -> Void in
+            completion?(false)
         })
         alert.addAction(upgrade)
         alert.addAction(restore)
         alert.addAction(notNow)
         
-        viewController.presentViewController(alert, animated: true, completion: nil)
+        viewController.present(alert, animated: true, completion: nil)
     }
     
-    static func upgrade(completion: ((success: Bool) -> ())?) {
-        store.addPayment(UpgradeProductId, success: { (transaction) -> Void in
+    static func upgrade(thenCall completion: ((Bool) -> ())?) {
+        store.addPayment(upgradeProductId, success: { (transaction) -> Void in
             upgraded = true
-            completion?(success: true)
+            completion?(true)
         }) { (transaction, error) -> Void in
-            completion?(success: false)
+            completion?(false)
         }
     }
     
-    static func restore(completion: ((success: Bool) -> ())?) {
-        store.restoreTransactionsOnSuccess( { (transactions) -> Void in
-            guard transactions.count > 0,
-                let transaction = transactions[0] as? SKPaymentTransaction
-                where transaction.payment.productIdentifier == UpgradeProductId else {
-                    completion?(success: false)
+    static func restore(thenCall completion: ((Bool) -> ())?) {
+        store.restoreTransactions( onSuccess: { (transactions) -> Void in
+            guard let transactions = transactions,
+                transactions.count > 0,
+                let transaction = transactions[0] as? SKPaymentTransaction,
+                transaction.payment.productIdentifier == upgradeProductId else {
+                    completion?(false)
                     return
             }
 
             upgraded = true
-            completion?(success: true)
+            completion?(true)
         }) { (error) -> Void in
-            completion?(success: false)
+            completion?(false)
         }
     }
 }

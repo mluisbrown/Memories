@@ -11,8 +11,8 @@ import UIKit
 
 public extension UITraitEnvironment {
     var thumbnailContentMode: UIViewContentMode {
-        let largeScreen = traitCollection.verticalSizeClass == .Regular &&
-                        traitCollection.horizontalSizeClass == .Regular
-        return largeScreen ? .ScaleAspectFit : .ScaleAspectFill
+        let largeScreen = traitCollection.verticalSizeClass == .regular &&
+                        traitCollection.horizontalSizeClass == .regular
+        return largeScreen ? .scaleAspectFit : .scaleAspectFill
     }
 }
