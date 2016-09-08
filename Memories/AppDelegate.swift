@@ -7,25 +7,20 @@
 //
 
 import UIKit
-import Fabric
-import Crashlytics
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-
-
-    func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-        Fabric.with([Crashlytics.self])
-        
-        NSUserDefaults.standardUserDefaults().registerDefaults([NotificationManager.NOTIFICATION_TIME_KEY : 1000,
-            NotificationManager.HAS_PROMPTED_KEY : false,
-            NotificationManager.NOTIFICATIONS_ENABLED_KEY: false])
+    
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey : Any]?) -> Bool {
+        UserDefaults.standard.register(defaults: [NotificationManager.Key.notificationTime : 1000,
+            NotificationManager.Key.hasPromptedForUserNotifications : false,
+            NotificationManager.Key.notificationsEnabled: false])
 
         // store the date of the notification that launched the app (if any)
         // so that we start the view controller with that date
-        if let notification = launchOptions?[UIApplicationLaunchOptionsLocalNotificationKey] as? UILocalNotification {
+        if let notification = launchOptions?[UIApplicationLaunchOptionsKey.localNotification] as? UILocalNotification {
             NotificationManager.setLaunchDate(notification.fireDate)
         }
         
@@ -35,17 +30,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
 
-    func application(application: UIApplication, didReceiveLocalNotification notification: UILocalNotification) {
-        if application.applicationState != .Active {
+    func application(_ application: UIApplication, didReceive notification: UILocalNotification) {
+        if application.applicationState != .active {
             NotificationManager.setLaunchDate(notification.fireDate)
         }
     }
     
     // MARK: Notification Settings
     
-    func application(application: UIApplication, didRegisterUserNotificationSettings notificationSettings: UIUserNotificationSettings) {
-        NSUserDefaults.standardUserDefaults().setBool(true, forKey: NotificationManager.HAS_PROMPTED_KEY)
-        NSUserDefaults.standardUserDefaults().synchronize()
+    func application(_ application: UIApplication, didRegister notificationSettings: UIUserNotificationSettings) {
+        UserDefaults.standard.set(true, forKey: NotificationManager.Key.hasPromptedForUserNotifications)
     }
 
 }

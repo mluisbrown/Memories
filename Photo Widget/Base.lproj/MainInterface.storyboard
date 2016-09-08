@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="M4Y-Lb-cyx">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11191" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES" initialViewController="M4Y-Lb-cyx">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11156"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
         <!--Today View Controller-->
@@ -15,37 +16,34 @@
                         <viewControllerLayoutGuide type="bottom" id="FKl-LY-JtV"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" simulatedAppContext="notificationCenter" id="S3S-Oj-5AN">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="280"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="245"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="eAH-P3-ahx">
-                                <rect key="frame" x="16" y="0.0" width="288" height="239"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" priority="750" constant="240" id="ovR-x6-l1d"/>
+                                    <constraint firstAttribute="height" priority="751" constant="200" id="ovR-x6-l1d"/>
                                 </constraints>
                             </imageView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hpG-l7-kDG" userLabel="Previous Button">
-                                <rect key="frame" x="21" y="238" width="40" height="40"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="40" id="2gu-Q1-bHJ"/>
                                     <constraint firstAttribute="width" constant="40" id="hER-gB-ozw"/>
                                 </constraints>
-                                <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="tintColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                 <inset key="imageEdgeInsets" minX="5" minY="5" maxX="5" maxY="5"/>
                                 <state key="normal" image="leftArrow">
-                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 </state>
                                 <connections>
                                     <action selector="previousBtnTapped:" destination="M4Y-Lb-cyx" eventType="touchUpInside" id="ZUI-I8-SdT"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8UB-C3-vCh" userLabel="Next Button">
-                                <rect key="frame" x="259" y="238" width="40" height="40"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="40" id="gj2-HO-IAa"/>
                                     <constraint firstAttribute="height" constant="40" id="pQW-gm-l2t"/>
                                 </constraints>
-                                <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="tintColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                 <inset key="imageEdgeInsets" minX="5" minY="5" maxX="5" maxY="5"/>
                                 <state key="normal" image="rightArrow"/>
                                 <connections>
@@ -53,9 +51,8 @@
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="2015" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lXA-Fe-1Yw">
-                                <rect key="frame" x="141" y="247" width="38" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
@@ -63,12 +60,13 @@
                             <constraint firstItem="eAH-P3-ahx" firstAttribute="trailing" secondItem="S3S-Oj-5AN" secondAttribute="trailingMargin" id="8mP-co-ROv"/>
                             <constraint firstItem="eAH-P3-ahx" firstAttribute="leading" secondItem="S3S-Oj-5AN" secondAttribute="leadingMargin" id="CeD-Ka-0WY"/>
                             <constraint firstItem="lXA-Fe-1Yw" firstAttribute="centerY" secondItem="hpG-l7-kDG" secondAttribute="centerY" id="Ibz-58-7gN"/>
+                            <constraint firstItem="lXA-Fe-1Yw" firstAttribute="centerY" secondItem="S3S-Oj-5AN" secondAttribute="centerY" priority="250" id="M7z-kB-gqM"/>
                             <constraint firstItem="lXA-Fe-1Yw" firstAttribute="centerX" secondItem="S3S-Oj-5AN" secondAttribute="centerX" id="OlU-on-QYf"/>
                             <constraint firstItem="hpG-l7-kDG" firstAttribute="leading" secondItem="S3S-Oj-5AN" secondAttribute="leadingMargin" constant="5" id="UoZ-oi-m7W"/>
-                            <constraint firstItem="FKl-LY-JtV" firstAttribute="top" secondItem="lXA-Fe-1Yw" secondAttribute="bottom" priority="751" constant="12" id="Zca-Ij-ttg"/>
+                            <constraint firstItem="FKl-LY-JtV" firstAttribute="top" relation="greaterThanOrEqual" secondItem="lXA-Fe-1Yw" secondAttribute="bottom" constant="12" id="Zca-Ij-ttg"/>
                             <constraint firstItem="8UB-C3-vCh" firstAttribute="centerY" secondItem="lXA-Fe-1Yw" secondAttribute="centerY" id="g6I-Os-eSt"/>
                             <constraint firstItem="eAH-P3-ahx" firstAttribute="top" secondItem="Ft6-oW-KC0" secondAttribute="bottom" id="pcJ-Ch-1ho"/>
-                            <constraint firstItem="lXA-Fe-1Yw" firstAttribute="top" secondItem="eAH-P3-ahx" secondAttribute="bottom" constant="8" id="rqD-jw-ctT"/>
+                            <constraint firstItem="lXA-Fe-1Yw" firstAttribute="top" relation="greaterThanOrEqual" secondItem="eAH-P3-ahx" secondAttribute="bottom" priority="251" constant="8" id="rqD-jw-ctT"/>
                             <constraint firstItem="8UB-C3-vCh" firstAttribute="trailing" secondItem="S3S-Oj-5AN" secondAttribute="trailingMargin" constant="-5" id="vhg-30-hZS"/>
                         </constraints>
                     </view>
@@ -77,7 +75,7 @@
                     <nil key="simulatedTopBarMetrics"/>
                     <nil key="simulatedBottomBarMetrics"/>
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-                    <size key="freeformSize" width="320" height="280"/>
+                    <size key="freeformSize" width="320" height="245"/>
                     <connections>
                         <outlet property="photoHeightConstraint" destination="ovR-x6-l1d" id="dWK-RG-vyL"/>
                         <outlet property="photoView" destination="eAH-P3-ahx" id="iZZ-0b-K3D"/>
@@ -93,4 +91,9 @@
         <image name="leftArrow" width="25" height="25"/>
         <image name="rightArrow" width="25" height="25"/>
     </resources>
+    <simulatedMetricsContainer key="defaultSimulatedMetrics">
+        <simulatedStatusBarMetrics key="statusBar"/>
+        <simulatedOrientationMetrics key="orientation"/>
+        <simulatedScreenMetrics key="destination" type="retina4_7.fullscreen"/>
+    </simulatedMetricsContainer>
 </document>

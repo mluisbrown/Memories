@@ -18,12 +18,12 @@ class DatePickerViewController: UIViewController, UIPickerViewDataSource, UIPick
     @IBOutlet weak var goButton: UIButton!
     @IBOutlet weak var todayButton: UIButton!
 
-    let gregorian = NSDate.gregorianCalendar
+    let gregorian = Date.gregorianCalendar
     
     var newDateSelected = false
-    var initialDate: NSDate?
-    var selectedDate: NSDate?
-    var datesWithCount: [(date: NSDate, count: Int)] = []
+    var initialDate: Date?
+    var selectedDate: Date?
+    var datesWithCount: [(date: Date, count: Int)] = []
     
     let progressView = DACircularProgressView()
     let assetHelper = PHAssetHelper()
@@ -32,13 +32,13 @@ class DatePickerViewController: UIViewController, UIPickerViewDataSource, UIPick
         super.viewDidLoad()
 
         goButton.layer.borderWidth = 1
-        goButton.layer.borderColor = UIColor.whiteColor().CGColor
+        goButton.layer.borderColor = UIColor.white.cgColor
         goButton.layer.cornerRadius = 4
         todayButton.layer.borderWidth = 1
-        todayButton.layer.borderColor = UIColor.whiteColor().CGColor
+        todayButton.layer.borderColor = UIColor.white.cgColor
         todayButton.layer.cornerRadius = 4
         
-        progressView.trackTintColor = UIColor.clearColor()
+        progressView.trackTintColor = UIColor.clear
         progressView.thicknessRatio = 0.1
         view.addSubview(progressView)
         
@@ -49,19 +49,19 @@ class DatePickerViewController: UIViewController, UIPickerViewDataSource, UIPick
         }
     }
     
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         self.progressView.setProgress(0.33, animated: false)
         self.progressView.indeterminateDuration = 1
         self.progressView.indeterminate = 1
         
-        self.buildDatesWithCount(progressView) {
+        self.buildDatesWithCount {
             self.datesWithCount = $0
             self.progressView.indeterminate = 0
-            self.progressView.hidden = true
+            self.progressView.isHidden = true
             self.datePicker.reloadAllComponents()
             
             if let initialDate = self.initialDate {
-                if let initialRow = self.getInitialRow(initialDate) {
+                if let initialRow = self.getInitialRow(forDate: initialDate) {
                     self.datePicker.selectRow(initialRow, inComponent: 0, animated: false)
                 }
             }
@@ -70,32 +70,32 @@ class DatePickerViewController: UIViewController, UIPickerViewDataSource, UIPick
     
 // MARK: UIPickerViewDataSource
     
-    func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
     }
     
-    func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         return datesWithCount.count;
     }
     
 // MARK: UIPickerViewDelegate
     
-    func pickerView(pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusingView view: UIView?) -> UIView {
+    func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
         var pickerRowView = view as! DatePickerRowView!
         if view == nil {
             pickerRowView = DatePickerRowView()
         }
 
-        pickerRowView.setData(datesWithCount[row].date, count: datesWithCount[row].count)
-        return pickerRowView
+        pickerRowView?.setData(date: datesWithCount[row].date, count: datesWithCount[row].count)
+        return pickerRowView!
     }
     
 // Actions
-    @IBAction func selectDateAndClose(sender: UIButton) {
-        selectedDate = datesWithCount[datePicker.selectedRowInComponent(0)].date
+    @IBAction func selectDateAndClose(_ sender: UIButton) {
+        selectedDate = datesWithCount[datePicker.selectedRow(inComponent: 0)].date
 
         if let ppc = self.popoverPresentationController {
-            presentingViewController?.dismissViewControllerAnimated(true) {
+            presentingViewController?.dismiss(animated: true) {
                 if let ppcDelegate = ppc.delegate {
                     ppcDelegate.popoverPresentationControllerDidDismissPopover?(ppc)
                 }
@@ -103,43 +103,43 @@ class DatePickerViewController: UIViewController, UIPickerViewDataSource, UIPick
         }
     }
 
-    @IBAction func gotoToday(sender: UIButton) {
-        if let todayRow = self.getInitialRow(NSDate()) {
+    @IBAction func gotoToday(_ sender: UIButton) {
+        if let todayRow = self.getInitialRow(forDate: Date()) {
             self.datePicker.selectRow(todayRow, inComponent: 0, animated: true)
         }
     }
     
     
 // MARK: helpers
-    private func getInitialRow(initialDate : NSDate) -> Int? {
-        let initialDay = gregorian.ordinalityOfUnit(.Day, inUnit: .Era, forDate: initialDate)
+    private func getInitialRow(forDate initialDate : Date) -> Int? {
+        let initialDay = gregorian.ordinality(of: .day, in: .era, for: initialDate)
         
         let diffs: [Int] = datesWithCount.map() {
-            let countDay = gregorian.ordinalityOfUnit(.Day, inUnit: .Era, forDate: $0.date)
-            return abs(countDay - initialDay)
+            let countDay = gregorian.ordinality(of: .day, in: .era, for: $0.date)
+            return abs(countDay! - initialDay!)
         }
 
         // get the index of the smallest date difference (ie, the closest matching date)
-        return zip(diffs, diffs.indices).minElement { $0.0 < $1.0 }.map { $0.1 }
+        return zip(diffs, diffs.indices).min { $0.0 < $1.0 }.map { $0.1 }
     }
     
-    private func buildDatesWithCount(progressView: DACircularProgressView, completion: (datesWithCount: [(date: NSDate, count: Int)]) -> ()) {
-        var datesMap = [NSDate : Int]()
+    private func buildDatesWithCount(thenCall completion: @escaping (_ datesWithCount: [(date: Date, count: Int)]) -> ()) {
+        var datesMap = [Date : Int]()
         
         // don't want to trigger a "Allow Photos?"
-        guard PHPhotoLibrary.authorizationStatus() == .Authorized else {
-            completion(datesWithCount: [])
+        guard PHPhotoLibrary.authorizationStatus() == .authorized else {
+            completion([])
             return
         }
         
-        dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0)) {
+        DispatchQueue.global(qos: .userInitiated).async {
             datesMap = self.assetHelper.datesMap()
 
-            dispatch_async(dispatch_get_main_queue()) {
-                completion(datesWithCount: datesMap.map {
+            DispatchQueue.main.async {
+                completion(datesMap.map {
                     (date: $0.0, count: $0.1)
-                }.sort {
-                    $0.date.compare($1.date) == .OrderedAscending
+                }.sorted {
+                    $0.date.compare($1.date) == .orderedAscending
                 })
             }
         }

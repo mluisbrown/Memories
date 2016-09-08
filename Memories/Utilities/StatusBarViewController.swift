@@ -9,7 +9,7 @@
 import UIKit
 
 protocol StatusBarViewController {
-    func hideStatusBar(hide: Bool)
+    func hideStatusBar(_ hide: Bool)
 }
 
 extension UIViewController {

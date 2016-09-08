@@ -1,3 +1,3 @@
 github "mluisbrown/RMStore" "master"
 github "mluisbrown/DACircularProgress" "master"
-github "robb/Cartography" "master"
+github "mluisbrown/Cartography" "swift3"
