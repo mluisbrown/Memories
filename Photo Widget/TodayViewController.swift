@@ -22,35 +22,40 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     var readyForDisplay = false
     var assetDisplayed = false
     
-    let photoViewHeight = CGFloat(integerLiteral: 200)
+    let expandedWidgetHeight = CGFloat(integerLiteral: 245)
+    let photoViewExpandedHeight = CGFloat(integerLiteral: 200)
     let cacheSize = CGSize(width: 256, height: 256)
-    let dateFormatter = NSDateFormatter()
+    let dateFormatter = DateFormatter()
     let requestOptions: PHImageRequestOptions = {
         let options = PHImageRequestOptions()
-        options.networkAccessAllowed = false
-        options.deliveryMode = .Opportunistic
-        options.synchronous = false
+        options.isNetworkAccessAllowed = false
+        options.deliveryMode = .opportunistic
+        options.isSynchronous = false
         return options
     }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        if #available(iOSApplicationExtension 10.0, *) {
+            extensionContext?.widgetLargestAvailableDisplayMode = .expanded
+        }
+        
         dateFormatter.dateFormat = "YYYY"
         yearLabel.text = "No Memories Today :("
         
 #if (arch(i386) || arch(x86_64)) && os(iOS)
-        let date = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!.dateWithEra(1, year: 2016, month: 8, day: 8, hour: 0, minute: 0, second: 0, nanosecond: 0)!
+    let date = Calendar(identifier: Calendar.Identifier.gregorian).date(from: DateComponents(era: 1, year: 2016, month: 8, day: 8, hour: 0, minute: 0, second: 0, nanosecond: 0))!
 #else
-        let date = NSDate()
+        let date = Date()
 #endif
         
-        if PHPhotoLibrary.authorizationStatus() == .Authorized {
+        if PHPhotoLibrary.authorizationStatus() == .authorized {
             imageManager = PHCachingImageManager()
             model = TodayViewModel(date: date) { [weak self] in
                 guard let `self` = self else { return }
                 
-                self.imageManager.startCachingImagesForAssets(self.model!.assets, targetSize: self.cacheSize, contentMode: .AspectFill, options: self.requestOptions)
+                self.imageManager.startCachingImages(for: self.model!.assets, targetSize: self.cacheSize, contentMode: .aspectFill, options: self.requestOptions)
                 if self.readyForDisplay && !self.assetDisplayed {
                     self.displayAsset(self.model!.currentAsset())
                 }
@@ -59,10 +64,10 @@ class TodayViewController: UIViewController, NCWidgetProviding {
         
         let imageTapper = UITapGestureRecognizer(target: self, action: #selector(TodayViewController.launchApp))
         photoView.addGestureRecognizer(imageTapper)
-        photoView.userInteractionEnabled = true
+        photoView.isUserInteractionEnabled = true
     }
 
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         readyForDisplay = true
         guard let model = self.model else {
             return
@@ -76,10 +81,10 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     }
     
     func launchApp() {
-        extensionContext?.openURL(NSURL(string: "memories://")!, completionHandler: nil)
+        extensionContext?.open(URL(string: "memories://")!, completionHandler: nil)
     }
     
-    @IBAction func nextBtnTapped(sender: UIButton) {
+    @IBAction func nextBtnTapped(_ sender: UIButton) {
         guard let model = self.model else {
             return
         }
@@ -87,7 +92,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
         displayAsset(model.nextAsset())
     }
     
-    @IBAction func previousBtnTapped(sender: UIButton) {
+    @IBAction func previousBtnTapped(_ sender: UIButton) {
         guard let model = self.model else {
             return
         }
@@ -95,7 +100,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
         displayAsset(model.previousAsset())
     }
     
-    private func displayAsset(asset: PHAsset?, completion: (Bool -> Void)? = nil) {
+    private func displayAsset(_ asset: PHAsset?, completion: ((Bool) -> Void)? = nil) {
         guard let asset = asset else {
             self.currentAsset = nil
             hidePhotoView(true) {
@@ -105,17 +110,17 @@ class TodayViewController: UIViewController, NCWidgetProviding {
         }
         
         assetDisplayed = true
-        imageManager.requestImageForAsset(asset, targetSize: cacheSize, contentMode: .AspectFill, options: requestOptions) { result, userInfo in
-            if let image = result, assetDate = asset.creationDate {
+        imageManager.requestImage(for: asset, targetSize: cacheSize, contentMode: .aspectFill, options: requestOptions) { result, userInfo in
+            if let image = result, let assetDate = asset.creationDate {
                 self.hidePhotoView(false) {
-                    let imageWider = image.size.width > self.photoView.image?.size.width
+                    let imageWider = image.size.width > self.photoView.image?.size.width ?? CGFloat.leastNormalMagnitude
                     let newAsset = asset != self.currentAsset
                     let newData = newAsset || imageWider
                     
                     if newData {
                         self.currentAsset = asset
                         self.photoView.image = image
-                        self.yearLabel.text = self.dateFormatter.stringFromDate(assetDate)
+                        self.yearLabel.text = self.dateFormatter.string(from: assetDate)
                     }
                     
                     completion?(newData)
@@ -127,14 +132,26 @@ class TodayViewController: UIViewController, NCWidgetProviding {
         }
     }
 
-    private func hidePhotoView(hide: Bool, completion: (Void -> Void)?) {
-        let constant = hide ? 0 : photoViewHeight
+    private func hidePhotoView(_ hide: Bool, completion: ((Void) -> Void)?) {
+        let constant: CGFloat
+        if #available(iOSApplicationExtension 10.0, *) {
+            constant = hide ? 0 : photoViewHeightFor(activeDisplayMode: extensionContext!.widgetActiveDisplayMode)
+        } else {
+            constant = hide ? 0 : photoViewExpandedHeight
+        }
         
-        if photoHeightConstraint.constant != constant {
-            photoHeightConstraint.constant = constant
+        setPhotoViewHeight(constant, completion: completion)
+    }
+    
+    private func setPhotoViewHeight(_ height: CGFloat, completion: ((Void) -> Void)? = nil) {
+        let showYearLabel = height == photoViewExpandedHeight || height == 0
+        
+        if photoHeightConstraint.constant != height {
+            photoHeightConstraint.constant = height
             
-            UIView.animateWithDuration(0.25, animations: {
+            UIView.animate(withDuration: 0.25, animations: {
                 self.view.layoutIfNeeded()
+                self.yearLabel.alpha = showYearLabel ? 1.0 : 0.0
             }) { Bool in
                 completion?()
             }
@@ -144,28 +161,57 @@ class TodayViewController: UIViewController, NCWidgetProviding {
         }
     }
     
-    // MARK: NCWidgetProviding
-    
-    func widgetMarginInsetsForProposedMarginInsets(defaultMarginInsets: UIEdgeInsets) -> UIEdgeInsets {
-        return UIEdgeInsetsZero
+    @available(iOSApplicationExtension 10.0, *)
+    private func photoViewHeightFor(activeDisplayMode: NCWidgetDisplayMode) -> CGFloat {
+        let photoViewHeight: CGFloat
+        
+        switch activeDisplayMode {
+        case .compact:
+            photoViewHeight = extensionContext!.widgetMaximumSize(for: activeDisplayMode).height
+        case .expanded:
+            photoViewHeight = photoViewExpandedHeight
+        }
+        
+        return photoViewHeight
     }
     
-    func widgetPerformUpdateWithCompletionHandler(completionHandler: NCUpdateResult -> Void) {
+    // MARK: NCWidgetProviding
+    
+    func widgetMarginInsets(forProposedMarginInsets defaultMarginInsets: UIEdgeInsets) -> UIEdgeInsets {
+        return .zero
+    }
+    
+    func widgetPerformUpdate(completionHandler: @escaping (NCUpdateResult) -> Swift.Void) {
         readyForDisplay = true
 
         guard let model = self.model else {
-            completionHandler(NCUpdateResult.Failed)
+            completionHandler(NCUpdateResult.failed)
             return
         }
         
         displayAsset(model.currentAsset()) { newData in
             if newData {
-                completionHandler(NCUpdateResult.NewData)
+                completionHandler(NCUpdateResult.newData)
             }
             else {
-                completionHandler(NCUpdateResult.NoData)
+                completionHandler(NCUpdateResult.noData)
             }
         }
+    }
+    
+    @available(iOSApplicationExtension 10.0, *)
+    func widgetActiveDisplayModeDidChange(_ activeDisplayMode: NCWidgetDisplayMode, withMaximumSize maxSize: CGSize) {
+        
+        switch activeDisplayMode {
+        case .compact:
+            preferredContentSize = maxSize
+        case .expanded:
+            preferredContentSize = CGSize(width: maxSize.width, height: expandedWidgetHeight)
+        }
+        
+        let showingPhoto = photoHeightConstraint.constant != 0
+        let height = showingPhoto ? photoViewHeightFor(activeDisplayMode: activeDisplayMode) : 0
+        setPhotoViewHeight(height)
     }
     
 }

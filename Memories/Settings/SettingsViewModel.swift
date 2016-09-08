@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct SettingsViewModel {
+class SettingsViewModel {
     let notificationsEnabled : Dynamic<Bool>
     let notificationHour : Dynamic<Int>
     let notificationMinute : Dynamic<Int>
@@ -33,7 +33,7 @@ struct SettingsViewModel {
         self.upgradeButtonText = Dynamic(buy)
         self.storeAvailable = Dynamic(UpgradeManager.upgradePrice != nil)
         
-        UpgradeManager.getUpgradePrice { (price) in
+        UpgradeManager.getUpgradePrice { price in
             if let price = price {
                 self.upgradeButtonText.value = buy + " " + price
                 self.storeAvailable.value = true

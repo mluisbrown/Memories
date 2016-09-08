@@ -11,30 +11,30 @@ import Photos
 
 public class PHAssetHelper {
     
-    private static var datesMapCache : [NSDate : Int]?
+    private static var datesMapCache : [Date : Int]?
     private static var eariestAssetYearCache : Int?
     
-    private let userDefaults : NSUserDefaults
+    private let userDefaults : UserDefaults
     private let assetSourceTypesKey = "assetSourceTypes"
 
     public static let sourceTypesChangedNotification = "PHAssetHelperSourceTypesChangedNotification"
     
     public init() {
-        userDefaults = NSUserDefaults.init(suiteName: "group.com.luacheia.memories")!
+        userDefaults = UserDefaults.init(suiteName: "group.com.luacheia.memories")!
         if #available(iOS 9.0, *) {
-            let types: PHAssetSourceType = [.TypeUserLibrary, .TypeiTunesSynced, .TypeCloudShared]
-            userDefaults.registerDefaults([assetSourceTypesKey : NSNumber(unsignedLong: types.rawValue)])
+            let types: PHAssetSourceType = [.typeUserLibrary, .typeiTunesSynced, .typeCloudShared]
+            userDefaults.register(defaults: [assetSourceTypesKey : NSNumber(value: types.rawValue)])
         }
     }
 
     @available(iOS 9.0, *)
     public var assetSourceTypes: PHAssetSourceType {
         get {
-            return PHAssetSourceType(rawValue: (userDefaults.valueForKey(assetSourceTypesKey) as! NSNumber).unsignedLongValue)
+            return PHAssetSourceType(rawValue: (userDefaults.value(forKey: assetSourceTypesKey) as! NSNumber).uintValue)
         }
         
         set {
-            userDefaults.setValue(NSNumber(unsignedLong: newValue.rawValue), forKey: assetSourceTypesKey)
+            userDefaults.setValue(NSNumber(value: newValue.rawValue), forKey: assetSourceTypesKey)
         }
     }
     
@@ -47,7 +47,7 @@ public class PHAssetHelper {
         var year = 2000
         
         let fetchResult = allAssetsInDateOrder()
-        if let firstAsset = fetchResult.firstObject as? PHAsset {
+        if let firstAsset = fetchResult.firstObject as PHAsset? {
             if let firstDate = firstAsset.creationDate {
                 year = firstDate.year
             }
@@ -62,91 +62,89 @@ public class PHAssetHelper {
     public func refreshDatesMapCache() {
         PHAssetHelper.datesMapCache = nil
         
-        let operation = NSBlockOperation {
+        let operation = BlockOperation {
             PHAssetHelper().datesMap()
         }
         
-        let queue = NSOperationQueue()
+        let queue = OperationQueue()
         queue.addOperation(operation)
     }
     
-    public func datesMap() -> [NSDate : Int] {
+    @discardableResult public func datesMap() -> [Date : Int] {
         guard PHAssetHelper.datesMapCache == nil else {
             return PHAssetHelper.datesMapCache!
         }
         
-        var datesMap = [NSDate : Int]()
-        guard PHPhotoLibrary.authorizationStatus() == .Authorized else {
+        var datesMap = [Date : Int]()
+        guard PHPhotoLibrary.authorizationStatus() == .authorized else {
             return datesMap
         }
         
         let fetchResult = allAssetsInDateOrder()
-        let currentYear = NSDate().year
-        let gregorian = NSDate.gregorianCalendar
+        let currentYear = Date().year
+        let gregorian = Date.gregorianCalendar
         
-        fetchResult.enumerateObjectsUsingBlock { object, index, stop in
-            let asset : PHAsset = object as! PHAsset
-            let comps = gregorian.components([.Month, .Day], fromDate: asset.creationDate!)
-            let date = gregorian.dateWithEra(1, year: currentYear, month: comps.month, day: comps.day, hour: 12, minute: 0, second: 0, nanosecond: 0)!
+        fetchResult.enumerateObjects( { (asset, index, stop) -> Void in
+            let comps = gregorian.dateComponents([.month, .day], from: asset.creationDate!)
+            let date = gregorian.date(from: DateComponents(era: 1, year: currentYear, month: comps.month!, day: comps.day!, hour: 12, minute: 0, second: 0, nanosecond: 0))!
             
             if let entry = datesMap[date] {
                 datesMap[date] = entry + 1
             } else {
                 datesMap[date] = 1
             }
-        }
+        })
         
         PHAssetHelper.datesMapCache = datesMap
         return datesMap
     }
     
-    public func allAssetsInDateOrder() -> PHFetchResult {
+    public func allAssetsInDateOrder() -> PHFetchResult<PHAsset> {
         let options = PHFetchOptions()
         options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
         if #available(iOS 9.0, *) {
             options.includeAssetSourceTypes = assetSourceTypes
         }
         
-        return PHAsset.fetchAssetsWithMediaType(.Image, options: options)
+        return PHAsset.fetchAssets(with: .image, options: options)
     }
     
-    public func allAssetsForDateInAllYears(date: NSDate) -> [PHAsset] {
-        let assetFetchResults = fetchResultsForDateInAllYears(date)
+    public func allAssetsForAllYears(with date: Date) -> [PHAsset] {
+        let assetFetchResults = fetchResultsForAllYears(with: date)
         var assets : [PHAsset] = [PHAsset]()
         
         for fetchResult in assetFetchResults {
-            fetchResult.enumerateObjectsUsingBlock { object, index, stop in
-                let asset : PHAsset = object as! PHAsset
+            fetchResult.enumerateObjects({ (asset, index, stop) -> Void in
                 assets.append(asset)
-            }
+            })
         }
         
         return assets
     }
     
-    public func fetchResultsForDateInAllYears(date : NSDate) -> [PHFetchResult] {
+    public func fetchResultsForAllYears(with date : Date) -> [PHFetchResult<PHAsset>] {
         let options = PHFetchOptions()
         options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
         if #available(iOS 9.0, *) {
             options.includeAssetSourceTypes = assetSourceTypes
         }
         
-        let startAndEndDates = startAndEndDatesForDateInYears(date, fromYear: earliestAssetYear(), toYear: NSDate().year)
+        let startAndEndDates = self.startAndEndDates(for: date, fromYear: earliestAssetYear(), toYear: Date().year)
         
         return startAndEndDates.map {
             NSPredicate(format: "creationDate >= %@ && creationDate <= %@", argumentArray: [$0.startDate, $0.endDate])
         }.map {
             options.predicate = $0
-            return PHAsset.fetchAssetsWithMediaType(.Image, options: options)
+            return PHAsset.fetchAssets(with: .image, options: options)
         }.filter {
             $0.count > 0
         }
     }
     
-    private func startAndEndDatesForDateInYears(date: NSDate, fromYear : Int, toYear : Int) -> [(startDate: NSDate, endDate: NSDate)] {
-        let gregorian = NSDate.gregorianCalendar
-        let startComps = gregorian.components([.Month, .Day] , fromDate: date)
-        let endComps = gregorian.components([.Month, .Day] , fromDate: date)
+    private func startAndEndDates(for date: Date, fromYear : Int, toYear : Int) -> [(startDate: Date, endDate: Date)] {
+        let gregorian = Date.gregorianCalendar
+        var startComps = gregorian.dateComponents([.month, .day] , from: date)
+        var endComps = gregorian.dateComponents([.month, .day] , from: date)
         
         startComps.hour = 0
         startComps.minute = 0
@@ -159,7 +157,7 @@ public class PHAssetHelper {
             startComps.year = $0
             endComps.year = $0
             
-            return (gregorian.dateFromComponents(startComps)!, gregorian.dateFromComponents(endComps)!)
+            return (gregorian.date(from: startComps)!, gregorian.date(from: endComps)!)
         }
     }
     

@@ -36,13 +36,13 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
     
     let sourcesSection = 2
     
-    func shouldHideSection(section: Int) -> Bool {
+    func shouldHideSection(_ section: Int) -> Bool {
         return section == sourcesSection && hideSourcesSection
     }
     
     var viewModel : SettingsViewModel? {
         willSet {
-            if let model = viewModel where newValue == nil {
+            if let model = viewModel, newValue == nil {
                 model.notificationsEnabled.bind(nil)
                 model.notificationHour.bind(nil)
                 model.notificationMinute.bind(nil)
@@ -59,14 +59,14 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
             if let model = viewModel {
                 model.notificationsEnabled.bindAndFire {
                     [unowned self] in
-                    self.notificationsSwitch.on = $0
+                    self.notificationsSwitch.isOn = $0
                     if $0 {
                         NotificationManager.enableNotifications()
-                        self.timePicker.userInteractionEnabled = true
+                        self.timePicker.isUserInteractionEnabled = true
                         self.timePicker.alpha = 1
                     } else {
                         NotificationManager.disableNotifications()
-                        self.timePicker.userInteractionEnabled = false
+                        self.timePicker.isUserInteractionEnabled = false
                         self.timePicker.alpha = 0.5
                     }
                 }
@@ -75,35 +75,35 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
                     [unowned self] in
                     let hour = $0
                     let minute = model.notificationMinute.value
-                    self.timePicker.date = self.timePicker.calendar.dateWithEra(1, year: 1970, month: 1, day: 1, hour: hour, minute: minute, second: 0, nanosecond: 0)!
+                    self.timePicker.date = self.timePicker.calendar.date(from: DateComponents(era: 1, year: 1970, month: 1, day: 1, hour: hour, minute: minute, second: 0, nanosecond: 0))!
                 }
                 
                 model.notificationMinute.bindAndFire {
                     [unowned self] in
                     let hour = model.notificationHour.value
                     let minute = $0
-                    self.timePicker.date = self.timePicker.calendar.dateWithEra(1, year: 1970, month: 1, day: 1, hour: hour, minute: minute, second: 0, nanosecond: 0)!
+                    self.timePicker.date = self.timePicker.calendar.date(from: DateComponents(era: 1, year: 1970, month: 1, day: 1, hour: hour, minute: minute, second: 0, nanosecond: 0))!
                 }
                 
                 model.sourcePhotoLibrary.bindAndFire {
                     [unowned self] in
-                    self.sourcePhotoLibrarySwitch.on = $0
+                    self.sourcePhotoLibrarySwitch.isOn = $0
                 }
                 
                 model.sourceICloudShare.bindAndFire {
                     [unowned self] in
-                    self.sourceICloudSharedSwitch.on = $0
+                    self.sourceICloudSharedSwitch.isOn = $0
                 }
 
                 model.sourceITunes.bindAndFire {
                     [unowned self] in
-                    self.sourceITunesSwitch.on = $0
+                    self.sourceITunesSwitch.isOn = $0
                 }
                 
                 model.userHasUpgraded.bindAndFire {
                     [unowned self] in
                     let value = $0
-                    UIView.animateWithDuration(0.25) {
+                    UIView.animate(withDuration: 0.25) {
                         self.upgradeButton.alpha = value ? 0 : 1
                         self.restoreButton.alpha = value ? 0 : 1
                         self.thankYouLabel.alpha = value ? 1 : 0
@@ -115,20 +115,20 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
                 
                 model.upgradeButtonText.bindAndFire {
                     [unowned self] in
-                    self.upgradeButton.setTitle($0, forState: .Normal)
+                    self.upgradeButton.setTitle($0, for: UIControlState())
                 }
                 
                 model.storeAvailable.bindAndFire {
                     [unowned self] in
                     let value = $0
-                    self.upgradeButton.enabled = value
-                    self.restoreButton.enabled = value
+                    self.upgradeButton.isEnabled = value
+                    self.restoreButton.isEnabled = value
                 }
             }
         }
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         let notificationTime = NotificationManager.notificationTime()
         let notificationsEnabled = NotificationManager.notificationsEnabled() && NotificationManager.notificationsAllowed()
         if #available(iOS 9.0, *) {
@@ -136,9 +136,9 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
             viewModel = SettingsViewModel(notificationsEnabled: notificationsEnabled,
                                           notificationHour: notificationTime.hour,
                                           notificationMinute: notificationTime.minute,
-                                          sourcePhotoLibrary: sources.contains(.TypeUserLibrary),
-                                          sourceICloudShare: sources.contains(.TypeCloudShared),
-                                          sourceITunes: sources.contains(.TypeiTunesSynced))
+                                          sourcePhotoLibrary: sources.contains(.typeUserLibrary),
+                                          sourceICloudShare: sources.contains(.typeCloudShared),
+                                          sourceITunes: sources.contains(.typeiTunesSynced))
         } else {
             viewModel = SettingsViewModel(notificationsEnabled: notificationsEnabled,
                                           notificationHour: notificationTime.hour,
@@ -150,7 +150,7 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
         
     }
     
-    override func viewWillDisappear(animated: Bool) {
+    override func viewWillDisappear(_ animated: Bool) {
         viewModel = nil
     }
     
@@ -159,7 +159,7 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
     }
     
     // this is called when the settings view is dismissed via the Done button
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // schedule or disable notifications
         if viewModel!.notificationsEnabled.value {
             NotificationManager.setNotificationTime(viewModel!.notificationHour.value, viewModel!.notificationMinute.value)
@@ -172,22 +172,22 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
         if #available(iOS 9.0, *) {
             var sources = PHAssetSourceType(rawValue: 0)
             
-            if viewModel!.sourcePhotoLibrary.value { sources.insert(.TypeUserLibrary) }
-            if viewModel!.sourceICloudShare.value { sources.insert(.TypeCloudShared) }
-            if viewModel!.sourceITunes.value { sources.insert(.TypeiTunesSynced) }
+            if viewModel!.sourcePhotoLibrary.value { _ = sources.insert(.typeUserLibrary) }
+            if viewModel!.sourceICloudShare.value { _ = sources.insert(.typeCloudShared) }
+            if viewModel!.sourceITunes.value { _ = sources.insert(.typeiTunesSynced) }
             
             if sources != assetHelper.assetSourceTypes {
                 assetHelper.assetSourceTypes = sources
                 assetHelper.refreshDatesMapCache()
-                NSNotificationCenter.defaultCenter().postNotificationName(PHAssetHelper.sourceTypesChangedNotification, object: self)
+                NotificationCenter.default.post(name: Notification.Name(rawValue: PHAssetHelper.sourceTypesChangedNotification), object: self)
             }
         }
     }
     
     // MARK: UITableViewDelegate
     
-    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let cell = tableView.cellForRowAtIndexPath(indexPath)
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let cell = tableView.cellForRow(at: indexPath)
         
         if cell == rateCell {
             rateApp()
@@ -197,22 +197,22 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
         }
     }
     
-    override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        guard !shouldHideSection(indexPath.section) else {
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        guard !shouldHideSection((indexPath as NSIndexPath).section) else {
             	return 0.1
         }
         
-        let timePickerIndexPath = NSIndexPath(forRow: 1, inSection: 1)
-        let upgradeIndexPath = NSIndexPath(forRow: 0, inSection: 0)
+        let timePickerIndexPath = IndexPath(row: 1, section: 1)
+        let upgradeIndexPath = IndexPath(row: 0, section: 0)
         
         let height : CGFloat
         switch indexPath {
         case timePickerIndexPath:
             height = 162
         case upgradeIndexPath:
-            let attributedString = NSAttributedString(string: upgradeLabel.text!, attributes: [NSFontAttributeName : UIFont.systemFontOfSize(14)])
-            let rect = attributedString.boundingRectWithSize(CGSize(width: tableView.bounds.width - 32, height: CGFloat.max)
-                , options: [.UsesLineFragmentOrigin, .UsesFontLeading]
+            let attributedString = NSAttributedString(string: upgradeLabel.text!, attributes: [NSFontAttributeName : UIFont.systemFont(ofSize: 14)])
+            let rect = attributedString.boundingRect(with: CGSize(width: tableView.bounds.width - 32, height: CGFloat.greatestFiniteMagnitude)
+                , options: [.usesLineFragmentOrigin, .usesFontLeading]
                 , context: nil)
             
             height = rect.height + 44 // space for the buttons etc
@@ -226,61 +226,61 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
     // the following methods overridden merely to be able to 
     // hide the Photo Sources section pre iOS 9 where this featur
     // is not supported
-    override func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return shouldHideSection(section) ? 0.1 : super.tableView(tableView, heightForHeaderInSection: section)
     }
     
-    override func tableView(tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+    override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         return shouldHideSection(section) ? 0.1 : super.tableView(tableView, heightForFooterInSection: section)
     }
     
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return shouldHideSection(section) ? 0 : super.tableView(tableView, numberOfRowsInSection: section)
     }
 
-    override func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         return shouldHideSection(section) ? UIView.init(frame: CGRect.zero) : nil
     }
     
-    override func tableView(tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+    override func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         return shouldHideSection(section) ? UIView.init(frame: CGRect.zero) : nil
     }
     
     // MARK: Actions
     
-    @IBAction func notificationSwitchValueChanged(sender: UISwitch) {
-        viewModel?.notificationsEnabled.value = sender.on
+    @IBAction func notificationSwitchValueChanged(_ sender: UISwitch) {
+        viewModel?.notificationsEnabled.value = sender.isOn
     }
     
-    @IBAction func timePickerValueChanged(sender: UIDatePicker) {
-        let hour = sender.calendar.component(.Hour, fromDate: timePicker.date)
-        let minute = sender.calendar.component(.Minute, fromDate: timePicker.date)
+    @IBAction func timePickerValueChanged(_ sender: UIDatePicker) {
+        let hour = sender.calendar.component(.hour, from: timePicker.date)
+        let minute = sender.calendar.component(.minute, from: timePicker.date)
 
         // read both values from the control first, then set the model values
         viewModel?.notificationHour.value = hour
         viewModel?.notificationMinute.value = minute
     }
 
-    @IBAction func sourceSwitchValueChanged(sender: UISwitch) {
+    @IBAction func sourceSwitchValueChanged(_ sender: UISwitch) {
         switch sender {
         case sourcePhotoLibrarySwitch:
-            viewModel?.sourcePhotoLibrary.value = sender.on
+            viewModel?.sourcePhotoLibrary.value = sender.isOn
         case sourceICloudSharedSwitch:
-            viewModel?.sourceICloudShare.value = sender.on
+            viewModel?.sourceICloudShare.value = sender.isOn
         case sourceITunesSwitch:
-            viewModel?.sourceITunes.value = sender.on
+            viewModel?.sourceITunes.value = sender.isOn
         default:
             break;
         }
     }
     
-    @IBAction func upgradeTapped(sender: UIButton) {
+    @IBAction func upgradeTapped(_ sender: UIButton) {
         UpgradeManager.upgrade {
             self.viewModel?.userHasUpgraded.value = $0
         }
     }
     
-    @IBAction func restoreTapped(sender: UIButton) {
+    @IBAction func restoreTapped(_ sender: UIButton) {
         UpgradeManager.restore {
             self.viewModel?.userHasUpgraded.value = $0
         }
@@ -291,38 +291,38 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
             let composer = MFMailComposeViewController()
             composer.mailComposeDelegate = self;
             
-            let device = UIDevice.currentDevice()
-            let appVersion = NSBundle.mainBundle().infoDictionary?["CFBundleShortVersionString"]
-            let appBuild = NSBundle.mainBundle().infoDictionary?["CFBundleVersion"]
+            let device = UIDevice.current
+            let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"]
+            let appBuild = Bundle.main.infoDictionary?["CFBundleVersion"]
             
             let body = "<div><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><hr><center>Developer Support Information</center><ul><li>Device Version: \(device.systemVersion)</li><li>Device Type: \(device.modelName)</li><li>App Version: \(appVersion!), Build: \(appBuild!)</li></ul><hr></div>"
             composer.setToRecipients(["memories@michael-brown.net"]);
             composer.setSubject("Memories Feedback")
             composer.setMessageBody(body, isHTML: true);
             
-            self.presentViewController(composer, animated: true, completion: nil)
+            self.present(composer, animated: true, completion: nil)
         } else {
             let title = NSLocalizedString("No e-mail account configured", comment: "No e-mail account configured") + "\nContact: memories@michael-brown.net"
 
-            let alert = UIAlertController(title: title, message: "", preferredStyle: .Alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
-            self.presentViewController(alert, animated: true, completion: nil)
+            let alert = UIAlertController(title: title, message: "", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            self.present(alert, animated: true, completion: nil)
         }
     }
     
     func rateApp() {
         let appId = 1037130497
-        let appStoreURL = NSURL(string: "itms-apps://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?type=Purple+Software&id=\(appId)&pageNumber=0&sortOrdering=2&mt=8")!
+        let appStoreURL = URL(string: "itms-apps://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?type=Purple+Software&id=\(appId)&pageNumber=0&sortOrdering=2&mt=8")!
         
-        if UIApplication.sharedApplication().canOpenURL(appStoreURL) {
-            UIApplication.sharedApplication().openURL(appStoreURL)
+        if UIApplication.shared.canOpenURL(appStoreURL) {
+            UIApplication.shared.openURL(appStoreURL)
         }
     }
     
     // MARK: MFMailComposeViewControllerDelegate
 
-    func mailComposeController(controller: MFMailComposeViewController, didFinishWithResult result: MFMailComposeResult, error: NSError?) {
-        self.dismissViewControllerAnimated(true, completion: nil)
+    func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+        self.dismiss(animated: true, completion: nil)
     }
     
 }

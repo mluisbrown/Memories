@@ -8,26 +8,26 @@
 
 import Foundation
 
-public extension NSDate {
+public extension Date {
     
-    @nonobjc static let gregorianCalendar = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
+    @nonobjc static let gregorianCalendar = Calendar(identifier: Calendar.Identifier.gregorian)
     
-    func addDays(days : Int) -> NSDate {
-        return NSDate.gregorianCalendar.dateByAddingUnit(.Day, value: days, toDate: self, options: NSCalendarOptions(rawValue: 0))!
+    func addDays(_ days : Int) -> Date {
+        return Date.gregorianCalendar.date(byAdding: .day, value: days, to: self)!
     }
     
     // MARK: API
-    func nextDay() -> NSDate {
+    func nextDay() -> Date {
         return addDays(1)
     }
     
-    func previousDay() -> NSDate {
+    func previousDay() -> Date {
         return addDays(-1)
     }
     
     var year: Int {
-        let comps = NSDate.gregorianCalendar.components(.Year, fromDate: self)
-        return comps.year
+        let comps = Date.gregorianCalendar.dateComponents([.year], from: self)
+        return comps.year!
     }
     
 }

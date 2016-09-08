@@ -13,15 +13,16 @@ import PHAssetHelper
 class TodayViewModel {
     let assetHelper = PHAssetHelper()
     
-    let date : NSDate
+    let date : Date
     var assets = [PHAsset]()
     var index = -1
     
-    init(date: NSDate, onDataReady: () -> ()) {
+    init(date: Date, onDataReady: @escaping () -> ()) {
         self.date = date
-        dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0)) { [unowned self] in
-            self.assets = self.assetHelper.allAssetsForDateInAllYears(date)
-            dispatch_async(dispatch_get_main_queue()) {
+        
+        DispatchQueue.global(qos: .userInitiated).async { [unowned self] in
+            self.assets = self.assetHelper.allAssetsForAllYears(with: date)
+            DispatchQueue.main.async {
                 onDataReady()
             }
         }
