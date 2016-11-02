@@ -334,12 +334,7 @@ class PhotoViewController: UIViewController,
                 if page == self.model.selectedIndex {
                     self.shareButton.isEnabled = true
                     self.heartButton.isEnabled = true
-
-                    if #available(iOS 9.0, *) {
-                        self.deleteButton.isEnabled = !asset.sourceType.contains(.typeiTunesSynced)
-                    } else {
-                        self.deleteButton.isEnabled = true
-                    }
+                    self.deleteButton.isEnabled = !asset.sourceType.contains(.typeiTunesSynced)
                 }
             }
             

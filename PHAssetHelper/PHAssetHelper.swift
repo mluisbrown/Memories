@@ -25,11 +25,9 @@ public class PHAssetHelper {
     
     public init() {
         userDefaults = UserDefaults.init(suiteName: "group.com.luacheia.memories")!
-        if #available(iOS 9.0, *) {
-            let types: PHAssetSourceType = [.typeUserLibrary, .typeiTunesSynced, .typeCloudShared]
-            userDefaults.register(defaults: [Key.assetSourceTypesKey : NSNumber(value: types.rawValue),
-                                             Key.includeCurrentYearKey: true])
-        }
+        let types: PHAssetSourceType = [.typeUserLibrary, .typeiTunesSynced, .typeCloudShared]
+        userDefaults.register(defaults: [Key.assetSourceTypesKey : NSNumber(value: types.rawValue),
+                                         Key.includeCurrentYearKey: true])
     }
 
     @available(iOS 9.0, *)
@@ -121,9 +119,7 @@ public class PHAssetHelper {
     private func allAssetsInDateOrder() -> PHFetchResult<PHAsset> {
         let options = PHFetchOptions()
         options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
-        if #available(iOS 9.0, *) {
-            options.includeAssetSourceTypes = assetSourceTypes
-        }
+        options.includeAssetSourceTypes = assetSourceTypes
         
         return PHAsset.fetchAssets(with: .image, options: options)
     }
@@ -144,9 +140,7 @@ public class PHAssetHelper {
     public func fetchResultsForAllYears(with date : Date) -> [PHFetchResult<PHAsset>] {
         let options = PHFetchOptions()
         options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
-        if #available(iOS 9.0, *) {
-            options.includeAssetSourceTypes = assetSourceTypes
-        }
+        options.includeAssetSourceTypes = assetSourceTypes
         
         let currentYear = Date().year - (includeCurrentYear ? 0 : 1)
         let startAndEndDates = self.startAndEndDates(for: date, fromYear: earliestAssetYear(), toYear: currentYear)

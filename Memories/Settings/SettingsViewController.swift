@@ -28,18 +28,6 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
     @IBOutlet weak var sourceITunesSwitch: UISwitch!
 
     let assetHelper = PHAssetHelper()
-    let hideSourcesSection: Bool = {
-        if #available(iOS 9.0, *) {
-            return false
-        }
-        return true
-    }()
-    
-    let sourcesSection = 2
-    
-    func shouldHideSection(_ section: Int) -> Bool {
-        return section == sourcesSection && hideSourcesSection
-    }
     
     var viewModel : SettingsViewModel? {
         willSet {
@@ -139,24 +127,14 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
         let notificationTime = NotificationManager.notificationTime()
         let notificationsEnabled = NotificationManager.notificationsEnabled() && NotificationManager.notificationsAllowed()
         let includeCurrentYear = assetHelper.includeCurrentYear
-        if #available(iOS 9.0, *) {
-            let sources = assetHelper.assetSourceTypes
-            viewModel = SettingsViewModel(notificationsEnabled: notificationsEnabled,
-                                          notificationHour: notificationTime.hour,
-                                          notificationMinute: notificationTime.minute,
-                                          sourceIncludeCurrentYear: includeCurrentYear,
-                                          sourcePhotoLibrary: sources.contains(.typeUserLibrary),
-                                          sourceICloudShare: sources.contains(.typeCloudShared),
-                                          sourceITunes: sources.contains(.typeiTunesSynced))
-        } else {
-            viewModel = SettingsViewModel(notificationsEnabled: notificationsEnabled,
-                                          notificationHour: notificationTime.hour,
-                                          notificationMinute: notificationTime.minute,
-                                          sourceIncludeCurrentYear: includeCurrentYear,
-                                          sourcePhotoLibrary: false,
-                                          sourceICloudShare: false,
-                                          sourceITunes: false)
-        }        
+        let sources = assetHelper.assetSourceTypes
+        viewModel = SettingsViewModel(notificationsEnabled: notificationsEnabled,
+                                      notificationHour: notificationTime.hour,
+                                      notificationMinute: notificationTime.minute,
+                                      sourceIncludeCurrentYear: includeCurrentYear,
+                                      sourcePhotoLibrary: sources.contains(.typeUserLibrary),
+                                      sourceICloudShare: sources.contains(.typeCloudShared),
+                                      sourceITunes: sources.contains(.typeiTunesSynced))
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -178,21 +156,19 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
         }
         
         // save the chosen source types
-        if #available(iOS 9.0, *) {
-            var sources = PHAssetSourceType(rawValue: 0)
-            
-            if viewModel!.sourcePhotoLibrary.value { _ = sources.insert(.typeUserLibrary) }
-            if viewModel!.sourceICloudShare.value { _ = sources.insert(.typeCloudShared) }
-            if viewModel!.sourceITunes.value { _ = sources.insert(.typeiTunesSynced) }
-            
-            let includeCurrentYear = viewModel!.sourceIncludeCurrentYear.value
-            if sources != assetHelper.assetSourceTypes ||
-                includeCurrentYear != assetHelper.includeCurrentYear {
-                assetHelper.assetSourceTypes = sources
-                assetHelper.includeCurrentYear = includeCurrentYear
-                assetHelper.refreshDatesMapCache()
-                NotificationCenter.default.post(name: Notification.Name(rawValue: PHAssetHelper.sourceTypesChangedNotification), object: self)
-            }
+        var sources = PHAssetSourceType(rawValue: 0)
+        
+        if viewModel!.sourcePhotoLibrary.value { _ = sources.insert(.typeUserLibrary) }
+        if viewModel!.sourceICloudShare.value { _ = sources.insert(.typeCloudShared) }
+        if viewModel!.sourceITunes.value { _ = sources.insert(.typeiTunesSynced) }
+        
+        let includeCurrentYear = viewModel!.sourceIncludeCurrentYear.value
+        if sources != assetHelper.assetSourceTypes ||
+            includeCurrentYear != assetHelper.includeCurrentYear {
+            assetHelper.assetSourceTypes = sources
+            assetHelper.includeCurrentYear = includeCurrentYear
+            assetHelper.refreshDatesMapCache()
+            NotificationCenter.default.post(name: Notification.Name(rawValue: PHAssetHelper.sourceTypesChangedNotification), object: self)
         }
     }
     
@@ -210,10 +186,6 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        guard !shouldHideSection((indexPath as NSIndexPath).section) else {
-            	return 0.1
-        }
-        
         let timePickerIndexPath = IndexPath(row: 1, section: 1)
         let upgradeIndexPath = IndexPath(row: 0, section: 0)
         
@@ -235,29 +207,6 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
         return height
     }
 
-    // the following methods overridden merely to be able to 
-    // hide the Photo Sources section pre iOS 9 where this featur
-    // is not supported
-    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return shouldHideSection(section) ? 0.1 : super.tableView(tableView, heightForHeaderInSection: section)
-    }
-    
-    override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        return shouldHideSection(section) ? 0.1 : super.tableView(tableView, heightForFooterInSection: section)
-    }
-    
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return shouldHideSection(section) ? 0 : super.tableView(tableView, numberOfRowsInSection: section)
-    }
-
-    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        return shouldHideSection(section) ? UIView.init(frame: CGRect.zero) : nil
-    }
-    
-    override func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        return shouldHideSection(section) ? UIView.init(frame: CGRect.zero) : nil
-    }
-    
     // MARK: Actions
     
     @IBAction func notificationSwitchValueChanged(_ sender: UISwitch) {
