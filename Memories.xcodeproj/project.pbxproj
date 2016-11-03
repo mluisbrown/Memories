@@ -22,6 +22,7 @@
 		4C3747A71D46BFCA0070734D /* StatusBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3747A61D46BFCA0070734D /* StatusBarViewController.swift */; };
 		4C5B90281B5D9C590014A87C /* GridHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C5B90271B5D9C590014A87C /* GridHeaderView.swift */; };
 		4C6299AD1B4CB0AD00B8795E /* PhotoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6299AC1B4CB0AD00B8795E /* PhotoViewController.swift */; };
+		4C69E63A1DCA73F1004D6F5C /* PhotoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C69E6391DCA73F1004D6F5C /* PhotoView.swift */; };
 		4C6F48EF1B69850F00CF7E67 /* DismissSegue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6F48EE1B69850F00CF7E67 /* DismissSegue.swift */; };
 		4C8594CC1BB33D49005CCFAC /* Cartography.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C8594C51BB33CF5005CCFAC /* Cartography.framework */; };
 		4C8594CD1BB33D4C005CCFAC /* DACircularProgress.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C8594C91BB33D02005CCFAC /* DACircularProgress.framework */; };
@@ -124,6 +125,7 @@
 		4C3747A61D46BFCA0070734D /* StatusBarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatusBarViewController.swift; sourceTree = "<group>"; };
 		4C5B90271B5D9C590014A87C /* GridHeaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridHeaderView.swift; sourceTree = "<group>"; };
 		4C6299AC1B4CB0AD00B8795E /* PhotoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoViewController.swift; sourceTree = "<group>"; };
+		4C69E6391DCA73F1004D6F5C /* PhotoView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoView.swift; sourceTree = "<group>"; };
 		4C6F48EE1B69850F00CF7E67 /* DismissSegue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DismissSegue.swift; sourceTree = "<group>"; };
 		4C6FF0461CED11E9001994DC /* Memories.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = Memories.entitlements; path = ../Memories.entitlements; sourceTree = "<group>"; };
 		4C6FF0491CED12D5001994DC /* Photo Widget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Photo Widget.entitlements"; sourceTree = "<group>"; };
@@ -261,6 +263,7 @@
 				4C6299AC1B4CB0AD00B8795E /* PhotoViewController.swift */,
 				4C3334521B65712D00D907C8 /* PhotoViewModel.swift */,
 				4C3334541B659DAA00D907C8 /* ZoomingPhotoView.swift */,
+				4C69E6391DCA73F1004D6F5C /* PhotoView.swift */,
 			);
 			path = "Photo View";
 			sourceTree = "<group>";
@@ -561,6 +564,7 @@
 				4CAAF0751B827EAD00AE47C3 /* PullView.swift in Sources */,
 				4CEAA9101B33462600774FE8 /* GridViewCell.swift in Sources */,
 				4CBA89671BBC926100913336 /* UpgradeManager.swift in Sources */,
+				4C69E63A1DCA73F1004D6F5C /* PhotoView.swift in Sources */,
 				4CF4105C1C4BB732002FD49A /* DateUtils.swift in Sources */,
 				4CEAA90E1B3343F700774FE8 /* GridViewController.swift in Sources */,
 				4C00A4F51C1B7ED30078A43F /* PhotoViewDismissTransition.swift in Sources */,

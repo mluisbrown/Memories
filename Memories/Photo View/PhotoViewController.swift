@@ -36,7 +36,7 @@ class PhotoViewController: UIViewController,
     var initialOffsetSet = false
     var initialPage : Int!
     var model : PhotoViewModel!
-    var pageViews: [ZoomingPhotoView?] = []
+    var pageViews = [ZoomingPhotoView?]()
     let imageManager : PHCachingImageManager
     var delegate: PhotoViewControllerDelegate?
     // If the size is too large then PhotoKit doesn't return an optimal image size
@@ -44,7 +44,7 @@ class PhotoViewController: UIViewController,
     let cacheSize = CGSize(width: 256, height: 256)
     
     struct PanState {
-        let imageView: UIImageView?
+        let imageView: UIView?
         let destImageView: UIImageView?
         let transform: CGAffineTransform
         let center: CGPoint
@@ -154,7 +154,7 @@ class PhotoViewController: UIViewController,
         let imageView = delegate.imageView(atIndex: model.selectedIndex)!
         let pageView = pageViews[model.selectedIndex]!
             
-        dismissTransition = PhotoViewDismissTransition(destImageView: imageView, sourceImageView: pageView.imageView)
+        dismissTransition = PhotoViewDismissTransition(destImageView: imageView, sourceImageView: pageView.photoView)
         presentingViewController?.dismiss(animated: true) {
             PHPhotoLibrary.shared().unregisterChangeObserver(self)
             self.cancelAllImageRequests()
@@ -171,7 +171,7 @@ class PhotoViewController: UIViewController,
         case .began:
             let startPoint = gr.location(in: gr.view)
             
-            let imageView = pageViews[model.selectedIndex]!.imageView!
+            let imageView = pageViews[model.selectedIndex]!.photoView
             initialPanState = PanState(imageView: imageView,
                                        destImageView: delegate?.imageView(atIndex: model.selectedIndex),
                                        transform: imageView.transform,
@@ -264,7 +264,7 @@ class PhotoViewController: UIViewController,
             }
         }
 
-        let pageView : ZoomingPhotoView!
+        let pageView: ZoomingPhotoView!
         
         if pageViews[page] != nil {
             pageView = pageViews[page]
@@ -281,7 +281,7 @@ class PhotoViewController: UIViewController,
         imageManager.requestImage(for: asset, targetSize: cacheSize, contentMode: .aspectFill, options: nil, resultHandler: { result, userInfo in
             if let image = result {
                 // NSLog("Cache Result with image for page \(page) requestFullImage: \(requestFullImage) iamgeSize: \(image.size.width), \(image.size.height)");
-                pageView.image = image
+                pageView.photo = image
                 if page == self.model.selectedIndex {
                     self.shareButton.isEnabled = false
                     self.deleteButton.isEnabled = false
@@ -307,8 +307,17 @@ class PhotoViewController: UIViewController,
             loadHighQualityImage(for: asset, page: page)
         }
     }
-    
+
     func loadHighQualityImage(for asset: PHAsset, page: Int) {
+        if asset.mediaSubtypes == .photoLive {
+            loadLivePhoto(for: asset, page: page)
+        }
+        else {
+            loadPhoto(for: asset, page: page)
+        }
+    }
+    
+    func loadPhoto(for asset: PHAsset, page: Int) {
         let options = PHImageRequestOptions()
         let pageView = pageViews[page]!
         
@@ -329,7 +338,7 @@ class PhotoViewController: UIViewController,
         pageView.imageRequestId = PHImageManager.default().requestImage(for: asset, targetSize: PHImageManagerMaximumSize, contentMode: .aspectFit, options: options) { (result, userInfo) -> Void in
             if let image = result {
                 UpgradeManager.highQualityViewCount += 1
-                pageView.image = image
+                pageView.photo = image
                 pageView.imageIsDegraded = false
                 if page == self.model.selectedIndex {
                     self.shareButton.isEnabled = true
@@ -344,6 +353,41 @@ class PhotoViewController: UIViewController,
         }
     }
     
+    func loadLivePhoto(for asset: PHAsset, page: Int) {
+        let options = PHLivePhotoRequestOptions()
+        let pageView = pageViews[page]!
+        
+        options.progressHandler  = { progress, error, stop, userInfo in
+            DispatchQueue.main.async {
+                pageView.updateProgress(progress)
+                
+                if error != nil {
+                    pageView.fullImageUnavailable = true
+                }
+            }
+        }
+        
+        options.isNetworkAccessAllowed = true
+        options.deliveryMode = .highQualityFormat
+        
+        pageView.imageRequestId = PHImageManager.default().requestLivePhoto(for: asset, targetSize: PHImageManagerMaximumSize, contentMode: .aspectFit, options: options) { (result, userInfo) -> Void in
+            if let livePhoto = result {
+                UpgradeManager.highQualityViewCount += 1
+                pageView.livePhoto = livePhoto
+                pageView.imageIsDegraded = false
+                if page == self.model.selectedIndex {
+                    self.shareButton.isEnabled = true
+                    self.heartButton.isEnabled = true
+                    self.deleteButton.isEnabled = !asset.sourceType.contains(.typeiTunesSynced)
+                }
+            }
+            
+            if let _ = userInfo?[PHImageErrorKey] as? NSError {
+                pageView.fullImageUnavailable = true
+            }
+        }
+    }
+
     func purge(page: Int) {
         guard page >= 0 && page < pageViews.count else {
             return
@@ -355,7 +399,7 @@ class PhotoViewController: UIViewController,
                 PHImageManager.default().cancelImageRequest(requestId)
                 pageView.imageRequestId = nil
             }
-            pageView.image = nil
+            pageView.photo = nil
             pageView.removeFromSuperview()
             pageViews[page] = nil
         }

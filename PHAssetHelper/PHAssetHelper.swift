@@ -30,7 +30,6 @@ public class PHAssetHelper {
                                          Key.includeCurrentYearKey: true])
     }
 
-    @available(iOS 9.0, *)
     public var assetSourceTypes: PHAssetSourceType {
         get {
             return PHAssetSourceType(rawValue: (userDefaults.value(forKey: Key.assetSourceTypesKey) as! NSNumber).uintValue)
@@ -121,7 +120,7 @@ public class PHAssetHelper {
         options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
         options.includeAssetSourceTypes = assetSourceTypes
         
-        return PHAsset.fetchAssets(with: .image, options: options)
+        return PHAsset.fetchAssets(with: options)
     }
     
     public func allAssetsForAllYears(with date: Date) -> [PHAsset] {
@@ -149,7 +148,7 @@ public class PHAssetHelper {
             NSPredicate(format: "creationDate >= %@ && creationDate <= %@", argumentArray: [$0.startDate, $0.endDate])
         }.map {
             options.predicate = $0
-            return PHAsset.fetchAssets(with: .image, options: options)
+            return PHAsset.fetchAssets(with: options)
         }.filter {
             $0.count > 0
         }

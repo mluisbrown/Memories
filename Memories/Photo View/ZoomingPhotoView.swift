@@ -8,6 +8,7 @@
 
 import UIKit
 import Photos
+import PhotosUI
 import Cartography
 import DACircularProgress
 
@@ -19,9 +20,9 @@ protocol ZoomingPhotoViewDelegate {
 class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
 
     var imageRequestId : PHImageRequestID?
-    var imageView : UIImageView!
-    var progressView : DACircularProgressView!
-    var errorIndicator : UILabel!
+    var photoView = PhotoView()
+    var progressView = DACircularProgressView()
+    var errorIndicator = UILabel()
     
     var photoViewDelegate: ZoomingPhotoViewDelegate?
     
@@ -46,15 +47,14 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
         self.showsVerticalScrollIndicator = false
         self.bounces = false
         
-        imageView = UIImageView()
-        imageView.isUserInteractionEnabled = true
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(self.imageView)
+        photoView.isUserInteractionEnabled = true
+        photoView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(self.photoView)
     
         let hConstraints = NSLayoutConstraint.constraints(withVisualFormat: "H:|[imageView]|", options: NSLayoutFormatOptions(rawValue: 0)
-            , metrics: nil, views: ["imageView": imageView!])
+            , metrics: nil, views: ["imageView": photoView])
         let vConstraints = NSLayoutConstraint.constraints(withVisualFormat: "V:|[imageView]|", options: NSLayoutFormatOptions(rawValue: 0)
-            , metrics: nil, views: ["imageView": imageView!])
+            , metrics: nil, views: ["imageView": photoView])
         addConstraints(hConstraints)
         addConstraints(vConstraints)
         
@@ -63,7 +63,6 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
         imageConstraintLeft = hConstraints[0]
         imageConstraintRight = hConstraints[1]
         
-        progressView = DACircularProgressView()
         progressView.roundedCorners = Int(false)
         progressView.thicknessRatio = 1
         progressView.trackTintColor = UIColor.clear
@@ -83,7 +82,6 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
             progressView.left == view.left
         }
         
-        errorIndicator = UILabel()
         errorIndicator.text = "!"
         errorIndicator.textAlignment = .center
         errorIndicator.font = UIFont.boldSystemFont(ofSize: 14)
@@ -114,9 +112,16 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
         super.init(frame: CGRect.zero)
     }
     
-    var image : UIImage? {
+    var photo : UIImage? {
         didSet {
-            imageView.image = self.image
+            photoView.photo = photo
+            adjustZoomScale()
+        }
+    }
+    
+    var livePhoto: PHLivePhoto? {
+        didSet {
+            photoView.livePhoto = livePhoto
             adjustZoomScale()
         }
     }
@@ -156,9 +161,9 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
     
     private func adjustZoomScale() {
         // adjust sizes as necessary
-        if let image = self.image {
-            var minZoom = min(bounds.size.width / image.size.width,
-                              bounds.size.height / image.size.height);
+        if let imageSize = photoView.imageSize {
+            var minZoom = min(bounds.size.width / imageSize.width,
+                              bounds.size.height / imageSize.height);
             
             aspectFitZoomScale = minZoom
             
@@ -168,10 +173,10 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
                 let imageDim : CGFloat
                 if padding.hPadding > padding.vPadding {
                     viewDim = bounds.size.width
-                    imageDim = image.size.width
+                    imageDim = imageSize.width
                 } else {
                     viewDim = bounds.size.height
-                    imageDim = image.size.height
+                    imageDim = imageSize.height
                 }
                 
                 let adjustedScale = abs((2 * buttonOffset - viewDim) / imageDim)
@@ -199,12 +204,12 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
     }
     
     private func getImagePadding(for scale: CGFloat) -> (hPadding: CGFloat, vPadding: CGFloat)? {
-        guard let image = imageView.image else {
+        guard let imageSize = photoView.imageSize else {
             return nil
         }
         
-        let imageWidth = image.size.width
-        let imageHeight = image.size.height
+        let imageWidth = imageSize.width
+        let imageHeight = imageSize.height
         
         let boundsSize = bounds.size
         let viewWidth = boundsSize.width
@@ -223,14 +228,14 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
     
     private func adjustImageConstraints(for zoomScale: CGFloat) {
         guard let padding = getImagePadding(for: zoomScale),
-                  let image = imageView.image else {
+                  let imageSize = photoView.imageSize else {
             return
         }
 
         let hPadding = padding.hPadding
         let vPadding = padding.vPadding
-        let imageWidth = image.size.width
-        let imageHeight = image.size.height
+        let imageWidth = imageSize.width
+        let imageHeight = imageSize.height
         
         imageConstraintLeft.constant = hPadding
         imageConstraintRight.constant = hPadding
@@ -246,7 +251,7 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
     
     // MARK: UITapGestureRecognizer actions
     func imageDoubleTapped(_ recognizer: UITapGestureRecognizer) {
-        let touchPoint = recognizer.location(ofTouch: 0, in: imageView)
+        let touchPoint = recognizer.location(ofTouch: 0, in: photoView)
 
         if zoomScale < aspectFitZoomScale {
             zoom(to: aspectFitZoomScale, animated: true)
@@ -310,7 +315,7 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
     }
     
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
-        return imageView;
+        return photoView;
     }
     
 }

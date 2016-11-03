@@ -11,10 +11,10 @@ import UIKit
 class PhotoViewDismissTransition: NSObject, UIViewControllerAnimatedTransitioning {
     
     let destImageView: UIImageView
-    let sourceImageView: UIImageView
+    let sourceImageView: UIView
     let duration = TimeInterval(0.25)
 
-    init(destImageView: UIImageView, sourceImageView: UIImageView) {
+    init(destImageView: UIImageView, sourceImageView: UIView) {
         self.destImageView = destImageView
         self.sourceImageView = sourceImageView
     }
