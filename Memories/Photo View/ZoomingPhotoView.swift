@@ -150,6 +150,10 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
     
     // MARK: Implementation
 
+    func didBecomeVisible() {
+        photoView.didBecomeVisible()
+    }
+    
     func hideProgressView(_ hide: Bool) {
         progressView.isHidden = hide
     }

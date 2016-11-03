@@ -17,9 +17,9 @@ class PhotoView: UIView {
         case livePhoto(livePhotoView: PHLivePhotoView?)
     }
     
-    var subView: PhotoViewType = .photo(photoView: nil) {
+    var contentView: PhotoViewType = .photo(photoView: nil) {
         didSet {
-            switch subView {
+            switch contentView {
             case .photo(let photoView):
                 setSubview(photoView)
             case .livePhoto(let livePhotoView):
@@ -39,16 +39,16 @@ class PhotoView: UIView {
 
     var photo: UIImage? {
         set {
-            switch subView {
+            switch contentView {
             case .photo(let photoView) where photoView != nil:
                 photoView!.image = newValue
             default:
                 let imageView = UIImageView(image: newValue)
-                subView = PhotoViewType.photo(photoView: imageView)
+                contentView = PhotoViewType.photo(photoView: imageView)
             }
         }
         get {
-            switch subView {
+            switch contentView {
             case .photo(let photo):
                 return photo?.image
             case .livePhoto:
@@ -59,18 +59,18 @@ class PhotoView: UIView {
     
     var livePhoto: PHLivePhoto? {
         set {
-            switch subView {
+            switch contentView {
             case .livePhoto(let livePhotoView) where livePhotoView != nil:
                 livePhotoView!.livePhoto = newValue
             default:
                 let photoView = PHLivePhotoView()
                 photoView.livePhoto = newValue
                 photoView.contentMode = .scaleAspectFit
-                subView = PhotoViewType.livePhoto(livePhotoView: photoView)
+                contentView = PhotoViewType.livePhoto(livePhotoView: photoView)
             }
         }
         get {
-            switch subView {
+            switch contentView {
             case .photo:
                 return nil
             case .livePhoto(let livePhoto):
@@ -81,12 +81,21 @@ class PhotoView: UIView {
     
     var imageSize: CGSize? {
         get {
-            switch subView {
+            switch contentView {
             case .photo(let imageView):
                 return imageView?.image?.size
             case .livePhoto(let livewPhotoView):
                 return livewPhotoView?.livePhoto?.size
             }
+        }
+    }
+    
+    func didBecomeVisible() {
+        switch contentView {
+        case .livePhoto(let livePhotoView) where livePhotoView != nil:
+            livePhotoView?.startPlayback(with: .hint)
+        default:
+            break
         }
     }
     
@@ -109,7 +118,9 @@ class PhotoView: UIView {
             view.right == subview.right
         }
 
-        if let size = imageSize, case .livePhoto = subView {
+        // Unlike UIImageView, PHLivePhotoView does not implement intrinsicContentSize()
+        // so we have to add width and height constraints too
+        if let size = imageSize, case .livePhoto = contentView {
             constrain(subview) { subview in
                 subview.width == size.width
                 subview.height == size.height

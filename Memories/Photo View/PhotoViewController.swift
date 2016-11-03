@@ -231,6 +231,16 @@ class PhotoViewController: UIViewController,
         loadVisiblePages()
     }
     
+    func page(view pageView: ZoomingPhotoView, didLoad enable: Bool, for asset: PHAsset) {
+        shareButton.isEnabled = enable
+        deleteButton.isEnabled = enable
+        heartButton.isEnabled = !asset.sourceType.contains(.typeiTunesSynced) && enable
+        
+        if asset.mediaSubtypes == .photoLive {
+            pageView.didBecomeVisible()
+        }
+    }
+    
     func load(page: Int, requestFullImage: Bool) {
         guard page >= 0 && page < model.assets.count else {
             return
@@ -256,9 +266,7 @@ class PhotoViewController: UIViewController,
             if !requestFullImage || !pageView.imageIsDegraded {
                 pageView.frame = frame
                 if requestFullImage {
-                    shareButton.isEnabled = true
-                    deleteButton.isEnabled = true
-                    heartButton.isEnabled = true
+                    self.page(view: pageView, didLoad: true, for: asset)
                 }
                 return
             }
@@ -283,9 +291,7 @@ class PhotoViewController: UIViewController,
                 // NSLog("Cache Result with image for page \(page) requestFullImage: \(requestFullImage) iamgeSize: \(image.size.width), \(image.size.height)");
                 pageView.photo = image
                 if page == self.model.selectedIndex {
-                    self.shareButton.isEnabled = false
-                    self.deleteButton.isEnabled = false
-                    self.heartButton.isEnabled = false
+                    self.page(view: pageView, didLoad: false, for: asset)
                 }
             }
         })
@@ -309,19 +315,8 @@ class PhotoViewController: UIViewController,
     }
 
     func loadHighQualityImage(for asset: PHAsset, page: Int) {
-        if asset.mediaSubtypes == .photoLive {
-            loadLivePhoto(for: asset, page: page)
-        }
-        else {
-            loadPhoto(for: asset, page: page)
-        }
-    }
-    
-    func loadPhoto(for asset: PHAsset, page: Int) {
-        let options = PHImageRequestOptions()
         let pageView = pageViews[page]!
-        
-        options.progressHandler  = { progress, error, stop, userInfo in
+        let progressHandler: PHAssetImageProgressHandler = { progress, error, stop, userInfo in
             DispatchQueue.main.async {
                 pageView.updateProgress(progress)
                 
@@ -331,59 +326,66 @@ class PhotoViewController: UIViewController,
             }
         }
         
+        let configurePageView = { (isLivePhoto: Bool) in
+            return { (ok: Bool, photo: UIImage?, livePhoto: PHLivePhoto?) in
+                guard ok else {
+                    pageView.fullImageUnavailable = true
+                    return
+                }
+                UpgradeManager.highQualityViewCount += 1
+                if isLivePhoto {
+                    pageView.livePhoto = livePhoto
+                } else {
+                    pageView.photo = photo
+                }
+                pageView.imageIsDegraded = false
+                if page == self.model.selectedIndex {
+                    self.page(view: pageView, didLoad: true, for: asset)
+                }
+            }
+        }
+        
+        if asset.mediaSubtypes == .photoLive {
+            pageView.imageRequestId = loadLivePhoto(for: asset, progressHandler: progressHandler, completion: configurePageView(true))
+        }
+        else {
+            pageView.imageRequestId = loadPhoto(for: asset, progressHandler: progressHandler, completion: configurePageView(false))
+        }
+    }
+    
+    func loadPhoto(for asset: PHAsset, progressHandler: @escaping PHAssetImageProgressHandler, completion: @escaping (Bool, UIImage?, PHLivePhoto?) -> ()) -> PHImageRequestID {
+        let options = PHImageRequestOptions()
+        
+        options.progressHandler = progressHandler
         options.isNetworkAccessAllowed = true
         options.deliveryMode = .highQualityFormat
         options.isSynchronous = false
         
-        pageView.imageRequestId = PHImageManager.default().requestImage(for: asset, targetSize: PHImageManagerMaximumSize, contentMode: .aspectFit, options: options) { (result, userInfo) -> Void in
+        return PHImageManager.default().requestImage(for: asset, targetSize: PHImageManagerMaximumSize, contentMode: .aspectFit, options: options) { (result, userInfo) -> Void in
             if let image = result {
-                UpgradeManager.highQualityViewCount += 1
-                pageView.photo = image
-                pageView.imageIsDegraded = false
-                if page == self.model.selectedIndex {
-                    self.shareButton.isEnabled = true
-                    self.heartButton.isEnabled = true
-                    self.deleteButton.isEnabled = !asset.sourceType.contains(.typeiTunesSynced)
-                }
+                completion(true, image, nil)
             }
             
             if let _ = userInfo?[PHImageErrorKey] as? NSError {
-                pageView.fullImageUnavailable = true
+                completion(false, nil, nil)
             }
         }
     }
     
-    func loadLivePhoto(for asset: PHAsset, page: Int) {
+    func loadLivePhoto(for asset: PHAsset, progressHandler: @escaping PHAssetImageProgressHandler, completion: @escaping (Bool, UIImage?, PHLivePhoto?) -> ()) -> PHImageRequestID {
         let options = PHLivePhotoRequestOptions()
-        let pageView = pageViews[page]!
         
-        options.progressHandler  = { progress, error, stop, userInfo in
-            DispatchQueue.main.async {
-                pageView.updateProgress(progress)
-                
-                if error != nil {
-                    pageView.fullImageUnavailable = true
-                }
-            }
-        }
-        
+        options.progressHandler = progressHandler
         options.isNetworkAccessAllowed = true
         options.deliveryMode = .highQualityFormat
         
-        pageView.imageRequestId = PHImageManager.default().requestLivePhoto(for: asset, targetSize: PHImageManagerMaximumSize, contentMode: .aspectFit, options: options) { (result, userInfo) -> Void in
+        return PHImageManager.default().requestLivePhoto(for: asset, targetSize: PHImageManagerMaximumSize, contentMode: .aspectFit, options: options) { (result, userInfo) -> Void in
             if let livePhoto = result {
-                UpgradeManager.highQualityViewCount += 1
-                pageView.livePhoto = livePhoto
-                pageView.imageIsDegraded = false
-                if page == self.model.selectedIndex {
-                    self.shareButton.isEnabled = true
-                    self.heartButton.isEnabled = true
-                    self.deleteButton.isEnabled = !asset.sourceType.contains(.typeiTunesSynced)
-                }
+                completion(true, nil, livePhoto)
             }
             
             if let _ = userInfo?[PHImageErrorKey] as? NSError {
-                pageView.fullImageUnavailable = true
+                completion(false, nil, nil)
             }
         }
     }
