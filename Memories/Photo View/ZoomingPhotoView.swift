@@ -9,6 +9,7 @@
 import UIKit
 import Photos
 import PhotosUI
+import AVFoundation
 import Cartography
 import DACircularProgress
 
@@ -20,7 +21,7 @@ protocol ZoomingPhotoViewDelegate {
 class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
 
     var imageRequestId : PHImageRequestID?
-    var photoView = PhotoView()
+    var mediaView = MediaView()
     var progressView = DACircularProgressView()
     var errorIndicator = UILabel()
     
@@ -47,14 +48,14 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
         self.showsVerticalScrollIndicator = false
         self.bounces = false
         
-        photoView.isUserInteractionEnabled = true
-        photoView.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(self.photoView)
+        mediaView.isUserInteractionEnabled = true
+        mediaView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(self.mediaView)
     
-        let hConstraints = NSLayoutConstraint.constraints(withVisualFormat: "H:|[imageView]|", options: NSLayoutFormatOptions(rawValue: 0)
-            , metrics: nil, views: ["imageView": photoView])
-        let vConstraints = NSLayoutConstraint.constraints(withVisualFormat: "V:|[imageView]|", options: NSLayoutFormatOptions(rawValue: 0)
-            , metrics: nil, views: ["imageView": photoView])
+        let hConstraints = NSLayoutConstraint.constraints(withVisualFormat: "H:|[mediaView]|", options: NSLayoutFormatOptions(rawValue: 0)
+            , metrics: nil, views: ["mediaView": mediaView])
+        let vConstraints = NSLayoutConstraint.constraints(withVisualFormat: "V:|[mediaView]|", options: NSLayoutFormatOptions(rawValue: 0)
+            , metrics: nil, views: ["mediaView": mediaView])
         addConstraints(hConstraints)
         addConstraints(vConstraints)
         
@@ -114,14 +115,21 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
     
     var photo : UIImage? {
         didSet {
-            photoView.photo = photo
+            mediaView.photo = photo
             adjustZoomScale()
         }
     }
     
     var livePhoto: PHLivePhoto? {
         didSet {
-            photoView.livePhoto = livePhoto
+            mediaView.livePhoto = livePhoto
+            adjustZoomScale()
+        }
+    }
+    
+    var video: AVPlayerItem? {
+        didSet {
+            mediaView.video = video
             adjustZoomScale()
         }
     }
@@ -151,7 +159,7 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
     // MARK: Implementation
 
     func didBecomeVisible() {
-        photoView.didBecomeVisible()
+        mediaView.didBecomeVisible()
     }
     
     func hideProgressView(_ hide: Bool) {
@@ -165,7 +173,7 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
     
     private func adjustZoomScale() {
         // adjust sizes as necessary
-        if let imageSize = photoView.imageSize {
+        if let imageSize = mediaView.imageSize {
             var minZoom = min(bounds.size.width / imageSize.width,
                               bounds.size.height / imageSize.height);
             
@@ -208,7 +216,7 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
     }
     
     private func getImagePadding(for scale: CGFloat) -> (hPadding: CGFloat, vPadding: CGFloat)? {
-        guard let imageSize = photoView.imageSize else {
+        guard let imageSize = mediaView.imageSize else {
             return nil
         }
         
@@ -232,7 +240,7 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
     
     private func adjustImageConstraints(for zoomScale: CGFloat) {
         guard let padding = getImagePadding(for: zoomScale),
-                  let imageSize = photoView.imageSize else {
+                  let imageSize = mediaView.imageSize else {
             return
         }
 
@@ -255,7 +263,7 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
     
     // MARK: UITapGestureRecognizer actions
     func imageDoubleTapped(_ recognizer: UITapGestureRecognizer) {
-        let touchPoint = recognizer.location(ofTouch: 0, in: photoView)
+        let touchPoint = recognizer.location(ofTouch: 0, in: mediaView)
 
         if zoomScale < aspectFitZoomScale {
             zoom(to: aspectFitZoomScale, animated: true)
@@ -319,7 +327,7 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
     }
     
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
-        return photoView;
+        return mediaView;
     }
     
 }

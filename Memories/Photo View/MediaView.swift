@@ -9,21 +9,25 @@
 import UIKit
 import PhotosUI
 import Cartography
+import AVFoundation
 
-class PhotoView: UIView {
+class MediaView: UIView {
 
-    enum PhotoViewType {
+    enum MediaViewType {
         case photo(photoView: UIImageView?)
         case livePhoto(livePhotoView: PHLivePhotoView?)
+        case video(videoView: VideoView?)
     }
     
-    var contentView: PhotoViewType = .photo(photoView: nil) {
+    var contentView: MediaViewType = .photo(photoView: nil) {
         didSet {
             switch contentView {
             case .photo(let photoView):
                 setSubview(photoView)
             case .livePhoto(let livePhotoView):
                 setSubview(livePhotoView)
+            case .video(let videoView):
+                setSubview(videoView)
             }
         }
     }
@@ -37,21 +41,27 @@ class PhotoView: UIView {
         super.init(frame: CGRect.zero)
     }
 
+    override class var layerClass : AnyClass {
+        return AVPlayerLayer.self
+    }
+    
+    var player: AVPlayer?
+    
     var photo: UIImage? {
         set {
             switch contentView {
             case .photo(let photoView) where photoView != nil:
                 photoView!.image = newValue
-            default:
+            case .photo, .livePhoto, .video:
                 let imageView = UIImageView(image: newValue)
-                contentView = PhotoViewType.photo(photoView: imageView)
+                contentView = .photo(photoView: imageView)
             }
         }
         get {
             switch contentView {
             case .photo(let photo):
                 return photo?.image
-            case .livePhoto:
+            case .livePhoto, .video:
                 return nil
             }
         }
@@ -62,19 +72,40 @@ class PhotoView: UIView {
             switch contentView {
             case .livePhoto(let livePhotoView) where livePhotoView != nil:
                 livePhotoView!.livePhoto = newValue
-            default:
+            case .livePhoto, .photo, .video:
                 let photoView = PHLivePhotoView()
                 photoView.livePhoto = newValue
                 photoView.contentMode = .scaleAspectFit
-                contentView = PhotoViewType.livePhoto(livePhotoView: photoView)
+                contentView = .livePhoto(livePhotoView: photoView)
             }
         }
         get {
             switch contentView {
-            case .photo:
-                return nil
             case .livePhoto(let livePhoto):
                 return livePhoto?.livePhoto
+            case .photo, .video:
+                return nil
+            }
+        }
+    }
+    
+    var video: AVPlayerItem? {
+        set {
+            switch contentView {
+            case .video(let videoView) where videoView != nil:
+                videoView?.playerItem = newValue
+            case .video, .livePhoto, .photo:
+                let videoView = VideoView()
+                videoView.playerItem = newValue
+                contentView = .video(videoView: videoView)
+            }
+        }
+        get {
+            switch contentView {
+            case .video(let videoView):
+                return videoView?.playerItem
+            case .livePhoto, .photo:
+                return nil
             }
         }
     }
@@ -86,15 +117,19 @@ class PhotoView: UIView {
                 return imageView?.image?.size
             case .livePhoto(let livewPhotoView):
                 return livewPhotoView?.livePhoto?.size
+            case .video(let videoView):
+                return videoView?.playerItem?.asset.tracks(withMediaType: AVMediaTypeVideo).first?.naturalSize
             }
         }
     }
     
     func didBecomeVisible() {
         switch contentView {
-        case .livePhoto(let livePhotoView) where livePhotoView != nil:
+        case .livePhoto(let livePhotoView):
             livePhotoView?.startPlayback(with: .hint)
-        default:
+        case .video(let videoView):
+            break // videoView?.play()
+        case .photo:
             break
         }
     }
@@ -120,10 +155,15 @@ class PhotoView: UIView {
 
         // Unlike UIImageView, PHLivePhotoView does not implement intrinsicContentSize()
         // so we have to add width and height constraints too
-        if let size = imageSize, case .livePhoto = contentView {
-            constrain(subview) { subview in
-                subview.width == size.width
-                subview.height == size.height
+        if let size = imageSize {
+            switch contentView {
+            case .livePhoto, .video:
+                constrain(subview) { subview in
+                    subview.width == size.width
+                    subview.height == size.height
+                }
+            case .photo:
+                break
             }
         }
         

@@ -14,6 +14,12 @@ protocol PhotoViewControllerDelegate {
     func imageView(atIndex: Int) -> UIImageView?
 }
 
+enum AssetData {
+    case photo(image: UIImage)
+    case livePhoto(livePhoto: PHLivePhoto)
+    case video(playerItem: AVPlayerItem)
+}
+
 class PhotoViewController: UIViewController,
     UIScrollViewDelegate,
     UIViewControllerTransitioningDelegate,
@@ -154,7 +160,7 @@ class PhotoViewController: UIViewController,
         let imageView = delegate.imageView(atIndex: model.selectedIndex)!
         let pageView = pageViews[model.selectedIndex]!
             
-        dismissTransition = PhotoViewDismissTransition(destImageView: imageView, sourceImageView: pageView.photoView)
+        dismissTransition = PhotoViewDismissTransition(destImageView: imageView, sourceImageView: pageView.mediaView)
         presentingViewController?.dismiss(animated: true) {
             PHPhotoLibrary.shared().unregisterChangeObserver(self)
             self.cancelAllImageRequests()
@@ -171,7 +177,7 @@ class PhotoViewController: UIViewController,
         case .began:
             let startPoint = gr.location(in: gr.view)
             
-            let imageView = pageViews[model.selectedIndex]!.photoView
+            let imageView = pageViews[model.selectedIndex]!.mediaView
             initialPanState = PanState(imageView: imageView,
                                        destImageView: delegate?.imageView(atIndex: model.selectedIndex),
                                        transform: imageView.transform,
@@ -303,18 +309,18 @@ class PhotoViewController: UIViewController,
                     if !$0 {
                         pageView.hideProgressView(true)
                     } else {
-                        self.loadHighQualityImage(for: asset, page: page)
+                        self.loadHighQualityVersion(of: asset, page: page)
                     }
                 }
                 
                 return
             }
             
-            loadHighQualityImage(for: asset, page: page)
+            loadHighQualityVersion(of: asset, page: page)
         }
     }
 
-    func loadHighQualityImage(for asset: PHAsset, page: Int) {
+    func loadHighQualityVersion(of asset: PHAsset, page: Int) {
         let pageView = pageViews[page]!
         let progressHandler: PHAssetImageProgressHandler = { progress, error, stop, userInfo in
             DispatchQueue.main.async {
@@ -326,34 +332,48 @@ class PhotoViewController: UIViewController,
             }
         }
         
-        let configurePageView = { (isLivePhoto: Bool) in
-            return { (ok: Bool, photo: UIImage?, livePhoto: PHLivePhoto?) in
-                guard ok else {
-                    pageView.fullImageUnavailable = true
-                    return
-                }
-                UpgradeManager.highQualityViewCount += 1
-                if isLivePhoto {
-                    pageView.livePhoto = livePhoto
-                } else {
-                    pageView.photo = photo
-                }
-                pageView.imageIsDegraded = false
-                if page == self.model.selectedIndex {
-                    self.page(view: pageView, didLoad: true, for: asset)
+        let configurePageView = { (asset: PHAsset) in
+            return { (data: AssetData?) in
+                DispatchQueue.main.async {
+                    guard let data = data else {
+                        pageView.fullImageUnavailable = true
+                        return
+                    }
+                    UpgradeManager.highQualityViewCount += 1
+                    
+                    switch data {
+                    case .photo(let image):
+                        pageView.photo = image
+                    case .livePhoto(let livePhoto):
+                        pageView.livePhoto = livePhoto
+                    case .video(let playerItem):
+                        pageView.video = playerItem
+                        break
+                    }
+                    
+                    pageView.imageIsDegraded = false
+                    if page == self.model.selectedIndex {
+                        self.page(view: pageView, didLoad: true, for: asset)
+                    }
                 }
             }
         }
+
         
-        if asset.mediaSubtypes == .photoLive {
-            pageView.imageRequestId = loadLivePhoto(for: asset, progressHandler: progressHandler, completion: configurePageView(true))
-        }
-        else {
-            pageView.imageRequestId = loadPhoto(for: asset, progressHandler: progressHandler, completion: configurePageView(false))
+        switch asset.mediaType {
+        case .image where asset.mediaSubtypes == .photoLive:
+            pageView.imageRequestId = loadLivePhoto(for: asset, progressHandler: progressHandler, completion: configurePageView(asset))
+        case .image:
+            pageView.imageRequestId = loadPhoto(for: asset, progressHandler: progressHandler, completion: configurePageView(asset))
+        case .video:
+            pageView.imageRequestId = loadVideo(for: asset, progressHandler: progressHandler, completion: configurePageView(asset))
+            break
+        default:
+            break
         }
     }
     
-    func loadPhoto(for asset: PHAsset, progressHandler: @escaping PHAssetImageProgressHandler, completion: @escaping (Bool, UIImage?, PHLivePhoto?) -> ()) -> PHImageRequestID {
+    func loadPhoto(for asset: PHAsset, progressHandler: @escaping PHAssetImageProgressHandler, completion: @escaping (AssetData?) -> ()) -> PHImageRequestID {
         let options = PHImageRequestOptions()
         
         options.progressHandler = progressHandler
@@ -363,16 +383,16 @@ class PhotoViewController: UIViewController,
         
         return PHImageManager.default().requestImage(for: asset, targetSize: PHImageManagerMaximumSize, contentMode: .aspectFit, options: options) { (result, userInfo) -> Void in
             if let image = result {
-                completion(true, image, nil)
+                completion(AssetData.photo(image: image))
             }
             
             if let _ = userInfo?[PHImageErrorKey] as? NSError {
-                completion(false, nil, nil)
+                completion(nil)
             }
         }
     }
     
-    func loadLivePhoto(for asset: PHAsset, progressHandler: @escaping PHAssetImageProgressHandler, completion: @escaping (Bool, UIImage?, PHLivePhoto?) -> ()) -> PHImageRequestID {
+    func loadLivePhoto(for asset: PHAsset, progressHandler: @escaping PHAssetImageProgressHandler, completion: @escaping (AssetData?) -> ()) -> PHImageRequestID {
         let options = PHLivePhotoRequestOptions()
         
         options.progressHandler = progressHandler
@@ -381,15 +401,33 @@ class PhotoViewController: UIViewController,
         
         return PHImageManager.default().requestLivePhoto(for: asset, targetSize: PHImageManagerMaximumSize, contentMode: .aspectFit, options: options) { (result, userInfo) -> Void in
             if let livePhoto = result {
-                completion(true, nil, livePhoto)
+                completion(AssetData.livePhoto(livePhoto: livePhoto))
             }
             
             if let _ = userInfo?[PHImageErrorKey] as? NSError {
-                completion(false, nil, nil)
+                completion(nil)
             }
         }
     }
 
+    func loadVideo(for asset: PHAsset, progressHandler: @escaping PHAssetImageProgressHandler, completion: @escaping (AssetData?) -> ()) -> PHImageRequestID {
+        let options = PHVideoRequestOptions()
+        
+        options.progressHandler = progressHandler
+        options.isNetworkAccessAllowed = true
+        options.deliveryMode = .highQualityFormat
+        
+        return PHImageManager.default().requestPlayerItem(forVideo: asset, options: options) { (result, userInfo) -> Void in
+            if let video = result {
+                completion(AssetData.video(playerItem: video))
+            }
+            
+            if let _ = userInfo?[PHImageErrorKey] as? NSError {
+                completion(nil)
+            }
+        }
+    }
+    
     func purge(page: Int) {
         guard page >= 0 && page < pageViews.count else {
             return
