@@ -24,6 +24,11 @@
 		4C6299AD1B4CB0AD00B8795E /* PhotoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6299AC1B4CB0AD00B8795E /* PhotoViewController.swift */; };
 		4C69E63A1DCA73F1004D6F5C /* MediaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C69E6391DCA73F1004D6F5C /* MediaView.swift */; };
 		4C6F48EF1B69850F00CF7E67 /* DismissSegue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6F48EE1B69850F00CF7E67 /* DismissSegue.swift */; };
+		4C758BB31DD6712D00AE9D9F /* CAShapeLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C758BB21DD6712C00AE9D9F /* CAShapeLayer.swift */; };
+		4C758BB51DD676FC00AE9D9F /* UIBezierPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C758BB41DD676FC00AE9D9F /* UIBezierPath.swift */; };
+		4C758BB71DD67A0400AE9D9F /* CALayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C758BB61DD67A0400AE9D9F /* CALayer.swift */; };
+		4C758BB91DD67E7B00AE9D9F /* UIButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C758BB81DD67E7B00AE9D9F /* UIButton.swift */; };
+		4C758BBB1DD685E700AE9D9F /* PlayerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C758BBA1DD685E700AE9D9F /* PlayerController.swift */; };
 		4C8594CC1BB33D49005CCFAC /* Cartography.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C8594C51BB33CF5005CCFAC /* Cartography.framework */; };
 		4C8594CD1BB33D4C005CCFAC /* DACircularProgress.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C8594C91BB33D02005CCFAC /* DACircularProgress.framework */; };
 		4C8594D11BB33E27005CCFAC /* Cartography.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4C8594D01BB33E27005CCFAC /* Cartography.framework.dSYM */; };
@@ -40,6 +45,7 @@
 		4CBA89651BBC66E000913336 /* RMStore.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4CBA89641BBC66E000913336 /* RMStore.framework.dSYM */; };
 		4CBA89671BBC926100913336 /* UpgradeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBA89661BBC926100913336 /* UpgradeManager.swift */; };
 		4CBA89691BBC9BF300913336 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CBA89681BBC9BF300913336 /* Security.framework */; };
+		4CD790181DD60DE000EEE452 /* With.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD790171DD60DE000EEE452 /* With.swift */; };
 		4CE8BD971C03BBE500207BE1 /* DatePickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE8BD961C03BBE500207BE1 /* DatePickerViewController.swift */; };
 		4CEAA8EE1B3340C600774FE8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CEAA8ED1B3340C600774FE8 /* AppDelegate.swift */; };
 		4CEAA8F31B3340C600774FE8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4CEAA8F11B3340C600774FE8 /* Main.storyboard */; };
@@ -130,6 +136,11 @@
 		4C6F48EE1B69850F00CF7E67 /* DismissSegue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DismissSegue.swift; sourceTree = "<group>"; };
 		4C6FF0461CED11E9001994DC /* Memories.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = Memories.entitlements; path = ../Memories.entitlements; sourceTree = "<group>"; };
 		4C6FF0491CED12D5001994DC /* Photo Widget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Photo Widget.entitlements"; sourceTree = "<group>"; };
+		4C758BB21DD6712C00AE9D9F /* CAShapeLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CAShapeLayer.swift; sourceTree = "<group>"; };
+		4C758BB41DD676FC00AE9D9F /* UIBezierPath.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIBezierPath.swift; sourceTree = "<group>"; };
+		4C758BB61DD67A0400AE9D9F /* CALayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CALayer.swift; sourceTree = "<group>"; };
+		4C758BB81DD67E7B00AE9D9F /* UIButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIButton.swift; sourceTree = "<group>"; };
+		4C758BBA1DD685E700AE9D9F /* PlayerController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlayerController.swift; sourceTree = "<group>"; };
 		4C8594C51BB33CF5005CCFAC /* Cartography.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cartography.framework; path = Carthage/Build/iOS/Cartography.framework; sourceTree = "<group>"; };
 		4C8594C91BB33D02005CCFAC /* DACircularProgress.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DACircularProgress.framework; path = Carthage/Build/iOS/DACircularProgress.framework; sourceTree = "<group>"; };
 		4C8594D01BB33E27005CCFAC /* Cartography.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = Cartography.framework.dSYM; path = Carthage/Build/iOS/Cartography.framework.dSYM; sourceTree = "<group>"; };
@@ -146,6 +157,7 @@
 		4CBA89641BBC66E000913336 /* RMStore.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = RMStore.framework.dSYM; path = Carthage/Build/iOS/RMStore.framework.dSYM; sourceTree = "<group>"; };
 		4CBA89661BBC926100913336 /* UpgradeManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UpgradeManager.swift; sourceTree = "<group>"; };
 		4CBA89681BBC9BF300913336 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		4CD790171DD60DE000EEE452 /* With.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = With.swift; sourceTree = "<group>"; };
 		4CE8BD961C03BBE500207BE1 /* DatePickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatePickerViewController.swift; sourceTree = "<group>"; };
 		4CEAA8E81B3340C600774FE8 /* Memories.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Memories.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4CEAA8EC1B3340C600774FE8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -216,6 +228,11 @@
 				4C0410E51BC8787200BBB76C /* UIDevice.swift */,
 				4CABEE211CAAF08500A9F23A /* UITraitEnvironment.swift */,
 				4C3747A61D46BFCA0070734D /* StatusBarViewController.swift */,
+				4CD790171DD60DE000EEE452 /* With.swift */,
+				4C758BB21DD6712C00AE9D9F /* CAShapeLayer.swift */,
+				4C758BB41DD676FC00AE9D9F /* UIBezierPath.swift */,
+				4C758BB61DD67A0400AE9D9F /* CALayer.swift */,
+				4C758BB81DD67E7B00AE9D9F /* UIButton.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -267,6 +284,7 @@
 				4C3334541B659DAA00D907C8 /* ZoomingPhotoView.swift */,
 				4C69E6391DCA73F1004D6F5C /* MediaView.swift */,
 				4CA4ECCD1DCCE3AA00A6B664 /* VideoView.swift */,
+				4C758BBA1DD685E700AE9D9F /* PlayerController.swift */,
 			);
 			path = "Photo View";
 			sourceTree = "<group>";
@@ -557,18 +575,23 @@
 				4CEAA8EE1B3340C600774FE8 /* AppDelegate.swift in Sources */,
 				4C3334551B659DAA00D907C8 /* ZoomingPhotoView.swift in Sources */,
 				4C5B90281B5D9C590014A87C /* GridHeaderView.swift in Sources */,
+				4C758BB91DD67E7B00AE9D9F /* UIButton.swift in Sources */,
+				4CD790181DD60DE000EEE452 /* With.swift in Sources */,
 				4C3334531B65712D00D907C8 /* PhotoViewModel.swift in Sources */,
+				4C758BB71DD67A0400AE9D9F /* CALayer.swift in Sources */,
 				4CABEE221CAAF08500A9F23A /* UITraitEnvironment.swift in Sources */,
 				4C2DFCAA1B9E21BC00AD6E16 /* NotificationManager.swift in Sources */,
 				4C3747A71D46BFCA0070734D /* StatusBarViewController.swift in Sources */,
 				4CF5FEEF1B58212700F8517D /* GridViewModel.swift in Sources */,
 				4CF574801C06749B00D12ADB /* DatePickerRowView.swift in Sources */,
 				4C0410E61BC8787200BBB76C /* UIDevice.swift in Sources */,
+				4C758BB51DD676FC00AE9D9F /* UIBezierPath.swift in Sources */,
 				4CAAF0751B827EAD00AE47C3 /* PullView.swift in Sources */,
 				4CEAA9101B33462600774FE8 /* GridViewCell.swift in Sources */,
 				4CBA89671BBC926100913336 /* UpgradeManager.swift in Sources */,
 				4C69E63A1DCA73F1004D6F5C /* MediaView.swift in Sources */,
 				4CF4105C1C4BB732002FD49A /* DateUtils.swift in Sources */,
+				4C758BB31DD6712D00AE9D9F /* CAShapeLayer.swift in Sources */,
 				4CEAA90E1B3343F700774FE8 /* GridViewController.swift in Sources */,
 				4C00A4F51C1B7ED30078A43F /* PhotoViewDismissTransition.swift in Sources */,
 				4CE8BD971C03BBE500207BE1 /* DatePickerViewController.swift in Sources */,
@@ -576,6 +599,7 @@
 				4CA4ECCE1DCCE3AA00A6B664 /* VideoView.swift in Sources */,
 				4C6299AD1B4CB0AD00B8795E /* PhotoViewController.swift in Sources */,
 				4CB674B51BA1EBC7001F401A /* SettingsViewController.swift in Sources */,
+				4C758BBB1DD685E700AE9D9F /* PlayerController.swift in Sources */,
 				4C989BE11BA780BB00D4C13F /* SettingsViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

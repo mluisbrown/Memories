@@ -45,7 +45,7 @@ class MediaView: UIView {
         return AVPlayerLayer.self
     }
     
-    var player: AVPlayer?
+    //var player: AVPlayer?
     
     var photo: UIImage? {
         set {
@@ -97,6 +97,9 @@ class MediaView: UIView {
             case .video, .livePhoto, .photo:
                 let videoView = VideoView()
                 videoView.playerItem = newValue
+                if case .photo(let imageView) = contentView {
+                    videoView.image = imageView?.image
+                }
                 contentView = .video(videoView: videoView)
             }
         }
@@ -104,6 +107,17 @@ class MediaView: UIView {
             switch contentView {
             case .video(let videoView):
                 return videoView?.playerItem
+            case .livePhoto, .photo:
+                return nil
+            }
+        }
+    }
+    
+    var player: AVPlayer? {
+        get {
+            switch contentView {
+            case .video(let videoView):
+                return videoView?.player
             case .livePhoto, .photo:
                 return nil
             }
@@ -118,7 +132,15 @@ class MediaView: UIView {
             case .livePhoto(let livewPhotoView):
                 return livewPhotoView?.livePhoto?.size
             case .video(let videoView):
-                return videoView?.playerItem?.asset.tracks(withMediaType: AVMediaTypeVideo).first?.naturalSize
+                let size = videoView?.playerItem?.asset.tracks(withMediaType: AVMediaTypeVideo).first?.naturalSize
+                if let transform = videoView?.playerItem?.asset.tracks(withMediaType: AVMediaTypeVideo).first?.preferredTransform,
+                    let naturalSize = size,
+                    transform != .identity {
+                    return CGSize(width: naturalSize.height, height: naturalSize.width)
+                }
+                else {
+                    return size
+                }
             }
         }
     }
@@ -127,8 +149,17 @@ class MediaView: UIView {
         switch contentView {
         case .livePhoto(let livePhotoView):
             livePhotoView?.startPlayback(with: .hint)
+        case .photo, .video:
+            break
+        }
+    }
+    
+    func willBecomeHidden() {
+        switch contentView {
+        case .livePhoto(let livePhotoView):
+            livePhotoView?.stopPlayback()
         case .video(let videoView):
-            break // videoView?.play()
+            videoView?.reset()
         case .photo:
             break
         }
@@ -147,10 +178,7 @@ class MediaView: UIView {
         bringSubview(toFront: subview)
         
         constrain(self, subview) {view, subview in
-            view.top == subview.top
-            view.bottom == subview.bottom
-            view.left == subview.left
-            view.right == subview.right
+            view.edges == subview.edges
         }
 
         // Unlike UIImageView, PHLivePhotoView does not implement intrinsicContentSize()

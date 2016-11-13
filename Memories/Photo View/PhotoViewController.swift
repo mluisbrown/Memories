@@ -76,6 +76,12 @@ class PhotoViewController: UIViewController,
             return closeButton.alpha == 0
         }
     }
+
+    private func setControls(alpha: CGFloat) {
+        [shareButton, deleteButton, closeButton, heartButton, yearLabel].forEach {
+            $0.alpha = alpha
+        }
+    }
     
     private func buttonImage(forFavorite favorite: Bool) -> UIImage {
         return favorite ? heartFullImg : heartEmptyImg
@@ -242,9 +248,7 @@ class PhotoViewController: UIViewController,
         deleteButton.isEnabled = enable
         heartButton.isEnabled = !asset.sourceType.contains(.typeiTunesSynced) && enable
         
-        if asset.mediaSubtypes == .photoLive {
-            pageView.didBecomeVisible()
-        }
+        pageView.didBecomeVisible()
     }
     
     func load(page: Int, requestFullImage: Bool) {
@@ -273,6 +277,8 @@ class PhotoViewController: UIViewController,
                 pageView.frame = frame
                 if requestFullImage {
                     self.page(view: pageView, didLoad: true, for: asset)
+                } else {
+                    pageView.willBecomeHidden()
                 }
                 return
             }
@@ -439,7 +445,6 @@ class PhotoViewController: UIViewController,
                 PHImageManager.default().cancelImageRequest(requestId)
                 pageView.imageRequestId = nil
             }
-            pageView.photo = nil
             pageView.removeFromSuperview()
             pageViews[page] = nil
         }
@@ -563,21 +568,15 @@ class PhotoViewController: UIViewController,
     }
     
     // MARK: ZoomingPhotoViewDelegate
-    func hideControls(_ hide: Bool) {
-        guard hide != controlsHidden else {
+    func viewWasZoomedIn() {
+        guard !controlsHidden else {
             return
         }
         
-        setControls(alpha: hide ? 0 : 1)
+        setControls(alpha: 0)
     }
     
-    func setControls(alpha: CGFloat) {
-        [shareButton, deleteButton, closeButton, heartButton, yearLabel].forEach {
-            $0.alpha = alpha
-        }
-    }
-    
-    func toggleControlsHidden() {
-        hideControls(!controlsHidden)
+    func viewWasTapped() {
+        setControls(alpha: controlsHidden ? 1 : 0)
     }
 }
