@@ -800,6 +800,7 @@
 				HEADERMAP_USES_VFS = YES;
 				INFOPLIST_FILE = "Memories/Supporting Files/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				"OTHER_SWIFT_FLAGS[arch=*]" = "-DDEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = com.luacheia.memories;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "b2065240-5a98-42d3-8b28-32bfddcd7124";

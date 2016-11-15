@@ -12,8 +12,25 @@ import Cartography
 
 class VideoView: UIView {
 
+    private let observedKeyPaths = [
+        #keyPath(VideoView.player.status),
+        #keyPath(VideoView.player.rate)
+    ]
+    private var observerContext = 0
+    
     let previewImageView = UIImageView().with {
         $0.translatesAutoresizingMaskIntoConstraints = false
+    }
+    
+    var previewImageVisible: Bool {
+        set {
+            UIView.animate(withDuration: 0.3) { [weak self] in
+                self?.previewImageView.alpha = newValue ? 1 : 0
+            }
+        }
+        get {
+            return previewImageView.alpha == 1
+        }
     }
     
     var image: UIImage? {
@@ -23,8 +40,9 @@ class VideoView: UIView {
     }
     
     deinit {
-        player?.removeObserver(self, forKeyPath: "status")
-        player?.removeObserver(self, forKeyPath: "rate")
+        for keyPath in observedKeyPaths {
+            removeObserver(self, forKeyPath: keyPath, context: nil)
+        }
     }
 
     var playerItem: AVPlayerItem? {
@@ -46,13 +64,14 @@ class VideoView: UIView {
     
     var player: AVPlayer? {
         willSet {
-            player?.removeObserver(self, forKeyPath: "status")
-            player?.removeObserver(self, forKeyPath: "rate")
+            for keyPath in observedKeyPaths {
+                removeObserver(self, forKeyPath: keyPath, context: &observerContext)
+            }
         }
         didSet {
-
-            player?.addObserver(self, forKeyPath: "status", options: .new, context: nil)
-            player?.addObserver(self, forKeyPath: "rate", options: .new, context: nil)
+            for keyPath in observedKeyPaths {
+                addObserver(self, forKeyPath: keyPath, options: [.new, .initial], context: &observerContext)
+            }
         }
     }
     
@@ -78,13 +97,7 @@ class VideoView: UIView {
     }
 
     func reset() {
-        setPreviewImage(visible: true)
-    }
-    
-    func setPreviewImage(visible: Bool) {
-        UIView.animate(withDuration: 0.3) { [weak self] in
-            self?.previewImageView.alpha = visible ? 1 : 0
-        }
+        previewImageVisible = true
     }
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
@@ -92,7 +105,7 @@ class VideoView: UIView {
             let rate = player?.rate,
             status == .readyToPlay,
             rate != 0 {
-            setPreviewImage(visible: false)
+            previewImageVisible = false
         }
     }
     
