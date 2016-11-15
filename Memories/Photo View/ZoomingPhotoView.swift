@@ -358,9 +358,6 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
             }
         }
         
-        let visibleCenter = self.convert(self.center, to: mediaView)
-        NSLog("visibleCenter: \(visibleCenter), self.center: \(self.center)")
-        
         adjustImageConstraints(for: zoomScale)
         layoutIfNeeded()
     }

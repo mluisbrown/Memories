@@ -12,10 +12,6 @@ import Cartography
 
 class VideoView: UIView {
 
-    private let observedKeyPaths = [
-        #keyPath(VideoView.player.status),
-        #keyPath(VideoView.player.rate)
-    ]
     private var observerContext = 0
     
     let previewImageView = UIImageView().with {
@@ -40,9 +36,8 @@ class VideoView: UIView {
     }
     
     deinit {
-        for keyPath in observedKeyPaths {
-            removeObserver(self, forKeyPath: keyPath, context: nil)
-        }
+        player?.removeObserver(self, forKeyPath: "status")
+        player?.removeObserver(self, forKeyPath: "rate")
     }
 
     var playerItem: AVPlayerItem? {
@@ -64,14 +59,12 @@ class VideoView: UIView {
     
     var player: AVPlayer? {
         willSet {
-            for keyPath in observedKeyPaths {
-                removeObserver(self, forKeyPath: keyPath, context: &observerContext)
-            }
+            player?.removeObserver(self, forKeyPath: "status")
+            player?.removeObserver(self, forKeyPath: "rate")
         }
         didSet {
-            for keyPath in observedKeyPaths {
-                addObserver(self, forKeyPath: keyPath, options: [.new, .initial], context: &observerContext)
-            }
+            player?.addObserver(self, forKeyPath: "status", options: .new, context: nil)
+            player?.addObserver(self, forKeyPath: "rate", options: .new, context: nil)
         }
     }
     
