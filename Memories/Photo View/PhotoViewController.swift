@@ -23,6 +23,7 @@ enum AssetData {
 class PhotoViewController: UIViewController,
     UIScrollViewDelegate,
     UIViewControllerTransitioningDelegate,
+    UIGestureRecognizerDelegate,
     PHPhotoLibraryChangeObserver,
     ZoomingPhotoViewDelegate
 {
@@ -96,7 +97,9 @@ class PhotoViewController: UIViewController,
         imageManager.startCachingImages(for: model.assets, targetSize: cacheSize, contentMode: .aspectFill, options: nil)
         PHPhotoLibrary.shared().register(self);
         
-        let panRecognizer = UIPanGestureRecognizer(target: self, action: #selector(PhotoViewController.viewDidPan))
+        let panRecognizer = UIPanGestureRecognizer(target: self, action: #selector(PhotoViewController.viewDidPan)).with {
+            $0.delegate = self
+        }
         view.addGestureRecognizer(panRecognizer)
     }
 
@@ -519,6 +522,16 @@ class PhotoViewController: UIViewController,
         }
     }
 
+    // MARK: UIGestureRecognizerDelegate
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        if touch.view is UISlider {
+            return false
+        }
+        
+        return true
+    }
+    
+    
     // MARK: UIViewControllerTransitioningDelegate
     func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         return presentTransition

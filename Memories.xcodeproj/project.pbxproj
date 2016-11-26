@@ -24,6 +24,7 @@
 		4C6299AD1B4CB0AD00B8795E /* PhotoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6299AC1B4CB0AD00B8795E /* PhotoViewController.swift */; };
 		4C69E63A1DCA73F1004D6F5C /* MediaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C69E6391DCA73F1004D6F5C /* MediaView.swift */; };
 		4C6F48EF1B69850F00CF7E67 /* DismissSegue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6F48EE1B69850F00CF7E67 /* DismissSegue.swift */; };
+		4C748EB11DE09D94005F44DD /* ScrubberView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C748EB01DE09D94005F44DD /* ScrubberView.swift */; };
 		4C758BB31DD6712D00AE9D9F /* CAShapeLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C758BB21DD6712C00AE9D9F /* CAShapeLayer.swift */; };
 		4C758BB51DD676FC00AE9D9F /* UIBezierPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C758BB41DD676FC00AE9D9F /* UIBezierPath.swift */; };
 		4C758BB71DD67A0400AE9D9F /* CALayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C758BB61DD67A0400AE9D9F /* CALayer.swift */; };
@@ -38,6 +39,7 @@
 		4C989BDF1BA7806E00D4C13F /* Dynamic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C989BDE1BA7806E00D4C13F /* Dynamic.swift */; };
 		4C989BE11BA780BB00D4C13F /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C989BE01BA780BB00D4C13F /* SettingsViewModel.swift */; };
 		4CA4ECCE1DCCE3AA00A6B664 /* VideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA4ECCD1DCCE3AA00A6B664 /* VideoView.swift */; };
+		4CA5E1831DEA42950019CA26 /* DateComponentsFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA5E1821DEA42950019CA26 /* DateComponentsFormatter.swift */; };
 		4CAAF0751B827EAD00AE47C3 /* PullView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CAAF0741B827EAD00AE47C3 /* PullView.swift */; };
 		4CABEE221CAAF08500A9F23A /* UITraitEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CABEE211CAAF08500A9F23A /* UITraitEnvironment.swift */; };
 		4CB674B51BA1EBC7001F401A /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB674B41BA1EBC7001F401A /* SettingsViewController.swift */; };
@@ -136,6 +138,7 @@
 		4C6F48EE1B69850F00CF7E67 /* DismissSegue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DismissSegue.swift; sourceTree = "<group>"; };
 		4C6FF0461CED11E9001994DC /* Memories.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = Memories.entitlements; path = ../Memories.entitlements; sourceTree = "<group>"; };
 		4C6FF0491CED12D5001994DC /* Photo Widget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Photo Widget.entitlements"; sourceTree = "<group>"; };
+		4C748EB01DE09D94005F44DD /* ScrubberView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScrubberView.swift; sourceTree = "<group>"; };
 		4C758BB21DD6712C00AE9D9F /* CAShapeLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CAShapeLayer.swift; sourceTree = "<group>"; };
 		4C758BB41DD676FC00AE9D9F /* UIBezierPath.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIBezierPath.swift; sourceTree = "<group>"; };
 		4C758BB61DD67A0400AE9D9F /* CALayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CALayer.swift; sourceTree = "<group>"; };
@@ -150,6 +153,7 @@
 		4C989BDE1BA7806E00D4C13F /* Dynamic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Dynamic.swift; sourceTree = "<group>"; };
 		4C989BE01BA780BB00D4C13F /* SettingsViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
 		4CA4ECCD1DCCE3AA00A6B664 /* VideoView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoView.swift; sourceTree = "<group>"; };
+		4CA5E1821DEA42950019CA26 /* DateComponentsFormatter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateComponentsFormatter.swift; sourceTree = "<group>"; };
 		4CAAF0741B827EAD00AE47C3 /* PullView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PullView.swift; sourceTree = "<group>"; };
 		4CABEE211CAAF08500A9F23A /* UITraitEnvironment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UITraitEnvironment.swift; sourceTree = "<group>"; };
 		4CB674B41BA1EBC7001F401A /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
@@ -233,6 +237,7 @@
 				4C758BB41DD676FC00AE9D9F /* UIBezierPath.swift */,
 				4C758BB61DD67A0400AE9D9F /* CALayer.swift */,
 				4C758BB81DD67E7B00AE9D9F /* UIButton.swift */,
+				4CA5E1821DEA42950019CA26 /* DateComponentsFormatter.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -285,6 +290,7 @@
 				4C69E6391DCA73F1004D6F5C /* MediaView.swift */,
 				4CA4ECCD1DCCE3AA00A6B664 /* VideoView.swift */,
 				4C758BBA1DD685E700AE9D9F /* PlayerController.swift */,
+				4C748EB01DE09D94005F44DD /* ScrubberView.swift */,
 			);
 			path = "Photo View";
 			sourceTree = "<group>";
@@ -570,6 +576,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4C748EB11DE09D94005F44DD /* ScrubberView.swift in Sources */,
 				4C989BDF1BA7806E00D4C13F /* Dynamic.swift in Sources */,
 				4C921FD21C1A038800F0411D /* PhotoViewPresentTransition.swift in Sources */,
 				4CEAA8EE1B3340C600774FE8 /* AppDelegate.swift in Sources */,
@@ -590,6 +597,7 @@
 				4CEAA9101B33462600774FE8 /* GridViewCell.swift in Sources */,
 				4CBA89671BBC926100913336 /* UpgradeManager.swift in Sources */,
 				4C69E63A1DCA73F1004D6F5C /* MediaView.swift in Sources */,
+				4CA5E1831DEA42950019CA26 /* DateComponentsFormatter.swift in Sources */,
 				4CF4105C1C4BB732002FD49A /* DateUtils.swift in Sources */,
 				4C758BB31DD6712D00AE9D9F /* CAShapeLayer.swift in Sources */,
 				4CEAA90E1B3343F700774FE8 /* GridViewController.swift in Sources */,

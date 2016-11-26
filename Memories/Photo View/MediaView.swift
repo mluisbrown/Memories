@@ -32,13 +32,13 @@ class MediaView: UIView {
         }
     }
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        
+    init() {
+        super.init(frame: .zero)
     }
     
+    @available(*, unavailable)
     required init?(coder aDecoder: NSCoder) {
-        super.init(frame: CGRect.zero)
+        fatalError("init(coder:) is not available")
     }
 
     override class var layerClass : AnyClass {

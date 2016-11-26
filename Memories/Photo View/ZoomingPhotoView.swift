@@ -76,6 +76,13 @@ class ZoomingPhotoView: UIView, UIScrollViewDelegate {
     let videoPlayButton = UIButton.circlePlayButton(diameter: 70).with {
         $0.translatesAutoresizingMaskIntoConstraints = false
     }
+    
+    let scrubberView = ScrubberView().with {
+        $0.translatesAutoresizingMaskIntoConstraints = false
+        $0.backgroundColor = UIColor.black.withAlphaComponent(0.5)
+        $0.layer.cornerRadius = 5
+    }
+    
     var playerController: PlayerController?
     
     var photoViewDelegate: ZoomingPhotoViewDelegate?
@@ -86,8 +93,8 @@ class ZoomingPhotoView: UIView, UIScrollViewDelegate {
     let buttonOffset = CGFloat(50)
     var aspectFitZoomScale = CGFloat(0)
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    init() {
+        super.init(frame: .zero)
         
         scrollView.delegate = self
         
@@ -129,8 +136,9 @@ class ZoomingPhotoView: UIView, UIScrollViewDelegate {
         singleTapper.require(toFail: doubleTapper)
     }
 
+    @available(*, unavailable)
     required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
+        fatalError("init(coder:) is not available")
     }
     
     var photo : UIImage? {
@@ -165,8 +173,20 @@ class ZoomingPhotoView: UIView, UIScrollViewDelegate {
                 button.center == view.center
             }
             
+            addSubview(scrubberView)
+            constrain(self, scrubberView) { view, scrubberView in
+                scrubberView.height == 40
+                scrubberView.bottom == view.bottom - 10
+                scrubberView.left == view.left + buttonOffset + 5
+                scrubberView.right == view.right - buttonOffset - 5
+            }
+            
             playerController = PlayerController(player: mediaView.player!).with {
                 $0.startPlayButton = videoPlayButton
+                $0.playPauseButton = scrubberView.playPauseButton
+                $0.slider = scrubberView.scrubberSlider
+                $0.currentTimeLabel = scrubberView.currentTimeLabel
+                $0.remainingTimeLabel = scrubberView.remainingTimeLabel
                 $0.loadingSpinner = videoLoadingSpinner as LoadingSpinner
             }
             
@@ -323,6 +343,7 @@ class ZoomingPhotoView: UIView, UIScrollViewDelegate {
     func imageSingleTapped(_ recognizer: UITapGestureRecognizer) {
         UIView.animate(withDuration: 0.25) {
             self.photoViewDelegate?.viewWasTapped()
+            self.scrubberView.alpha = self.scrubberView.alpha == 1 ? 0 : 1
         }
     }
     
@@ -362,6 +383,7 @@ class ZoomingPhotoView: UIView, UIScrollViewDelegate {
         if scrollView.zoomScale > scrollView.minimumZoomScale {
             UIView.animate(withDuration: 0.25) {
                 self.photoViewDelegate?.viewWasZoomedIn()
+                self.scrubberView.alpha = 0
             }
         }
         

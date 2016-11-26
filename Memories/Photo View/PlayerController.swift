@@ -43,14 +43,20 @@ class PlayerController: NSObject {
     let player: AVPlayer
     let playerItem: AVPlayerItem
     var observing = false
+    var timeObserver: Any?
     
     private let observedKeyPaths = [
         #keyPath(PlayerController.playerItem.playbackLikelyToKeepUp),
         #keyPath(PlayerController.playerItem.playbackBufferEmpty),
-        #keyPath(PlayerController.playerItem.loadedTimeRanges)
+        #keyPath(PlayerController.playerItem.loadedTimeRanges),
+        #keyPath(PlayerController.player.rate)
     ]
     
     private var observerContext = 0
+    private var playAfterScrub = false
+    private let frameDuration: Float
+    private let itemDuration: TimeInterval
+    private let timeFormatter = DateComponentsFormatter()
     
     weak var startPlayButton: UIButton? {
         didSet {
@@ -58,8 +64,27 @@ class PlayerController: NSObject {
         }
     }
     
+    var loadingSpinner: LoadingSpinner?
+    weak var playPauseButton: UIButton? {
+        didSet {
+            playPauseButton?.addTarget(self, action: #selector(playPause), for: .touchUpInside)
+        }
+    }
+    weak var slider: UISlider? {
+        didSet {
+            slider?.addTarget(self, action: #selector(sliderValueChanged(sender:event:)), for: .valueChanged)
+        }
+    }
+    
+    weak var currentTimeLabel: UILabel?
+    weak var remainingTimeLabel: UILabel?
+    
     var startPlayButtonVisible: Bool {
         set {
+            guard startPlayButton?.alpha != (newValue ? 1 : 0) else {
+                return
+            }
+            
             UIView.animate(withDuration: 0.25) { [weak self] in
                 self?.startPlayButton?.alpha = newValue ? 1 : 0
             }
@@ -80,18 +105,46 @@ class PlayerController: NSObject {
     }
 
     
-    var loadingSpinner: LoadingSpinner?
     
     init(player: AVPlayer) {
         self.player = player
         self.player.actionAtItemEnd = .pause
         self.playerItem = player.currentItem!
+        self.itemDuration = CMTimeGetSeconds(playerItem.asset.duration)
+        
+        let frameRate = player.currentItem?.asset.tracks(withMediaType: AVMediaTypeVideo).first?.nominalFrameRate ?? 0
+        self.frameDuration = 1 / frameRate
         super.init()
+
+        addTimeObserver()
     }
     
     deinit {
         removeObservers()
     }
+    
+    // MARK: Implementation
+    
+    private func updatePlayer(thenPlay: Bool) {
+        guard let slider = slider else {
+            return
+        }
+        
+        let secondsDuration = CMTimeGetSeconds(playerItem.duration)
+        let time = CMTimeMakeWithSeconds(secondsDuration * Float64(slider.value), Int32(NSEC_PER_SEC))
+        
+        player.seek(to: time, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero) { [weak self] _ in
+            guard let `self` = self else {
+                return
+            }
+            
+            if thenPlay && slider.value < slider.maximumValue && self.playAfterScrub {
+                self.player.play()
+            }
+        }
+    }
+    
+    // MARK: KVO
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         guard context == &observerContext else {
@@ -111,6 +164,10 @@ class PlayerController: NSObject {
         }
 #endif
 
+        if keyPath == #keyPath(PlayerController.player.rate) {
+            playPauseButton?.isSelected = (player.rate != 0)
+        }
+        
         if timebaseRate != player.rate {
             loadingSpinner?.show(loading: true)
         }
@@ -119,14 +176,25 @@ class PlayerController: NSObject {
         }
     }
     
-    func addObservers() {
+    private func addObservers() {
         for keyPath in observedKeyPaths {
             addObserver(self, forKeyPath: keyPath, options: [.new, .initial], context: &observerContext)
         }
         observing = true
     }
     
-    func removeObservers() {
+    private func addTimeObserver() {
+        timeObserver = player.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(Float64(frameDuration), Int32(NSEC_PER_SEC)), queue: nil) { [weak self] _ in
+            guard let `self` = self else {
+                return
+            }
+            
+            self.playerTimeChanged()
+        }
+    }
+    
+    private func removeObservers() {
+        removeTimeObserver()
         if observing {
             for keyPath in observedKeyPaths {
                 removeObserver(self, forKeyPath: keyPath, context: &observerContext)
@@ -135,12 +203,24 @@ class PlayerController: NSObject {
         }
     }
     
-    func startPlay() {
-        startPlayButtonVisible = false
-        
-        addObservers()
-        player.play()
+    private func removeTimeObserver() {
+        if let timeObserver = timeObserver {
+            player.removeTimeObserver(timeObserver)
+            self.timeObserver = nil
+        }
     }
+    
+    private func playerTimeChanged() {
+        let secondsElapsed = CMTimeGetSeconds(playerItem.currentTime())
+        let ratio = itemDuration == 0 ? 0 : secondsElapsed / itemDuration
+
+        currentTimeLabel?.text = timeFormatter.videoDuration(from: secondsElapsed)
+        remainingTimeLabel?.text = timeFormatter.videoDuration(from: itemDuration - secondsElapsed)
+        
+        slider?.value = Float(ratio)
+    }
+    
+    // MARK: API
     
     func pause(andReset reset: Bool) {
         player.pause()
@@ -149,6 +229,47 @@ class PlayerController: NSObject {
             removeObservers()
             player.seek(to: kCMTimeZero)
             startPlayButtonVisible = true
+        }
+    }
+
+    
+    // MARK: Actions
+    
+    func startPlay() {
+        startPlayButtonVisible = false
+        
+        addObservers()
+        player.play()
+    }
+    
+    func playPause() {
+        startPlayButtonVisible = false
+        
+        if player.rate == 0 {
+            if CMTimeCompare(player.currentTime(), playerItem.duration) == 0 {
+                player.seek(to: kCMTimeZero) {_ in 
+                    self.player.play()
+                }
+            }
+            else {
+                player.play()
+            }
+        }
+        else {
+            player.pause()
+        }
+    }
+    
+    func sliderValueChanged(sender: UISlider, event: UIEvent) {
+        startPlayButtonVisible = false
+        
+        if let touch = event.allTouches?.first {
+            if touch.phase == .began {
+                playAfterScrub = player.rate > 0
+                player.pause()
+            }
+
+            updatePlayer(thenPlay: touch.phase == .ended)
         }
     }
 }

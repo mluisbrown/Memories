@@ -68,21 +68,18 @@ class VideoView: UIView {
         }
     }
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        
+    init() {
+        super.init(frame: .zero)
+
         addSubview(previewImageView)
         constrain(self, previewImageView) {view, imageView in
             view.edges == imageView.edges
         }
     }
-
-    convenience init() {
-        self.init(frame: .zero)
-    }
     
+    @available(*, unavailable)
     required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
+        fatalError("init(coder:) is not available")
     }
     
     override class var layerClass : AnyClass {
