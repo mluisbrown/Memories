@@ -236,6 +236,24 @@ class ZoomingPhotoView: UIView, UIScrollViewDelegate {
         progressView.setProgress(CGFloat(progress), animated: true)
     }
     
+    func prepareForDragging() {
+        playerController?.pause(andReset: false)
+        
+        UIView.animate(withDuration: 0.25) {
+            if self.videoPlayButton.alpha == 1 { self.videoPlayButton.alpha = 0.01 }
+            if self.scrubberView.alpha == 1 { self.scrubberView.alpha = 0.01 }
+            if self.videoLoadingSpinner.alpha == 1 { self.videoLoadingSpinner.alpha = 0.01 }
+        }
+    }
+    
+    func dragWasCancelled() {
+        UIView.animate(withDuration: 0.25) {
+            if self.videoPlayButton.alpha != 0 { self.videoPlayButton.alpha = 1 }
+            if self.scrubberView.alpha != 0 { self.scrubberView.alpha = 1 }
+            if self.videoLoadingSpinner.alpha != 0 { self.videoLoadingSpinner.alpha = 1 }
+        }
+    }
+    
     private func adjustZoomScale() {
         // adjust sizes as necessary
         if let imageSize = mediaView.imageSize {

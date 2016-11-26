@@ -51,6 +51,7 @@ class PhotoViewController: UIViewController,
     let cacheSize = CGSize(width: 256, height: 256)
     
     struct PanState {
+        let pageView: ZoomingPhotoView?
         let imageView: UIView?
         let destImageView: UIImageView?
         let transform: CGAffineTransform
@@ -58,7 +59,7 @@ class PhotoViewController: UIViewController,
         let panHeight: CGFloat
     }
     
-    var initialPanState = PanState(imageView: nil, destImageView: nil, transform: CGAffineTransform.identity, center: .zero, panHeight: 0)
+    var initialPanState = PanState(pageView: nil, imageView: nil, destImageView: nil, transform: CGAffineTransform.identity, center: .zero, panHeight: 0)
     
     var presentTransition: PhotoViewPresentTransition?
     var dismissTransition: PhotoViewDismissTransition?
@@ -186,13 +187,16 @@ class PhotoViewController: UIViewController,
         case .began:
             let startPoint = gr.location(in: gr.view)
             
+            let pageView = pageViews[model.selectedIndex]
             let imageView = pageViews[model.selectedIndex]!.mediaView
-            initialPanState = PanState(imageView: imageView,
+            initialPanState = PanState(pageView: pageView,
+                                       imageView: imageView,
                                        destImageView: delegate?.imageView(atIndex: model.selectedIndex),
                                        transform: imageView.transform,
                                        center: imageView.center,
                                        panHeight: gr.view!.bounds.height - startPoint.y)
             initialPanState.destImageView?.isHidden = true
+            initialPanState.pageView?.prepareForDragging()
         case .changed:
             let translation = gr.translation(in: gr.view)
             let yPercent = translation.y / initialPanState.panHeight
@@ -216,6 +220,7 @@ class PhotoViewController: UIViewController,
                     if !self.controlsHidden { self.setControls(alpha: 1) }
                 }) { finished in
                     self.initialPanState.destImageView?.isHidden = false
+                    self.initialPanState.pageView?.dragWasCancelled()
                 }
             }
             else {
