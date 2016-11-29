@@ -42,7 +42,10 @@ class VideoView: UIView {
 
     var playerItem: AVPlayerItem? {
         set {
-            self.player = AVPlayer()
+            self.player = AVPlayer().with {
+                $0.usesExternalPlaybackWhileExternalScreenIsActive = true
+                $0.allowsExternalPlayback = true
+            }
 
             if let videoLayer = self.layer as? AVPlayerLayer {
                 videoLayer.player = player
