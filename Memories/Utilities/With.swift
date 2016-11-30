@@ -20,7 +20,7 @@ extension With where Self: AnyObject {
     ///       $0.textColor = UIColor.blackColor()
     ///       $0.text = "Hello, World!"
     ///     }
-    public func with(_ block: (Self) -> Void) -> Self {
+    @discardableResult public func with(_ block: (Self) -> Void) -> Self {
         block(self)
         return self
     }

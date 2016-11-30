@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import AVFoundation
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -26,6 +27,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         // this will schedule notifications if they are allowed and enabled
         NotificationManager.scheduleNotifications()
+        
+        do {
+            try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback)
+        } catch {
+            NSLog("AVAudioSession setCategory failed!")
+        }
         
         return true
     }

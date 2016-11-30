@@ -8,6 +8,8 @@
 
 import UIKit
 import Photos
+import DACircularProgress
+import Cartography
 
 protocol PhotoViewControllerDelegate {
     func setSelected(index: Int)
@@ -33,6 +35,9 @@ class PhotoViewController: UIViewController,
     @IBOutlet weak var closeButton: UIButton!
     @IBOutlet weak var heartButton: UIButton!
     @IBOutlet weak var yearLabel: UILabel!
+    let shareProgressView = DACircularProgressView().with {
+        $0.isHidden = true
+    }
 
     let padding = CGFloat(10);
     
@@ -102,6 +107,21 @@ class PhotoViewController: UIViewController,
             $0.delegate = self
         }
         view.addGestureRecognizer(panRecognizer)
+        
+        shareProgressView.with {
+            $0.trackTintColor = UIColor.clear
+            $0.thicknessRatio = 0.1
+            $0.indeterminateDuration = 1
+            $0.indeterminate = 0
+            $0.setProgress(0.33, animated: false)
+        }
+        view.addSubview(shareProgressView)
+        constrain(view, shareProgressView) { view, shareProgressView in
+            shareProgressView.width == 40
+            shareProgressView.height == 40
+            shareProgressView.left == view.left + 10
+            shareProgressView.bottom == view.bottom - 10
+        }
     }
 
     override func viewDidLayoutSubviews() {
@@ -121,26 +141,65 @@ class PhotoViewController: UIViewController,
     // MARK: Actions
     @IBAction func sharePhoto(_ sender: UIButton) {
         let page = model.selectedIndex
-        
         let asset = model.assets[page]
-        let options = PHImageRequestOptions()
-        options.version = .current
-        options.isNetworkAccessAllowed = false
-        PHImageManager.default().requestImageData(for: asset, options: options) {
-            [weak self] imageData, dataUTI, orientation, info in
-            guard let `self` = self else { return }
-
-            if let imageData = imageData {
-                let avc = UIActivityViewController(activityItems: [imageData], applicationActivities: nil)
-                if let popover = avc.popoverPresentationController {
-                    popover.sourceView = sender
-                    popover.sourceRect = sender.bounds
-                    popover.permittedArrowDirections = .down
-                }
-                
-                self.present(avc, animated: true, completion: nil)
+        let pageView = pageViews[page]
+        
+        switch asset.mediaType {
+        case .image where asset.mediaSubtypes == .photoLive:
+            if let livePhoto = pageView?.livePhoto {
+                share(media: [livePhoto], from: sender)
             }
+        case .image:
+            let options = PHImageRequestOptions()
+            options.version = .current
+            options.isNetworkAccessAllowed = true
+            PHImageManager.default().requestImageData(for: asset, options: options) {
+                [weak self] imageData, dataUTI, orientation, info in
+                guard let `self` = self else { return }
+                
+                if let imageData = imageData {
+                    self.share(media: [imageData], from: sender)
+                }
+            }
+        case .video:
+            let options = PHVideoRequestOptions()
+            options.version = .current
+            options.deliveryMode = .automatic
+            options.isNetworkAccessAllowed = true
+            
+            UIView.animate(withDuration: 0.25) {
+                sender.alpha = 0
+                self.shareProgressView.show(loading: true)
+            }
+            
+            PHImageManager.default().requestAVAsset(forVideo: asset, options: options) { [weak self] asset, audioMix, info in
+                guard let `self` = self else { return }
+
+                UIView.animate(withDuration: 0.25, animations: {
+                    self.shareProgressView.show(loading: false)
+                    sender.alpha = 1
+                }) { _ in
+                    if let urlAsset = asset as? AVURLAsset {
+                        self.share(media: [urlAsset.url], from: sender)
+                    }
+                }
+            }
+            break
+        default:
+            break
+            
         }
+    }
+    
+    private func share(media: [Any], from view: UIView) {
+        let avc = UIActivityViewController(activityItems: media, applicationActivities: nil)
+        if let popover = avc.popoverPresentationController {
+            popover.sourceView = view
+            popover.sourceRect = view.bounds
+            popover.permittedArrowDirections = .down
+        }
+        
+        self.present(avc, animated: true, completion: nil)
     }
     
     @IBAction func deletePhoto(_ sender: UIButton) {
@@ -167,10 +226,15 @@ class PhotoViewController: UIViewController,
         }
         
         delegate.setSelected(index: model.selectedIndex)
-        let imageView = delegate.imageView(atIndex: model.selectedIndex)!
-        let pageView = pageViews[model.selectedIndex]!
-            
-        dismissTransition = PhotoViewDismissTransition(destImageView: imageView, sourceImageView: pageView.mediaView)
+        
+        if let imageView = delegate.imageView(atIndex: model.selectedIndex),
+            let pageView = pageViews[model.selectedIndex] {
+            dismissTransition = PhotoViewDismissTransition(destImageView: imageView, sourceImageView: pageView.mediaView)
+        }
+        else {
+            dismissTransition = nil
+        }
+        
         presentingViewController?.dismiss(animated: true) {
             PHPhotoLibrary.shared().unregisterChangeObserver(self)
             self.cancelAllImageRequests()
@@ -429,7 +493,7 @@ class PhotoViewController: UIViewController,
         
         options.progressHandler = progressHandler
         options.isNetworkAccessAllowed = true
-        options.deliveryMode = .highQualityFormat
+        options.deliveryMode = .automatic
         
         return PHImageManager.default().requestPlayerItem(forVideo: asset, options: options) { (result, userInfo) -> Void in
             if let video = result {
