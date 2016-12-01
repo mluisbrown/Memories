@@ -116,6 +116,7 @@ class PlayerController: NSObject {
         self.frameDuration = 1 / frameRate
         super.init()
 
+        addObservers()
         addTimeObserver()
     }
     
@@ -162,13 +163,16 @@ class PlayerController: NSObject {
         else if keyPath == #keyPath(PlayerController.playerItem.loadedTimeRanges) {
             NSLog("Time ranges: \(playerItem.loadedTimeRanges.asTimeRanges.description)")
         }
+        else if keyPath == #keyPath(PlayerController.player.rate) {
+            NSLog("Player rate: \(player.rate), Timebase rate: \(timebaseRate)")
+        }
 #endif
 
         if keyPath == #keyPath(PlayerController.player.rate) {
             playPauseButton?.isSelected = (player.rate != 0)
         }
         
-        if timebaseRate != player.rate {
+        if timebaseRate != player.rate && player.rate == 1.0 {
             loadingSpinner?.show(loading: true)
         }
         else {
@@ -226,7 +230,7 @@ class PlayerController: NSObject {
         player.pause()
         
         if reset {
-            removeObservers()
+//            removeObservers()
             player.seek(to: kCMTimeZero)
             startPlayButtonVisible = true
         }
@@ -238,7 +242,7 @@ class PlayerController: NSObject {
     func startPlay() {
         startPlayButtonVisible = false
         
-        addObservers()
+//        addObservers()
         player.play()
     }
     
