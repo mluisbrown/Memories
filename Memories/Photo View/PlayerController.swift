@@ -42,13 +42,13 @@ class PlayerController: NSObject {
     
     let player: AVPlayer
     let playerItem: AVPlayerItem
-    var observing = false
     var timeObserver: Any?
     
     private let observedKeyPaths = [
         #keyPath(PlayerController.playerItem.playbackLikelyToKeepUp),
         #keyPath(PlayerController.playerItem.playbackBufferEmpty),
         #keyPath(PlayerController.playerItem.loadedTimeRanges),
+        #keyPath(PlayerController.playerItem.status),
         #keyPath(PlayerController.player.rate)
     ]
     
@@ -57,10 +57,14 @@ class PlayerController: NSObject {
     private let frameDuration: Float
     private let itemDuration: TimeInterval
     private let timeFormatter = DateComponentsFormatter()
+
+    private var isSeekInProgress = false
+    private var chaseTime = kCMTimeZero
+    private var playerCurrentItemStatus = AVPlayerItemStatus.unknown
     
     weak var startPlayButton: UIButton? {
         didSet {
-            startPlayButton?.addTarget(self, action: #selector(startPlay), for: .touchUpInside)
+            startPlayButton?.addTarget(self, action: #selector(playPause), for: .touchUpInside)
         }
     }
     
@@ -116,11 +120,12 @@ class PlayerController: NSObject {
         self.frameDuration = 1 / frameRate
         super.init()
 
-        addObservers()
         addTimeObserver()
+        addObservers()
     }
     
     deinit {
+        removeTimeObserver()
         removeObservers()
     }
     
@@ -168,7 +173,10 @@ class PlayerController: NSObject {
         }
 #endif
 
-        if keyPath == #keyPath(PlayerController.player.rate) {
+        if keyPath == #keyPath(PlayerController.playerItem.status) {
+            playerCurrentItemStatus = playerItem.status
+        }
+        else if keyPath == #keyPath(PlayerController.player.rate) {
             playPauseButton?.isSelected = (player.rate != 0)
         }
         
@@ -184,7 +192,6 @@ class PlayerController: NSObject {
         for keyPath in observedKeyPaths {
             addObserver(self, forKeyPath: keyPath, options: [.new, .initial], context: &observerContext)
         }
-        observing = true
     }
     
     private func addTimeObserver() {
@@ -198,12 +205,8 @@ class PlayerController: NSObject {
     }
     
     private func removeObservers() {
-        removeTimeObserver()
-        if observing {
-            for keyPath in observedKeyPaths {
-                removeObserver(self, forKeyPath: keyPath, context: &observerContext)
-            }
-            observing = false
+        for keyPath in observedKeyPaths {
+            removeObserver(self, forKeyPath: keyPath, context: &observerContext)
         }
     }
     
@@ -230,7 +233,6 @@ class PlayerController: NSObject {
         player.pause()
         
         if reset {
-//            removeObservers()
             player.seek(to: kCMTimeZero)
             startPlayButtonVisible = true
         }
@@ -238,13 +240,6 @@ class PlayerController: NSObject {
 
     
     // MARK: Actions
-    
-    func startPlay() {
-        startPlayButtonVisible = false
-        
-//        addObservers()
-        player.play()
-    }
     
     func playPause() {
         startPlayButtonVisible = false
