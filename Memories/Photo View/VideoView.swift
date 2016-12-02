@@ -37,7 +37,6 @@ class VideoView: UIView {
     
     deinit {
         player?.removeObserver(self, forKeyPath: "status")
-        player?.removeObserver(self, forKeyPath: "rate")
     }
 
     var playerItem: AVPlayerItem? {
@@ -63,11 +62,9 @@ class VideoView: UIView {
     var player: AVPlayer? {
         willSet {
             player?.removeObserver(self, forKeyPath: "status")
-            player?.removeObserver(self, forKeyPath: "rate")
         }
         didSet {
-            player?.addObserver(self, forKeyPath: "status", options: .new, context: nil)
-            player?.addObserver(self, forKeyPath: "rate", options: .new, context: nil)
+            player?.addObserver(self, forKeyPath: "status", options: [.new, .initial], context: nil)
         }
     }
     
@@ -95,9 +92,7 @@ class VideoView: UIView {
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         if let status = player?.status,
-            let rate = player?.rate,
-            status == .readyToPlay,
-            rate != 0 {
+            status == .readyToPlay {
             previewImageVisible = false
         }
     }
