@@ -309,10 +309,16 @@ class PhotoViewController: UIViewController,
         }
 
         let pagesScrollViewSize = scrollView.bounds.size
-        scrollView.contentSize = CGSize(width: pagesScrollViewSize.width * CGFloat(pageCount),
-            height: pagesScrollViewSize.height)
+        scrollView.delegate = nil
+        scrollView.contentSize = CGSize(width: pagesScrollViewSize.width * CGFloat(pageCount), height: pagesScrollViewSize.height)
+        scrollView.delegate = self
         
-        loadVisiblePages()
+        if (!initialOffsetSet) {
+            // setting the scrollView contentOffset will cause scrollViewDidScroll 
+            // to be called which will call loadVisiblePages()
+            scrollView.contentOffset = contentOffsetForPage(at: initialPage)
+            initialOffsetSet = true
+        }
     }
     
     func page(view pageView: ZoomingPhotoView, didLoad enable: Bool, for asset: PHAsset) {
@@ -440,10 +446,12 @@ class PhotoViewController: UIViewController,
         
         switch asset.mediaType {
         case .image where asset.mediaSubtypes == .photoLive:
+            pageView.updateProgress(indeterminate: true)
             pageView.imageRequestId = loadLivePhoto(for: asset, progressHandler: progressHandler, completion: configurePageView(asset))
         case .image:
             pageView.imageRequestId = loadPhoto(for: asset, progressHandler: progressHandler, completion: configurePageView(asset))
         case .video:
+            pageView.updateProgress(indeterminate: true)
             pageView.imageRequestId = loadVideo(for: asset, progressHandler: progressHandler, completion: configurePageView(asset))
             break
         default:
@@ -538,18 +546,12 @@ class PhotoViewController: UIViewController,
     func loadVisiblePages() {
         let initialLoad = !initialOffsetSet
         
-        if (!initialOffsetSet) {
-            scrollView.contentOffset = contentOffsetForPage(at: initialPage)
-            initialOffsetSet = true
-        }
-        
         // First, determine which page is currently visible
         let pageWidth = scrollView.bounds.size.width
         let fractionalPage = scrollView.contentOffset.x / pageWidth;
         let page = lround(Double(fractionalPage))
         
-        if !initialLoad &&
-            page == model.selectedIndex {
+        guard initialLoad || page != model.selectedIndex else {
             return
         }
         
