@@ -231,9 +231,18 @@ class ZoomingPhotoView: UIView, UIScrollViewDelegate {
         progressView.isHidden = hide
     }
     
-    func updateProgress(_ progress: Double) {
-        progressView.isHidden = progress >= 1.0
-        progressView.setProgress(CGFloat(progress), animated: true)
+    func updateProgress(_ progress: Double = 0.33, indeterminate: Bool = false) {
+        if indeterminate {
+            progressView.setProgress(CGFloat(progress), animated: false)
+            progressView.isHidden = false
+            progressView.indeterminateDuration = 1
+            progressView.indeterminate = 1
+        }
+        else {
+            progressView.indeterminate = 0
+            progressView.isHidden = progress >= 1.0
+            progressView.setProgress(CGFloat(progress), animated: true)
+        }
     }
     
     func prepareForDragging() {
