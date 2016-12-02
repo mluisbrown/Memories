@@ -54,7 +54,7 @@ class PlayerController: NSObject {
     
     private var observerContext = 0
     private var playAfterScrub = false
-    private let frameDuration: Float
+    private var scrubEnded = false
     private let itemDuration: TimeInterval
     private let timeFormatter = DateComponentsFormatter()
 
@@ -116,8 +116,6 @@ class PlayerController: NSObject {
         self.playerItem = player.currentItem!
         self.itemDuration = CMTimeGetSeconds(playerItem.asset.duration)
         
-        let frameRate = player.currentItem?.asset.tracks(withMediaType: AVMediaTypeVideo).first?.nominalFrameRate ?? 0
-        self.frameDuration = 1 / frameRate
         super.init()
 
         addTimeObserver()
@@ -139,13 +137,50 @@ class PlayerController: NSObject {
         let secondsDuration = CMTimeGetSeconds(playerItem.duration)
         let time = CMTimeMakeWithSeconds(secondsDuration * Float64(slider.value), Int32(NSEC_PER_SEC))
         
-        player.seek(to: time, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero) { [weak self] _ in
+        self.scrubEnded = thenPlay
+        seekSmoothlyTo(time: time)
+    }
+    
+    private func seekSmoothlyTo(time newChaseTime: CMTime) {
+        if CMTimeCompare(newChaseTime, chaseTime) != 0 {
+            chaseTime = newChaseTime
+            
+            if !isSeekInProgress {
+                tryToSeekToChaseTime()
+            }
+        }
+    }
+    
+    private func tryToSeekToChaseTime() {
+        switch playerCurrentItemStatus {
+        case .readyToPlay:
+            actuallySeekToTime()
+        case .unknown, .failed:
+            break;
+        }
+    }
+    
+    private func actuallySeekToTime() {
+        isSeekInProgress = true
+        let seekTimeInProgress = chaseTime
+        
+        player.seek(to: seekTimeInProgress, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero) { [weak self] _ in
             guard let `self` = self else {
                 return
             }
             
-            if thenPlay && slider.value < slider.maximumValue && self.playAfterScrub {
-                self.player.play()
+            if CMTimeCompare(seekTimeInProgress, self.chaseTime) == 0 {
+                self.isSeekInProgress = false
+                
+                if let slider = self.slider,
+                    slider.value < slider.maximumValue,
+                    self.scrubEnded,
+                    self.playAfterScrub {
+                    self.player.play()
+                }
+            }
+            else {
+                self.tryToSeekToChaseTime()
             }
         }
     }
@@ -168,13 +203,20 @@ class PlayerController: NSObject {
         else if keyPath == #keyPath(PlayerController.playerItem.loadedTimeRanges) {
             NSLog("Time ranges: \(playerItem.loadedTimeRanges.asTimeRanges.description)")
         }
-        else if keyPath == #keyPath(PlayerController.player.rate) {
-            NSLog("Player rate: \(player.rate), Timebase rate: \(timebaseRate)")
+        else if keyPath == #keyPath(PlayerController.playerItem.status) {
+            NSLog("Player item status: \(playerItem.status.rawValue)")
         }
 #endif
 
         if keyPath == #keyPath(PlayerController.playerItem.status) {
             playerCurrentItemStatus = playerItem.status
+            
+            switch playerItem.status {
+            case .readyToPlay:
+                loadingSpinner?.show(loading: false)
+            case .unknown, .failed:
+                loadingSpinner?.show(loading: true)
+            }
         }
         else if keyPath == #keyPath(PlayerController.player.rate) {
             playPauseButton?.isSelected = (player.rate != 0)
@@ -195,6 +237,9 @@ class PlayerController: NSObject {
     }
     
     private func addTimeObserver() {
+        let frameRate = playerItem.asset.tracks(withMediaType: AVMediaTypeVideo).first?.nominalFrameRate ?? 30
+        let frameDuration = 1 / frameRate
+        
         timeObserver = player.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(Float64(frameDuration), Int32(NSEC_PER_SEC)), queue: nil) { [weak self] _ in
             guard let `self` = self else {
                 return
