@@ -309,16 +309,22 @@ class PhotoViewController: UIViewController,
         }
 
         let pagesScrollViewSize = scrollView.bounds.size
-        scrollView.delegate = nil
-        scrollView.contentSize = CGSize(width: pagesScrollViewSize.width * CGFloat(pageCount), height: pagesScrollViewSize.height)
-        scrollView.delegate = self
-        
-        if (!initialOffsetSet) {
-            // setting the scrollView contentOffset will cause scrollViewDidScroll 
-            // to be called which will call loadVisiblePages()
-            scrollView.contentOffset = contentOffsetForPage(at: initialPage)
-            initialOffsetSet = true
+
+        doWithScrollViewDelegateDisabled {
+            scrollView.contentSize = CGSize(width: pagesScrollViewSize.width * CGFloat(pageCount), height: pagesScrollViewSize.height)
+            if (!initialOffsetSet) {
+                scrollView.contentOffset = contentOffsetForPage(at: initialPage)
+                initialOffsetSet = true
+                
+                loadVisiblePages(initialLoad: true)
+            }
         }
+    }
+    
+    func doWithScrollViewDelegateDisabled(block: () -> ()) {
+        scrollView.delegate = nil
+        block()
+        scrollView.delegate = self
     }
     
     func page(view pageView: ZoomingPhotoView, didLoad enable: Bool, for asset: PHAsset) {
@@ -543,9 +549,7 @@ class PhotoViewController: UIViewController,
         }
     }
     
-    func loadVisiblePages() {
-        let initialLoad = !initialOffsetSet
-        
+    func loadVisiblePages(initialLoad: Bool = false) {
         // First, determine which page is currently visible
         let pageWidth = scrollView.bounds.size.width
         let fractionalPage = scrollView.contentOffset.x / pageWidth;
