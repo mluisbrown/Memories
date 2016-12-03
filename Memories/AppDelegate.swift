@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import AVFoundation
 import Fabric
 import Crashlytics
 
@@ -30,6 +31,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         // this will schedule notifications if they are allowed and enabled
         NotificationManager.scheduleNotifications()
+        
+        do {
+            try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback)
+        } catch {
+            NSLog("AVAudioSession setCategory failed!")
+        }
         
         return true
     }

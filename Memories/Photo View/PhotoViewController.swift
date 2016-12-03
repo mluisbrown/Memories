@@ -8,15 +8,24 @@
 
 import UIKit
 import Photos
+import DACircularProgress
+import Cartography
 
 protocol PhotoViewControllerDelegate {
     func setSelected(index: Int)
     func imageView(atIndex: Int) -> UIImageView?
 }
 
+enum AssetData {
+    case photo(image: UIImage)
+    case livePhoto(livePhoto: PHLivePhoto)
+    case video(playerItem: AVPlayerItem)
+}
+
 class PhotoViewController: UIViewController,
     UIScrollViewDelegate,
     UIViewControllerTransitioningDelegate,
+    UIGestureRecognizerDelegate,
     PHPhotoLibraryChangeObserver,
     ZoomingPhotoViewDelegate
 {
@@ -26,6 +35,9 @@ class PhotoViewController: UIViewController,
     @IBOutlet weak var closeButton: UIButton!
     @IBOutlet weak var heartButton: UIButton!
     @IBOutlet weak var yearLabel: UILabel!
+    let shareProgressView = DACircularProgressView().with {
+        $0.isHidden = true
+    }
 
     let padding = CGFloat(10);
     
@@ -36,7 +48,7 @@ class PhotoViewController: UIViewController,
     var initialOffsetSet = false
     var initialPage : Int!
     var model : PhotoViewModel!
-    var pageViews: [ZoomingPhotoView?] = []
+    var pageViews = [ZoomingPhotoView?]()
     let imageManager : PHCachingImageManager
     var delegate: PhotoViewControllerDelegate?
     // If the size is too large then PhotoKit doesn't return an optimal image size
@@ -44,14 +56,15 @@ class PhotoViewController: UIViewController,
     let cacheSize = CGSize(width: 256, height: 256)
     
     struct PanState {
-        let imageView: UIImageView?
+        let pageView: ZoomingPhotoView?
+        let imageView: UIView?
         let destImageView: UIImageView?
         let transform: CGAffineTransform
         let center: CGPoint
         let panHeight: CGFloat
     }
     
-    var initialPanState = PanState(imageView: nil, destImageView: nil, transform: CGAffineTransform.identity, center: .zero, panHeight: 0)
+    var initialPanState = PanState(pageView: nil, imageView: nil, destImageView: nil, transform: CGAffineTransform.identity, center: .zero, panHeight: 0)
     
     var presentTransition: PhotoViewPresentTransition?
     var dismissTransition: PhotoViewDismissTransition?
@@ -70,6 +83,12 @@ class PhotoViewController: UIViewController,
             return closeButton.alpha == 0
         }
     }
+
+    private func setControls(alpha: CGFloat) {
+        [shareButton, deleteButton, closeButton, heartButton, yearLabel].forEach {
+            $0.alpha = alpha
+        }
+    }
     
     private func buttonImage(forFavorite favorite: Bool) -> UIImage {
         return favorite ? heartFullImg : heartEmptyImg
@@ -84,8 +103,25 @@ class PhotoViewController: UIViewController,
         imageManager.startCachingImages(for: model.assets, targetSize: cacheSize, contentMode: .aspectFill, options: nil)
         PHPhotoLibrary.shared().register(self);
         
-        let panRecognizer = UIPanGestureRecognizer(target: self, action: #selector(PhotoViewController.viewDidPan))
+        let panRecognizer = UIPanGestureRecognizer(target: self, action: #selector(PhotoViewController.viewDidPan)).with {
+            $0.delegate = self
+        }
         view.addGestureRecognizer(panRecognizer)
+        
+        shareProgressView.with {
+            $0.trackTintColor = UIColor.clear
+            $0.thicknessRatio = 0.1
+            $0.indeterminateDuration = 1
+            $0.indeterminate = 0
+            $0.setProgress(0.33, animated: false)
+        }
+        view.addSubview(shareProgressView)
+        constrain(view, shareProgressView) { view, shareProgressView in
+            shareProgressView.width == 40
+            shareProgressView.height == 40
+            shareProgressView.left == view.left + 10
+            shareProgressView.bottom == view.bottom - 10
+        }
     }
 
     override func viewDidLayoutSubviews() {
@@ -105,26 +141,65 @@ class PhotoViewController: UIViewController,
     // MARK: Actions
     @IBAction func sharePhoto(_ sender: UIButton) {
         let page = model.selectedIndex
-        
         let asset = model.assets[page]
-        let options = PHImageRequestOptions()
-        options.version = .current
-        options.isNetworkAccessAllowed = false
-        PHImageManager.default().requestImageData(for: asset, options: options) {
-            [weak self] imageData, dataUTI, orientation, info in
-            guard let `self` = self else { return }
-
-            if let imageData = imageData {
-                let avc = UIActivityViewController(activityItems: [imageData], applicationActivities: nil)
-                if let popover = avc.popoverPresentationController {
-                    popover.sourceView = sender
-                    popover.sourceRect = sender.bounds
-                    popover.permittedArrowDirections = .down
-                }
-                
-                self.present(avc, animated: true, completion: nil)
+        let pageView = pageViews[page]
+        
+        switch asset.mediaType {
+        case .image where asset.mediaSubtypes == .photoLive:
+            if let livePhoto = pageView?.livePhoto {
+                share(media: [livePhoto], from: sender)
             }
+        case .image:
+            let options = PHImageRequestOptions()
+            options.version = .current
+            options.isNetworkAccessAllowed = true
+            PHImageManager.default().requestImageData(for: asset, options: options) {
+                [weak self] imageData, dataUTI, orientation, info in
+                guard let `self` = self else { return }
+                
+                if let imageData = imageData {
+                    self.share(media: [imageData], from: sender)
+                }
+            }
+        case .video:
+            let options = PHVideoRequestOptions()
+            options.version = .current
+            options.deliveryMode = .automatic
+            options.isNetworkAccessAllowed = true
+            
+            UIView.animate(withDuration: 0.25) {
+                sender.alpha = 0
+                self.shareProgressView.show(loading: true)
+            }
+            
+            PHImageManager.default().requestAVAsset(forVideo: asset, options: options) { [weak self] asset, audioMix, info in
+                guard let `self` = self else { return }
+
+                UIView.animate(withDuration: 0.25, animations: {
+                    self.shareProgressView.show(loading: false)
+                    sender.alpha = 1
+                }) { _ in
+                    if let urlAsset = asset as? AVURLAsset {
+                        self.share(media: [urlAsset.url], from: sender)
+                    }
+                }
+            }
+            break
+        default:
+            break
+            
         }
+    }
+    
+    private func share(media: [Any], from view: UIView) {
+        let avc = UIActivityViewController(activityItems: media, applicationActivities: nil)
+        if let popover = avc.popoverPresentationController {
+            popover.sourceView = view
+            popover.sourceRect = view.bounds
+            popover.permittedArrowDirections = .down
+        }
+        
+        self.present(avc, animated: true, completion: nil)
     }
     
     @IBAction func deletePhoto(_ sender: UIButton) {
@@ -151,10 +226,15 @@ class PhotoViewController: UIViewController,
         }
         
         delegate.setSelected(index: model.selectedIndex)
-        let imageView = delegate.imageView(atIndex: model.selectedIndex)!
-        let pageView = pageViews[model.selectedIndex]!
-            
-        dismissTransition = PhotoViewDismissTransition(destImageView: imageView, sourceImageView: pageView.imageView)
+        
+        if let imageView = delegate.imageView(atIndex: model.selectedIndex),
+            let pageView = pageViews[model.selectedIndex] {
+            dismissTransition = PhotoViewDismissTransition(destImageView: imageView, sourceImageView: pageView.mediaView)
+        }
+        else {
+            dismissTransition = nil
+        }
+        
         presentingViewController?.dismiss(animated: true) {
             PHPhotoLibrary.shared().unregisterChangeObserver(self)
             self.cancelAllImageRequests()
@@ -171,13 +251,16 @@ class PhotoViewController: UIViewController,
         case .began:
             let startPoint = gr.location(in: gr.view)
             
-            let imageView = pageViews[model.selectedIndex]!.imageView!
-            initialPanState = PanState(imageView: imageView,
+            let pageView = pageViews[model.selectedIndex]
+            let imageView = pageViews[model.selectedIndex]!.mediaView
+            initialPanState = PanState(pageView: pageView,
+                                       imageView: imageView,
                                        destImageView: delegate?.imageView(atIndex: model.selectedIndex),
                                        transform: imageView.transform,
                                        center: imageView.center,
                                        panHeight: gr.view!.bounds.height - startPoint.y)
             initialPanState.destImageView?.isHidden = true
+            initialPanState.pageView?.prepareForDragging()
         case .changed:
             let translation = gr.translation(in: gr.view)
             let yPercent = translation.y / initialPanState.panHeight
@@ -201,6 +284,7 @@ class PhotoViewController: UIViewController,
                     if !self.controlsHidden { self.setControls(alpha: 1) }
                 }) { finished in
                     self.initialPanState.destImageView?.isHidden = false
+                    self.initialPanState.pageView?.dragWasCancelled()
                 }
             }
             else {
@@ -225,10 +309,30 @@ class PhotoViewController: UIViewController,
         }
 
         let pagesScrollViewSize = scrollView.bounds.size
-        scrollView.contentSize = CGSize(width: pagesScrollViewSize.width * CGFloat(pageCount),
-            height: pagesScrollViewSize.height)
+
+        doWithScrollViewDelegateDisabled {
+            scrollView.contentSize = CGSize(width: pagesScrollViewSize.width * CGFloat(pageCount), height: pagesScrollViewSize.height)
+            if (!initialOffsetSet) {
+                scrollView.contentOffset = contentOffsetForPage(at: initialPage)
+                initialOffsetSet = true
+                
+                loadVisiblePages(initialLoad: true)
+            }
+        }
+    }
+    
+    func doWithScrollViewDelegateDisabled(block: () -> ()) {
+        scrollView.delegate = nil
+        block()
+        scrollView.delegate = self
+    }
+    
+    func page(view pageView: ZoomingPhotoView, didLoad enable: Bool, for asset: PHAsset) {
+        shareButton.isEnabled = enable
+        deleteButton.isEnabled = enable
+        heartButton.isEnabled = !asset.sourceType.contains(.typeiTunesSynced) && enable
         
-        loadVisiblePages()
+        pageView.didBecomeVisible()
     }
     
     func load(page: Int, requestFullImage: Bool) {
@@ -256,15 +360,15 @@ class PhotoViewController: UIViewController,
             if !requestFullImage || !pageView.imageIsDegraded {
                 pageView.frame = frame
                 if requestFullImage {
-                    shareButton.isEnabled = true
-                    deleteButton.isEnabled = true
-                    heartButton.isEnabled = true
+                    self.page(view: pageView, didLoad: true, for: asset)
+                } else {
+                    pageView.willBecomeHidden()
                 }
                 return
             }
         }
 
-        let pageView : ZoomingPhotoView!
+        let pageView: ZoomingPhotoView!
         
         if pageViews[page] != nil {
             pageView = pageViews[page]
@@ -281,11 +385,9 @@ class PhotoViewController: UIViewController,
         imageManager.requestImage(for: asset, targetSize: cacheSize, contentMode: .aspectFill, options: nil, resultHandler: { result, userInfo in
             if let image = result {
                 // NSLog("Cache Result with image for page \(page) requestFullImage: \(requestFullImage) iamgeSize: \(image.size.width), \(image.size.height)");
-                pageView.image = image
+                pageView.photo = image
                 if page == self.model.selectedIndex {
-                    self.shareButton.isEnabled = false
-                    self.deleteButton.isEnabled = false
-                    self.heartButton.isEnabled = false
+                    self.page(view: pageView, didLoad: false, for: asset)
                 }
             }
         })
@@ -297,22 +399,20 @@ class PhotoViewController: UIViewController,
                     if !$0 {
                         pageView.hideProgressView(true)
                     } else {
-                        self.loadHighQualityImage(for: asset, page: page)
+                        self.loadHighQualityVersion(of: asset, page: page)
                     }
                 }
                 
                 return
             }
             
-            loadHighQualityImage(for: asset, page: page)
+            loadHighQualityVersion(of: asset, page: page)
         }
     }
-    
-    func loadHighQualityImage(for asset: PHAsset, page: Int) {
-        let options = PHImageRequestOptions()
+
+    func loadHighQualityVersion(of asset: PHAsset, page: Int) {
         let pageView = pageViews[page]!
-        
-        options.progressHandler  = { progress, error, stop, userInfo in
+        let progressHandler: PHAssetImageProgressHandler = { progress, error, stop, userInfo in
             DispatchQueue.main.async {
                 pageView.updateProgress(progress)
                 
@@ -322,29 +422,100 @@ class PhotoViewController: UIViewController,
             }
         }
         
+        let configurePageView = { (asset: PHAsset) in
+            return { (data: AssetData?) in
+                DispatchQueue.main.async {
+                    guard let data = data else {
+                        pageView.fullImageUnavailable = true
+                        return
+                    }
+                    UpgradeManager.highQualityViewCount += 1
+                    
+                    switch data {
+                    case .photo(let image):
+                        pageView.photo = image
+                    case .livePhoto(let livePhoto):
+                        pageView.livePhoto = livePhoto
+                    case .video(let playerItem):
+                        pageView.video = playerItem
+                        break
+                    }
+                    
+                    pageView.imageIsDegraded = false
+                    if page == self.model.selectedIndex {
+                        self.page(view: pageView, didLoad: true, for: asset)
+                    }
+                }
+            }
+        }
+
+        
+        switch asset.mediaType {
+        case .image where asset.mediaSubtypes == .photoLive:
+            pageView.updateProgress(indeterminate: true)
+            pageView.imageRequestId = loadLivePhoto(for: asset, progressHandler: progressHandler, completion: configurePageView(asset))
+        case .image:
+            pageView.imageRequestId = loadPhoto(for: asset, progressHandler: progressHandler, completion: configurePageView(asset))
+        case .video:
+            pageView.updateProgress(indeterminate: true)
+            pageView.imageRequestId = loadVideo(for: asset, progressHandler: progressHandler, completion: configurePageView(asset))
+            break
+        default:
+            break
+        }
+    }
+    
+    func loadPhoto(for asset: PHAsset, progressHandler: @escaping PHAssetImageProgressHandler, completion: @escaping (AssetData?) -> ()) -> PHImageRequestID {
+        let options = PHImageRequestOptions()
+        
+        options.progressHandler = progressHandler
         options.isNetworkAccessAllowed = true
         options.deliveryMode = .highQualityFormat
         options.isSynchronous = false
         
-        pageView.imageRequestId = PHImageManager.default().requestImage(for: asset, targetSize: PHImageManagerMaximumSize, contentMode: .aspectFit, options: options) { (result, userInfo) -> Void in
+        return PHImageManager.default().requestImage(for: asset, targetSize: PHImageManagerMaximumSize, contentMode: .aspectFit, options: options) { (result, userInfo) -> Void in
             if let image = result {
-                UpgradeManager.highQualityViewCount += 1
-                pageView.image = image
-                pageView.imageIsDegraded = false
-                if page == self.model.selectedIndex {
-                    self.shareButton.isEnabled = true
-                    self.heartButton.isEnabled = true
-
-                    if #available(iOS 9.0, *) {
-                        self.deleteButton.isEnabled = !asset.sourceType.contains(.typeiTunesSynced)
-                    } else {
-                        self.deleteButton.isEnabled = true
-                    }
-                }
+                completion(AssetData.photo(image: image))
             }
             
             if let _ = userInfo?[PHImageErrorKey] as? NSError {
-                pageView.fullImageUnavailable = true
+                completion(nil)
+            }
+        }
+    }
+    
+    func loadLivePhoto(for asset: PHAsset, progressHandler: @escaping PHAssetImageProgressHandler, completion: @escaping (AssetData?) -> ()) -> PHImageRequestID {
+        let options = PHLivePhotoRequestOptions()
+        
+        options.progressHandler = progressHandler
+        options.isNetworkAccessAllowed = true
+        options.deliveryMode = .highQualityFormat
+        
+        return PHImageManager.default().requestLivePhoto(for: asset, targetSize: PHImageManagerMaximumSize, contentMode: .aspectFit, options: options) { (result, userInfo) -> Void in
+            if let livePhoto = result {
+                completion(AssetData.livePhoto(livePhoto: livePhoto))
+            }
+            
+            if let _ = userInfo?[PHImageErrorKey] as? NSError {
+                completion(nil)
+            }
+        }
+    }
+
+    func loadVideo(for asset: PHAsset, progressHandler: @escaping PHAssetImageProgressHandler, completion: @escaping (AssetData?) -> ()) -> PHImageRequestID {
+        let options = PHVideoRequestOptions()
+        
+        options.progressHandler = progressHandler
+        options.isNetworkAccessAllowed = true
+        options.deliveryMode = .automatic
+        
+        return PHImageManager.default().requestPlayerItem(forVideo: asset, options: options) { (result, userInfo) -> Void in
+            if let video = result {
+                completion(AssetData.video(playerItem: video))
+            }
+            
+            if let _ = userInfo?[PHImageErrorKey] as? NSError {
+                completion(nil)
             }
         }
     }
@@ -360,7 +531,6 @@ class PhotoViewController: UIViewController,
                 PHImageManager.default().cancelImageRequest(requestId)
                 pageView.imageRequestId = nil
             }
-            pageView.image = nil
             pageView.removeFromSuperview()
             pageViews[page] = nil
         }
@@ -379,21 +549,13 @@ class PhotoViewController: UIViewController,
         }
     }
     
-    func loadVisiblePages() {
-        let initialLoad = !initialOffsetSet
-        
-        if (!initialOffsetSet) {
-            scrollView.contentOffset = contentOffsetForPage(at: initialPage)
-            initialOffsetSet = true
-        }
-        
+    func loadVisiblePages(initialLoad: Bool = false) {
         // First, determine which page is currently visible
         let pageWidth = scrollView.bounds.size.width
         let fractionalPage = scrollView.contentOffset.x / pageWidth;
         let page = lround(Double(fractionalPage))
         
-        if !initialLoad &&
-            page == model.selectedIndex {
+        guard initialLoad || page != model.selectedIndex else {
             return
         }
         
@@ -435,6 +597,16 @@ class PhotoViewController: UIViewController,
         }
     }
 
+    // MARK: UIGestureRecognizerDelegate
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        if touch.view is UISlider {
+            return false
+        }
+        
+        return true
+    }
+    
+    
     // MARK: UIViewControllerTransitioningDelegate
     func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         return presentTransition
@@ -484,21 +656,15 @@ class PhotoViewController: UIViewController,
     }
     
     // MARK: ZoomingPhotoViewDelegate
-    func hideControls(_ hide: Bool) {
-        guard hide != controlsHidden else {
+    func viewWasZoomedIn() {
+        guard !controlsHidden else {
             return
         }
         
-        setControls(alpha: hide ? 0 : 1)
+        setControls(alpha: 0)
     }
     
-    func setControls(alpha: CGFloat) {
-        [shareButton, deleteButton, closeButton, heartButton, yearLabel].forEach {
-            $0.alpha = alpha
-        }
-    }
-    
-    func toggleControlsHidden() {
-        hideControls(!controlsHidden)
+    func viewWasTapped() {
+        setControls(alpha: controlsHidden ? 1 : 0)
     }
 }

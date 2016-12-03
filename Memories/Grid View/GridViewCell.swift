@@ -10,6 +10,7 @@ import UIKit
 
 class GridViewCell: UICollectionViewCell {
     @IBOutlet var imageView: UIImageView?
+    @IBOutlet var durationLabel: UILabel?
     var thumbnailImage: UIImage? {
         set {
             imageView?.image = newValue

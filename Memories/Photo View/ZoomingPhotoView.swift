@@ -8,115 +8,188 @@
 
 import UIKit
 import Photos
+import PhotosUI
+import AVFoundation
 import Cartography
 import DACircularProgress
 
 protocol ZoomingPhotoViewDelegate {
-    func hideControls(_ hide: Bool)
-    func toggleControlsHidden()
+    func viewWasZoomedIn()
+    func viewWasTapped()
 }
 
-class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
+extension DACircularProgressView: LoadingSpinner {
+    func show(loading: Bool) {
+        if loading {
+            isHidden = false
+            indeterminate = 1
+        } else {
+            isHidden = true
+            indeterminate = 0
+        }
+    }
+}
+
+class ZoomingPhotoView: UIView, UIScrollViewDelegate {
 
     var imageRequestId : PHImageRequestID?
-    var imageView : UIImageView!
-    var progressView : DACircularProgressView!
-    var errorIndicator : UILabel!
+
+    let scrollView = UIScrollView().with {
+        $0.showsHorizontalScrollIndicator = false
+        $0.showsVerticalScrollIndicator = false
+        $0.bounces = false
+    }
+    
+    let mediaView = MediaView().with {
+        $0.isUserInteractionEnabled = true
+        $0.translatesAutoresizingMaskIntoConstraints = false
+    }
+    
+    let progressView = DACircularProgressView().with {
+        $0.roundedCorners = Int(false)
+        $0.thicknessRatio = 1
+        $0.trackTintColor = UIColor.clear
+        $0.layer.borderColor = UIColor.white.cgColor
+        $0.layer.borderWidth = 1
+        $0.layer.cornerRadius = 10;
+        $0.isHidden = true
+    }
+    
+    let errorIndicator = UILabel().with {
+        $0.text = "!"
+        $0.textAlignment = .center
+        $0.font = UIFont.boldSystemFont(ofSize: 14)
+        $0.textColor = UIColor.white
+        $0.backgroundColor = UIColor.black.withAlphaComponent(0.1)
+        $0.isHidden = true
+    }
+    
+    let videoLoadingSpinner = DACircularProgressView().with {
+        $0.trackTintColor = UIColor.white.withAlphaComponent(0.3)
+        $0.thicknessRatio = 0.1
+        $0.indeterminateDuration = 1
+        $0.indeterminate = 0
+        $0.isHidden = true
+        $0.setProgress(0.33, animated: false)
+    }
+    
+    let videoPlayButton = UIButton.circlePlayButton(diameter: 70).with {
+        $0.translatesAutoresizingMaskIntoConstraints = false
+    }
+    
+    let scrubberView = ScrubberView().with {
+        $0.translatesAutoresizingMaskIntoConstraints = false
+        $0.backgroundColor = UIColor.black.withAlphaComponent(0.5)
+        $0.layer.cornerRadius = 5
+    }
+    
+    var playerController: PlayerController?
     
     var photoViewDelegate: ZoomingPhotoViewDelegate?
     
-    var imageConstraintTop : NSLayoutConstraint!
-    var imageConstraintBottom : NSLayoutConstraint!
-    var imageConstraintLeft : NSLayoutConstraint!
-    var imageConstraintRight : NSLayoutConstraint!
-
-    var progressConstraintGroup : ConstraintGroup!
-    
-    var doubleTapper: UITapGestureRecognizer!
-    var singleTapper: UITapGestureRecognizer!
+    var mediaConstraintGroup: ConstraintGroup?
+    var progressConstraintGroup : ConstraintGroup?
     
     let buttonOffset = CGFloat(50)
     var aspectFitZoomScale = CGFloat(0)
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        self.delegate = self
-
-        self.showsHorizontalScrollIndicator = false
-        self.showsVerticalScrollIndicator = false
-        self.bounces = false
+    init() {
+        super.init(frame: .zero)
         
-        imageView = UIImageView()
-        imageView.isUserInteractionEnabled = true
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(self.imageView)
-    
-        let hConstraints = NSLayoutConstraint.constraints(withVisualFormat: "H:|[imageView]|", options: NSLayoutFormatOptions(rawValue: 0)
-            , metrics: nil, views: ["imageView": imageView!])
-        let vConstraints = NSLayoutConstraint.constraints(withVisualFormat: "V:|[imageView]|", options: NSLayoutFormatOptions(rawValue: 0)
-            , metrics: nil, views: ["imageView": imageView!])
-        addConstraints(hConstraints)
-        addConstraints(vConstraints)
+        scrollView.delegate = self
         
-        imageConstraintTop = vConstraints[0]
-        imageConstraintBottom = vConstraints[1]
-        imageConstraintLeft = hConstraints[0]
-        imageConstraintRight = hConstraints[1]
+        addSubview(scrollView)
+        constrain(self, scrollView) { view, scrollView in
+            scrollView.edges == view.edges
+        }
         
-        progressView = DACircularProgressView()
-        progressView.roundedCorners = Int(false)
-        progressView.thicknessRatio = 1
-        progressView.trackTintColor = UIColor.clear
-        progressView.layer.borderColor = UIColor.white.cgColor
-        progressView.layer.borderWidth = 1
-        progressView.layer.cornerRadius = 10;
-        progressView.isHidden = true
-        addSubview(progressView)
+        scrollView.addSubview(mediaView)
+        mediaConstraintGroup = constrain(scrollView, mediaView) { scrollView, mediaView in
+            mediaView.edges == inset(scrollView.edges, 0, 0, 0, 0)
+        }
         
-        constrain(self, progressView) {view, progressView in
+        scrollView.addSubview(progressView)
+        constrain(progressView) { progressView in
             progressView.width == 20
             progressView.height == 20
         }
-        
-        progressConstraintGroup = constrain(self, progressView) {view, progressView in
-            progressView.top == view.top
-            progressView.left == view.left
+        progressConstraintGroup = constrain(scrollView, progressView) { scrollView, progressView in
+            progressView.top == scrollView.top
+            progressView.left == scrollView.left
         }
         
-        errorIndicator = UILabel()
-        errorIndicator.text = "!"
-        errorIndicator.textAlignment = .center
-        errorIndicator.font = UIFont.boldSystemFont(ofSize: 14)
-        errorIndicator.textColor = UIColor.white
-        errorIndicator.backgroundColor = UIColor.black.withAlphaComponent(0.1)
-        errorIndicator.isHidden = true
         progressView.addSubview(errorIndicator)
-        
-        constrain(errorIndicator, progressView) {errorView, progressView in
-            align(top: errorView, progressView)
-            align(bottom: errorView, progressView)
-            align(left: errorView, progressView)
-            align(right: errorView, progressView)
+        constrain(errorIndicator, progressView) { errorView, progressView in
+            errorView.edges == progressView.edges
         }
         
-        doubleTapper = UITapGestureRecognizer(target: self, action: #selector(ZoomingPhotoView.imageDoubleTapped(_:)))
-        doubleTapper.numberOfTapsRequired = 2
-        self.addGestureRecognizer(doubleTapper)
+        let doubleTapper = UITapGestureRecognizer(target: self, action: #selector(ZoomingPhotoView.imageDoubleTapped(_:))).with {
+            $0.numberOfTapsRequired = 2
+        }
+        scrollView.addGestureRecognizer(doubleTapper)
         
-        singleTapper = UITapGestureRecognizer(target: self, action: #selector(ZoomingPhotoView.imageSingleTapped(_:)))
-        singleTapper.numberOfTapsRequired = 1
-        self.addGestureRecognizer(singleTapper)
+        let singleTapper = UITapGestureRecognizer(target: self, action: #selector(ZoomingPhotoView.imageSingleTapped(_:))).with {
+            $0.numberOfTapsRequired = 1
+        }
+        scrollView.addGestureRecognizer(singleTapper)
         
         singleTapper.require(toFail: doubleTapper)
     }
 
+    @available(*, unavailable)
     required init?(coder aDecoder: NSCoder) {
-        super.init(frame: CGRect.zero)
+        fatalError("init(coder:) is not available")
     }
     
-    var image : UIImage? {
+    var photo : UIImage? {
         didSet {
-            imageView.image = self.image
+            mediaView.photo = photo
+            adjustZoomScale()
+        }
+    }
+    
+    var livePhoto: PHLivePhoto? {
+        didSet {
+            mediaView.livePhoto = livePhoto
+            adjustZoomScale()
+        }
+    }
+    
+    var video: AVPlayerItem? {
+        didSet {
+            mediaView.video = video
+
+            addSubview(videoLoadingSpinner)
+            constrain(self, videoLoadingSpinner) { view, spinner in
+                spinner.width == 70
+                spinner.height == 70
+                spinner.center == view.center
+            }
+            
+            addSubview(videoPlayButton)
+            constrain(self, videoPlayButton) { view, button in
+                button.width == 70
+                button.height == 70
+                button.center == view.center
+            }
+            
+            addSubview(scrubberView)
+            constrain(self, scrubberView) { view, scrubberView in
+                scrubberView.height == 40
+                scrubberView.bottom == view.bottom - 10
+                scrubberView.left == view.left + buttonOffset + 5
+                scrubberView.right == view.right - buttonOffset - 5
+            }
+            
+            playerController = PlayerController(player: mediaView.player!).with {
+                $0.startPlayButton = videoPlayButton
+                $0.playPauseButton = scrubberView.playPauseButton
+                $0.slider = scrubberView.scrubberSlider
+                $0.currentTimeLabel = scrubberView.currentTimeLabel
+                $0.remainingTimeLabel = scrubberView.remainingTimeLabel
+                $0.loadingSpinner = videoLoadingSpinner as LoadingSpinner
+            }
+            
             adjustZoomScale()
         }
     }
@@ -145,20 +218,56 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
     
     // MARK: Implementation
 
+    func didBecomeVisible() {
+        mediaView.didBecomeVisible()
+    }
+    
+    func willBecomeHidden() {
+        mediaView.willBecomeHidden()
+        playerController?.pause(andReset: true)
+    }
+    
     func hideProgressView(_ hide: Bool) {
         progressView.isHidden = hide
     }
     
-    func updateProgress(_ progress: Double) {
-        progressView.isHidden = progress >= 1.0
-        progressView.setProgress(CGFloat(progress), animated: true)
+    func updateProgress(_ progress: Double = 0.33, indeterminate: Bool = false) {
+        if indeterminate {
+            progressView.setProgress(CGFloat(progress), animated: false)
+            progressView.isHidden = false
+            progressView.indeterminateDuration = 1
+            progressView.indeterminate = 1
+        }
+        else {
+            progressView.indeterminate = 0
+            progressView.isHidden = progress >= 1.0
+            progressView.setProgress(CGFloat(progress), animated: true)
+        }
+    }
+    
+    func prepareForDragging() {
+        playerController?.pause(andReset: false)
+        
+        UIView.animate(withDuration: 0.25) {
+            if self.videoPlayButton.alpha == 1 { self.videoPlayButton.alpha = 0.01 }
+            if self.scrubberView.alpha == 1 { self.scrubberView.alpha = 0.01 }
+            if self.videoLoadingSpinner.alpha == 1 { self.videoLoadingSpinner.alpha = 0.01 }
+        }
+    }
+    
+    func dragWasCancelled() {
+        UIView.animate(withDuration: 0.25) {
+            if self.videoPlayButton.alpha != 0 { self.videoPlayButton.alpha = 1 }
+            if self.scrubberView.alpha != 0 { self.scrubberView.alpha = 1 }
+            if self.videoLoadingSpinner.alpha != 0 { self.videoLoadingSpinner.alpha = 1 }
+        }
     }
     
     private func adjustZoomScale() {
         // adjust sizes as necessary
-        if let image = self.image {
-            var minZoom = min(bounds.size.width / image.size.width,
-                              bounds.size.height / image.size.height);
+        if let imageSize = mediaView.imageSize {
+            var minZoom = min(bounds.size.width / imageSize.width,
+                              bounds.size.height / imageSize.height);
             
             aspectFitZoomScale = minZoom
             
@@ -168,43 +277,43 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
                 let imageDim : CGFloat
                 if padding.hPadding > padding.vPadding {
                     viewDim = bounds.size.width
-                    imageDim = image.size.width
+                    imageDim = imageSize.width
                 } else {
                     viewDim = bounds.size.height
-                    imageDim = image.size.height
+                    imageDim = imageSize.height
                 }
                 
                 let adjustedScale = abs((2 * buttonOffset - viewDim) / imageDim)
                 minZoom = adjustedScale
             }
             
-            minimumZoomScale = minZoom
-            maximumZoomScale = minZoom * 4
-            zoomScale = minZoom
+            scrollView.minimumZoomScale = minZoom
+            scrollView.maximumZoomScale = minZoom * 4
+            scrollView.zoomScale = minZoom
             
             // only allow scrolling if the image has been zoomed
             // larger than the window
-            isScrollEnabled = zoomScale > minZoom
+            scrollView.isScrollEnabled = scrollView.zoomScale > minZoom
             
-            adjustImageConstraints(for: zoomScale)
+            adjustImageConstraints(for: scrollView.zoomScale)
         }
     }
     
     // MARK: UIView
     
     override func updateConstraints() {
-        adjustImageConstraints(for: zoomScale)
+        adjustImageConstraints(for: scrollView.zoomScale)
     
         super.updateConstraints()
     }
     
     private func getImagePadding(for scale: CGFloat) -> (hPadding: CGFloat, vPadding: CGFloat)? {
-        guard let image = imageView.image else {
+        guard let imageSize = mediaView.imageSize else {
             return nil
         }
         
-        let imageWidth = image.size.width
-        let imageHeight = image.size.height
+        let imageWidth = imageSize.width
+        let imageHeight = imageSize.height
         
         let boundsSize = bounds.size
         let viewWidth = boundsSize.width
@@ -223,46 +332,45 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
     
     private func adjustImageConstraints(for zoomScale: CGFloat) {
         guard let padding = getImagePadding(for: zoomScale),
-                  let image = imageView.image else {
+                  let imageSize = mediaView.imageSize else {
             return
         }
 
         let hPadding = padding.hPadding
         let vPadding = padding.vPadding
-        let imageWidth = image.size.width
-        let imageHeight = image.size.height
+        let imageWidth = imageSize.width
+        let imageHeight = imageSize.height
         
-        imageConstraintLeft.constant = hPadding
-        imageConstraintRight.constant = hPadding
+        constrain(scrollView, mediaView, replace: mediaConstraintGroup) { scrollView, mediaView in
+            mediaView.edges == inset(scrollView.edges, vPadding, hPadding, vPadding, hPadding)
+        }
         
-        imageConstraintTop.constant = vPadding
-        imageConstraintBottom.constant = vPadding
-        
-        constrain(self, progressView, replace: progressConstraintGroup) {view, progressView in
-            progressView.top == view.top + vPadding + (zoomScale * imageHeight) - 25
-            progressView.left == view.left + hPadding + (zoomScale * imageWidth) - 25
+        constrain(scrollView, progressView, replace: progressConstraintGroup) {scrollView, progressView in
+            progressView.top == scrollView.top + vPadding + (zoomScale * imageHeight) - 25
+            progressView.left == scrollView.left + hPadding + (zoomScale * imageWidth) - 25
         }
     }
     
     // MARK: UITapGestureRecognizer actions
     func imageDoubleTapped(_ recognizer: UITapGestureRecognizer) {
-        let touchPoint = recognizer.location(ofTouch: 0, in: imageView)
+        let touchPoint = recognizer.location(ofTouch: 0, in: mediaView)
 
-        if zoomScale < aspectFitZoomScale {
+        if scrollView.zoomScale < aspectFitZoomScale {
             zoom(to: aspectFitZoomScale, animated: true)
         }
-        else if zoomScale == minimumZoomScale ||
-            zoomScale == aspectFitZoomScale {
-            zoom(to: zoomScale * 3, center: touchPoint, animated: true)
+        else if scrollView.zoomScale == scrollView.minimumZoomScale ||
+            scrollView.zoomScale == aspectFitZoomScale {
+            zoom(to: scrollView.zoomScale * 3, center: touchPoint, animated: true)
         }
         else {
-            zoom(to: minimumZoomScale, animated: true)
+            zoom(to: scrollView.minimumZoomScale, animated: true)
         }
     }
 
     func imageSingleTapped(_ recognizer: UITapGestureRecognizer) {
         UIView.animate(withDuration: 0.25) {
-            self.photoViewDelegate?.toggleControlsHidden()
+            self.photoViewDelegate?.viewWasTapped()
+            self.scrubberView.alpha = self.scrubberView.alpha == 1 ? 0 : 1
         }
     }
     
@@ -280,7 +388,7 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
 
         adjustImageConstraints(for: scale)
         UIView.animate(withDuration: 0.5) {
-            self.zoom(to: rect, animated: false)
+            self.scrollView.zoom(to: rect, animated: false)
             self.layoutIfNeeded()
         }
     }
@@ -288,7 +396,7 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
     private func zoom(to scale: CGFloat, animated: Bool) {
         adjustImageConstraints(for: scale)
         UIView.animate(withDuration: animated ? 0.5 : 0) {
-            self.setZoomScale(scale, animated: false)
+            self.scrollView.setZoomScale(scale, animated: false)
             self.layoutIfNeeded()
         }
     }
@@ -297,20 +405,21 @@ class ZoomingPhotoView: UIScrollView, UIScrollViewDelegate {
     // MARK: UIScrollViewDelegate
     
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
-        isScrollEnabled = zoomScale >= minimumZoomScale
+        scrollView.isScrollEnabled = scrollView.zoomScale >= scrollView.minimumZoomScale
         
-        if zoomScale > minimumZoomScale {
+        if scrollView.zoomScale > scrollView.minimumZoomScale {
             UIView.animate(withDuration: 0.25) {
-                self.photoViewDelegate?.hideControls(true)
+                self.photoViewDelegate?.viewWasZoomedIn()
+                self.scrubberView.alpha = 0
             }
         }
         
-        adjustImageConstraints(for: zoomScale)
+        adjustImageConstraints(for: scrollView.zoomScale)
         layoutIfNeeded()
     }
     
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
-        return imageView;
+        return mediaView;
     }
     
 }

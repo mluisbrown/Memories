@@ -146,7 +146,7 @@ class UpgradeManager {
         upgradeTitle = NSLocalizedString("Upgrade for ", comment: "") + price
         
         let alert = UIAlertController(title: NSLocalizedString("Five a Day Limit", comment: "")
-            , message: NSLocalizedString("You can view 5 full quality photos per day which you can share, favorite or delete. You can Upgrade to remove this restriction. The Upgrade option is also available in the settings page.", comment: "")
+            , message: NSLocalizedString("You can view 5 full quality photos, live photos or videos per day which you can share, favorite or delete. You can Upgrade to remove this restriction. The Upgrade option is also available in the settings page.", comment: "")
             , preferredStyle: .alert)
         let upgrade = UIAlertAction(title: upgradeTitle, style: .default, handler: { (action) -> Void in
             UpgradeManager.upgrade(thenCall: completion)
