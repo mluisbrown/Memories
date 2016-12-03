@@ -319,7 +319,7 @@ class GridViewController: UICollectionViewController,
                 if let image = result, cell.tag == currentTag {
                     // Only update the thumbnail if the cell tag hasn't changed. Otherwise, the cell has been re-used.
                     cell.thumbnailImage = image
-                    cell.durationLabel?.text = asset.mediaType == .video ? self.timeFormatter.videoDuration(from: asset.duration) : ""
+                    cell.durationLabel?.text = asset.mediaType == .video ? " \(self.timeFormatter.videoDuration(from: asset.duration) ?? "") " : ""
                 }
             }
         }
