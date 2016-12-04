@@ -132,6 +132,11 @@ class PhotoViewController: UIViewController,
         super.viewWillTransition(to: size, with: coordinator)
         initialPage = model.selectedIndex
         initialOffsetSet = false
+        
+        // disable delegate to avoid calls to scrollViewDidScroll
+        // whilst transition is in progress
+        // the delegate is reset in setupViews()
+        scrollView.delegate = nil
     }
     
     override func didReceiveMemoryWarning() {
@@ -335,6 +340,32 @@ class PhotoViewController: UIViewController,
         pageView.didBecomeVisible()
     }
     
+    func loadVisiblePages(initialLoad: Bool = false) {
+        // First, determine which page is currently visible
+        let pageWidth = scrollView.bounds.size.width
+        let fractionalPage = scrollView.contentOffset.x / pageWidth;
+        let page = lround(Double(fractionalPage))
+        
+        guard initialLoad || page != model.selectedIndex else {
+            return
+        }
+        
+        model.selectedIndex = page
+        
+        // Work out which pages you want to load
+        let firstPage = page - 1
+        let lastPage = page + 1
+        
+        // Purge anything before the first page
+        stride(from: 0, to: firstPage, by: 1).forEach(purge)
+        
+        // Load pages in our range
+        (firstPage...lastPage).forEach { load(page: $0, requestFullImage: $0 == page) }
+        
+        // Purge anything after the last page
+        stride(from: model.assets.count, to: lastPage, by: -1).forEach(purge)
+    }
+    
     func load(page: Int, requestFullImage: Bool) {
         guard page >= 0 && page < model.assets.count else {
             return
@@ -520,20 +551,8 @@ class PhotoViewController: UIViewController,
         }
     }
     
-    func purge(page: Int) {
-        guard page >= 0 && page < pageViews.count else {
-            return
-        }
-        
-        // Remove a page from the scroll view and reset the container array
-        if let pageView = pageViews[page] {
-            if let requestId = pageView.imageRequestId {
-                PHImageManager.default().cancelImageRequest(requestId)
-                pageView.imageRequestId = nil
-            }
-            pageView.removeFromSuperview()
-            pageViews[page] = nil
-        }
+    func cancelAllImageRequests() {
+        pageViews.indices.forEach(cancelPageImageRequest)
     }
     
     func cancelPageImageRequest(for page: Int) {
@@ -549,38 +568,24 @@ class PhotoViewController: UIViewController,
         }
     }
     
-    func loadVisiblePages(initialLoad: Bool = false) {
-        // First, determine which page is currently visible
-        let pageWidth = scrollView.bounds.size.width
-        let fractionalPage = scrollView.contentOffset.x / pageWidth;
-        let page = lround(Double(fractionalPage))
-        
-        guard initialLoad || page != model.selectedIndex else {
+    func purgeAllViews() {
+        pageViews.indices.forEach(purge)
+    }
+    
+    func purge(page: Int) {
+        guard page >= 0 && page < pageViews.count else {
             return
         }
         
-        model.selectedIndex = page
-        
-        // Work out which pages you want to load
-        let firstPage = page - 1
-        let lastPage = page + 1
-        
-        // Purge anything before the first page
-        stride(from: 0, to: firstPage, by: 1).forEach(purge)
-        
-        // Load pages in our range
-        (firstPage...lastPage).forEach { load(page: $0, requestFullImage: $0 == page) }
-        
-        // Purge anything after the last page
-        stride(from: model.assets.count, to: lastPage, by: -1).forEach(purge)
-    }
-    
-    func cancelAllImageRequests() {
-        pageViews.indices.forEach(cancelPageImageRequest)
-    }
-    
-    func purgeAllViews() {
-        pageViews.indices.forEach(purge)
+        // Remove a page from the scroll view and reset the container array
+        if let pageView = pageViews[page] {
+            if let requestId = pageView.imageRequestId {
+                PHImageManager.default().cancelImageRequest(requestId)
+                pageView.imageRequestId = nil
+            }
+            pageView.removeFromSuperview()
+            pageViews[page] = nil
+        }
     }
     
     func contentOffsetForPage(at index : Int) -> CGPoint {
