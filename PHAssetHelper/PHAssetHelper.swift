@@ -55,8 +55,7 @@ public class PHAssetHelper {
             return PHAssetHelper.eariestAssetYearCache!
         }
         
-        // default to 2000
-        var year = 2000
+        var year = 1990
         
         let fetchResult = allAssetsInDateOrder()
         if let firstAsset = fetchResult.firstObject as PHAsset? {
@@ -65,7 +64,7 @@ public class PHAssetHelper {
             }
         }
         
-        year = max(year, 1900)
+        year = max(min(1990, year), 1900)
         
         PHAssetHelper.eariestAssetYearCache = year;
         return year
