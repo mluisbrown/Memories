@@ -8,8 +8,8 @@
 
 import UIKit
 import MessageUI
-import PHAssetHelper
-import Photos
+import ReactiveCocoa
+import ReactiveSwift
 
 class SettingsViewController: UITableViewController, MFMailComposeViewControllerDelegate {
 
@@ -27,118 +27,93 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
     @IBOutlet weak var sourceICloudSharedSwitch: UISwitch!
     @IBOutlet weak var sourceITunesSwitch: UISwitch!
 
-    let assetHelper = PHAssetHelper()
+    let viewModel: SettingsViewModel
     
-    var viewModel : SettingsViewModel? {
-        willSet {
-            if let model = viewModel, newValue == nil {
-                model.notificationsEnabled.bind(nil)
-                model.notificationHour.bind(nil)
-                model.notificationMinute.bind(nil)
-                model.userHasUpgraded.bind(nil)
-                model.upgradeButtonText.bind(nil)
-                model.storeAvailable.bind(nil)
-                model.sourceIncludeCurrentYear.bind(nil)
-                model.sourcePhotoLibrary.bind(nil)
-                model.sourceICloudShare.bind(nil)
-                model.sourceITunes.bind(nil)
+    required init?(coder aDecoder: NSCoder) {
+        viewModel = SettingsViewModel()
+
+        super.init(coder: aDecoder)
+    }
+    
+    private func initUI() {
+        notificationsSwitch.isOn = viewModel.notificationsEnabled.value
+        timePicker.date = timePicker.calendar.date(from: DateComponents(era: 1, year: 1970, month: 1, day: 1,
+                                                                        hour: viewModel.notificationTime.value.hour,
+                                                                        minute: viewModel.notificationTime.value.minute,
+                                                                        second: 0, nanosecond: 0))!
+        
+        sourceIncludeCurrentYearSwitch.isOn = viewModel.sourceIncludeCurrentYear.value
+        sourcePhotoLibrarySwitch.isOn = viewModel.sourcePhotoLibrary.value
+        sourceICloudSharedSwitch.isOn = viewModel.sourceICloudShare.value
+        sourceITunesSwitch.isOn = viewModel.sourceITunes.value
+        upgradeButton.isEnabled = false
+        restoreButton.isEnabled = false
+    }
+    
+    private func bindToModel() {
+        viewModel.notificationsEnabled.producer.startWithValues { [unowned self] in
+            if $0 {
+                NotificationManager.enableNotifications()
+                self.timePicker.isUserInteractionEnabled = true
+                self.timePicker.alpha = 1
+            } else {
+                NotificationManager.disableNotifications()
+                self.timePicker.isUserInteractionEnabled = false
+                self.timePicker.alpha = 0.5
             }
         }
         
-        didSet {
-            if let model = viewModel {
-                model.notificationsEnabled.bindAndFire {
-                    [unowned self] in
-                    self.notificationsSwitch.isOn = $0
-                    if $0 {
-                        NotificationManager.enableNotifications()
-                        self.timePicker.isUserInteractionEnabled = true
-                        self.timePicker.alpha = 1
-                    } else {
-                        NotificationManager.disableNotifications()
-                        self.timePicker.isUserInteractionEnabled = false
-                        self.timePicker.alpha = 0.5
-                    }
-                }
-                
-                model.notificationHour.bindAndFire {
-                    [unowned self] in
-                    let hour = $0
-                    let minute = model.notificationMinute.value
-                    self.timePicker.date = self.timePicker.calendar.date(from: DateComponents(era: 1, year: 1970, month: 1, day: 1, hour: hour, minute: minute, second: 0, nanosecond: 0))!
-                }
-                
-                model.notificationMinute.bindAndFire {
-                    [unowned self] in
-                    let hour = model.notificationHour.value
-                    let minute = $0
-                    self.timePicker.date = self.timePicker.calendar.date(from: DateComponents(era: 1, year: 1970, month: 1, day: 1, hour: hour, minute: minute, second: 0, nanosecond: 0))!
-                }
-                
-                model.sourceIncludeCurrentYear.bindAndFire {
-                    [unowned self] in
-                    self.sourceIncludeCurrentYearSwitch.isOn = $0
-                }
-                
-                model.sourcePhotoLibrary.bindAndFire {
-                    [unowned self] in
-                    self.sourcePhotoLibrarySwitch.isOn = $0
-                }
-                
-                model.sourceICloudShare.bindAndFire {
-                    [unowned self] in
-                    self.sourceICloudSharedSwitch.isOn = $0
-                }
+        viewModel.userHasUpgraded.producer.startWithValues {
+            [unowned self] upgraded in
+            UIView.animate(withDuration: 0.25) {
+                self.upgradeButton.alpha = upgraded ? 0 : 1
+                self.restoreButton.alpha = upgraded ? 0 : 1
+                self.thankYouLabel.alpha = upgraded ? 1 : 0
+                if upgraded { self.upgradeLabel.text = "" }
+                self.tableView.beginUpdates()
+                self.tableView.endUpdates()
+            }
+        }
 
-                model.sourceITunes.bindAndFire {
-                    [unowned self] in
-                    self.sourceITunesSwitch.isOn = $0
-                }
-                
-                model.userHasUpgraded.bindAndFire {
-                    [unowned self] in
-                    let value = $0
-                    UIView.animate(withDuration: 0.25) {
-                        self.upgradeButton.alpha = value ? 0 : 1
-                        self.restoreButton.alpha = value ? 0 : 1
-                        self.thankYouLabel.alpha = value ? 1 : 0
-                        if value { self.upgradeLabel.text = "" }
-                        self.tableView.beginUpdates()
-                        self.tableView.endUpdates()
-                    }
-                }
-                
-                model.upgradeButtonText.bindAndFire {
-                    [unowned self] in
-                    self.upgradeButton.setTitle($0, for: UIControlState())
-                }
-                
-                model.storeAvailable.bindAndFire {
-                    [unowned self] in
-                    let value = $0
-                    self.upgradeButton.isEnabled = value
-                    self.restoreButton.isEnabled = value
-                }
+        viewModel.upgradeButtonText.startWithSignal { signal, _ in
+            signal.observeValues {
+                [unowned self] in
+                self.upgradeButton.setTitle($0, for: .normal)
+            }
+            signal.skip(first: 1).observeValues {
+                [unowned self] _ in
+                self.upgradeButton.isEnabled = true
+                self.restoreButton.isEnabled = true
             }
         }
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        let notificationTime = NotificationManager.notificationTime()
-        let notificationsEnabled = NotificationManager.notificationsEnabled() && NotificationManager.notificationsAllowed()
-        let includeCurrentYear = assetHelper.includeCurrentYear
-        let sources = assetHelper.assetSourceTypes
-        viewModel = SettingsViewModel(notificationsEnabled: notificationsEnabled,
-                                      notificationHour: notificationTime.hour,
-                                      notificationMinute: notificationTime.minute,
-                                      sourceIncludeCurrentYear: includeCurrentYear,
-                                      sourcePhotoLibrary: sources.contains(.typeUserLibrary),
-                                      sourceICloudShare: sources.contains(.typeCloudShared),
-                                      sourceITunes: sources.contains(.typeiTunesSynced))
+    private func bindControls() {
+        viewModel.notificationsEnabled <~ notificationsSwitch.reactive.isOnValues
+        viewModel.notificationTime <~ timePicker.reactive.dates.map {
+            (hour: self.timePicker.calendar.component(.hour, from: $0),
+             minute: self.timePicker.calendar.component(.minute, from: $0))
+        }
+        
+        viewModel.sourceIncludeCurrentYear <~ sourceIncludeCurrentYearSwitch.reactive.isOnValues
+        viewModel.sourcePhotoLibrary <~ sourcePhotoLibrarySwitch.reactive.isOnValues
+        viewModel.sourceICloudShare <~ sourceICloudSharedSwitch.reactive.isOnValues
+        viewModel.sourceITunes <~ sourceITunesSwitch.reactive.isOnValues
+        
+        upgradeButton.reactive.controlEvents(.touchUpInside).observeValues { _ in
+            self.viewModel.userHasUpgraded <~ self.viewModel.upgrade()
+        }
+        
+        restoreButton.reactive.controlEvents(.touchUpInside).observeValues { _ in
+            self.viewModel.userHasUpgraded <~ self.viewModel.restore()
+        }
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        viewModel = nil
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        initUI()
+        bindToModel()
+        bindControls()
     }
     
     override func didReceiveMemoryWarning() {
@@ -147,29 +122,7 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
     
     // this is called when the settings view is dismissed via the Done button
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // schedule or disable notifications
-        if viewModel!.notificationsEnabled.value {
-            NotificationManager.setNotificationTime(viewModel!.notificationHour.value, viewModel!.notificationMinute.value)
-            NotificationManager.scheduleNotifications()
-        } else {
-            NotificationManager.disableNotifications()
-        }
-        
-        // save the chosen source types
-        var sources = PHAssetSourceType(rawValue: 0)
-        
-        if viewModel!.sourcePhotoLibrary.value { _ = sources.insert(.typeUserLibrary) }
-        if viewModel!.sourceICloudShare.value { _ = sources.insert(.typeCloudShared) }
-        if viewModel!.sourceITunes.value { _ = sources.insert(.typeiTunesSynced) }
-        
-        let includeCurrentYear = viewModel!.sourceIncludeCurrentYear.value
-        if sources != assetHelper.assetSourceTypes ||
-            includeCurrentYear != assetHelper.includeCurrentYear {
-            assetHelper.assetSourceTypes = sources
-            assetHelper.includeCurrentYear = includeCurrentYear
-            assetHelper.refreshDatesMapCache()
-            NotificationCenter.default.post(name: Notification.Name(rawValue: PHAssetHelper.sourceTypesChangedNotification), object: self)
-        }
+        viewModel.commit()
     }
     
     // MARK: UITableViewDelegate
@@ -207,51 +160,7 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
         return height
     }
 
-    // MARK: Actions
-    
-    @IBAction func notificationSwitchValueChanged(_ sender: UISwitch) {
-        viewModel?.notificationsEnabled.value = sender.isOn
-    }
-    
-    @IBAction func timePickerValueChanged(_ sender: UIDatePicker) {
-        let hour = sender.calendar.component(.hour, from: timePicker.date)
-        let minute = sender.calendar.component(.minute, from: timePicker.date)
-
-        // read both values from the control first, then set the model values
-        viewModel?.notificationHour.value = hour
-        viewModel?.notificationMinute.value = minute
-    }
-
-    @IBAction func sourceIncludeCurrentYearValueChanged(_ sender: UISwitch) {
-        viewModel?.sourceIncludeCurrentYear.value = sender.isOn
-    }
-    
-    @IBAction func sourceSwitchValueChanged(_ sender: UISwitch) {
-        switch sender {
-        case sourcePhotoLibrarySwitch:
-            viewModel?.sourcePhotoLibrary.value = sender.isOn
-        case sourceICloudSharedSwitch:
-            viewModel?.sourceICloudShare.value = sender.isOn
-        case sourceITunesSwitch:
-            viewModel?.sourceITunes.value = sender.isOn
-        default:
-            break;
-        }
-    }
-    
-    @IBAction func upgradeTapped(_ sender: UIButton) {
-        UpgradeManager.upgrade {
-            self.viewModel?.userHasUpgraded.value = $0
-        }
-    }
-    
-    @IBAction func restoreTapped(_ sender: UIButton) {
-        UpgradeManager.restore {
-            self.viewModel?.userHasUpgraded.value = $0
-        }
-    }
-    
-    func sendFeedback() {
+    private func sendFeedback() {
         if MFMailComposeViewController.canSendMail() {
             let composer = MFMailComposeViewController()
             composer.mailComposeDelegate = self;
@@ -275,7 +184,7 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
         }
     }
     
-    func rateApp() {
+    private func rateApp() {
         let appId = 1037130497
         let appStoreURL = URL(string: "itms-apps://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?type=Purple+Software&id=\(appId)&pageNumber=0&sortOrdering=2&mt=8")!
         

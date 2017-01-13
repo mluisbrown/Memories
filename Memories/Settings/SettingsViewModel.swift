@@ -1,5 +1,5 @@
 //
-//  SettingsViewModel.swift
+//  Settingsswift
 //  Memories
 //
 //  Created by Michael Brown on 14/09/2015.
@@ -7,39 +7,84 @@
 //
 
 import Foundation
+import ReactiveSwift
+import Result
+import PHAssetHelper
+import Photos
 
-class SettingsViewModel {
-    let notificationsEnabled : Dynamic<Bool>
-    let notificationHour : Dynamic<Int>
-    let notificationMinute : Dynamic<Int>
-    let sourceIncludeCurrentYear: Dynamic<Bool>
-    let sourcePhotoLibrary: Dynamic<Bool>
-    let sourceICloudShare: Dynamic<Bool>
-    let sourceITunes: Dynamic<Bool>
-    let userHasUpgraded : Dynamic<Bool>
-    let upgradeButtonText : Dynamic<String>
-    let storeAvailable : Dynamic<Bool>
+struct SettingsViewModel {
+    let assetHelper = PHAssetHelper()
     
-    init(notificationsEnabled: Bool, notificationHour: Int, notificationMinute: Int,
-         sourceIncludeCurrentYear: Bool, sourcePhotoLibrary: Bool, sourceICloudShare: Bool, sourceITunes: Bool) {
-        self.notificationsEnabled = Dynamic(notificationsEnabled)
-        self.notificationHour = Dynamic(notificationHour)
-        self.notificationMinute = Dynamic(notificationMinute)
-        self.userHasUpgraded = Dynamic(UpgradeManager.upgraded)
-        self.sourceIncludeCurrentYear = Dynamic(sourceIncludeCurrentYear)
-        self.sourcePhotoLibrary = Dynamic(sourcePhotoLibrary)
-        self.sourceICloudShare = Dynamic(sourceICloudShare)
-        self.sourceITunes = Dynamic(sourceITunes)
-        
+    let notificationsEnabled = MutableProperty<Bool>(NotificationManager.notificationsEnabled() && NotificationManager.notificationsAllowed())
+    let notificationTime = MutableProperty(NotificationManager.notificationTime())
+    let sourceIncludeCurrentYear: MutableProperty<Bool>
+    let sourcePhotoLibrary: MutableProperty<Bool>
+    let sourceICloudShare: MutableProperty<Bool>
+    let sourceITunes: MutableProperty<Bool>
+    let userHasUpgraded  = MutableProperty(UpgradeManager.upgraded)
+    let upgradeButtonText = SignalProducer<String, NoError> { observer, _ in
         let buy = NSLocalizedString("Buy", comment: "")
-        self.upgradeButtonText = Dynamic(buy)
-        self.storeAvailable = Dynamic(UpgradeManager.upgradePrice != nil)
         
+        observer.send(value: buy)
         UpgradeManager.getUpgradePrice { price in
             if let price = price {
-                self.upgradeButtonText.value = buy + " " + price
-                self.storeAvailable.value = true
+                observer.send(value: buy + " " + price)
             }
+            observer.sendCompleted()
+        }
+    }
+    
+    
+    init() {
+        let sources = assetHelper.assetSourceTypes
+        
+        self.sourceIncludeCurrentYear = MutableProperty(assetHelper.includeCurrentYear)
+        self.sourcePhotoLibrary = MutableProperty(sources.contains(.typeUserLibrary))
+        self.sourceICloudShare = MutableProperty(sources.contains(.typeCloudShared))
+        self.sourceITunes = MutableProperty(sources.contains(.typeiTunesSynced))
+    }
+
+    func upgrade() -> SignalProducer<Bool, NoError> {
+        return SignalProducer<Bool, NoError> { observer, _ in
+            UpgradeManager.upgrade {
+                observer.send(value: $0)
+                observer.sendCompleted()
+            }
+        }
+    }
+
+    func restore() -> SignalProducer<Bool, NoError> {
+        return SignalProducer<Bool, NoError> { observer, _ in
+            UpgradeManager.restore {
+                observer.send(value: $0)
+                observer.sendCompleted()
+            }
+        }
+    }
+    
+    func commit() {
+        // schedule or disable notifications
+        if notificationsEnabled.value {
+            NotificationManager.setNotificationTime(notificationTime.value.hour, notificationTime.value.minute)
+            NotificationManager.scheduleNotifications()
+        } else {
+            NotificationManager.disableNotifications()
+        }
+        
+        // save the chosen source types
+        var sources = PHAssetSourceType(rawValue: 0)
+        
+        if sourcePhotoLibrary.value { _ = sources.insert(.typeUserLibrary) }
+        if sourceICloudShare.value { _ = sources.insert(.typeCloudShared) }
+        if sourceITunes.value { _ = sources.insert(.typeiTunesSynced) }
+        
+        let includeCurrentYear = sourceIncludeCurrentYear.value
+        if sources != assetHelper.assetSourceTypes ||
+            includeCurrentYear != assetHelper.includeCurrentYear {
+            assetHelper.assetSourceTypes = sources
+            assetHelper.includeCurrentYear = includeCurrentYear
+            assetHelper.refreshDatesMapCache()
+            NotificationCenter.default.post(name: Notification.Name(rawValue: PHAssetHelper.sourceTypesChangedNotification), object: self)
         }
     }
 }
