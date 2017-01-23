@@ -27,6 +27,7 @@
 		4C3EA9D91E1F058D000D78EA /* Result.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C3EA9D61E1F058D000D78EA /* Result.framework */; };
 		4C5B90281B5D9C590014A87C /* GridHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C5B90271B5D9C590014A87C /* GridHeaderView.swift */; };
 		4C6299AD1B4CB0AD00B8795E /* PhotoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6299AC1B4CB0AD00B8795E /* PhotoViewController.swift */; };
+		4C65B5B01E36137900DF2465 /* IndexSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C65B5AF1E36137900DF2465 /* IndexSet.swift */; };
 		4C69E63A1DCA73F1004D6F5C /* MediaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C69E6391DCA73F1004D6F5C /* MediaView.swift */; };
 		4C6F48EF1B69850F00CF7E67 /* DismissSegue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6F48EE1B69850F00CF7E67 /* DismissSegue.swift */; };
 		4C748EB11DE09D94005F44DD /* ScrubberView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C748EB01DE09D94005F44DD /* ScrubberView.swift */; };
@@ -41,7 +42,6 @@
 		4C8594D31BB33E2F005CCFAC /* DACircularProgress.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4C8594D21BB33E2F005CCFAC /* DACircularProgress.framework.dSYM */; };
 		4C91432C1BA958CC001B30A9 /* notification.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 4C91432B1BA958CC001B30A9 /* notification.mp3 */; };
 		4C921FD21C1A038800F0411D /* PhotoViewPresentTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C921FD11C1A038800F0411D /* PhotoViewPresentTransition.swift */; };
-		4C989BDF1BA7806E00D4C13F /* Dynamic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C989BDE1BA7806E00D4C13F /* Dynamic.swift */; };
 		4C989BE11BA780BB00D4C13F /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C989BE01BA780BB00D4C13F /* SettingsViewModel.swift */; };
 		4CA4ECCE1DCCE3AA00A6B664 /* VideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA4ECCD1DCCE3AA00A6B664 /* VideoView.swift */; };
 		4CA5E1831DEA42950019CA26 /* DateComponentsFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA5E1821DEA42950019CA26 /* DateComponentsFormatter.swift */; };
@@ -63,9 +63,9 @@
 		4CF410531C4BB099002FD49A /* PHAssetHelper.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4CF4104B1C4BB098002FD49A /* PHAssetHelper.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		4CF410591C4BB112002FD49A /* PHAssetHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF410581C4BB112002FD49A /* PHAssetHelper.swift */; };
 		4CF4105A1C4BB466002FD49A /* PHAssetHelper.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CF4104B1C4BB098002FD49A /* PHAssetHelper.framework */; };
-		4CF4105C1C4BB732002FD49A /* DateUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF4105B1C4BB732002FD49A /* DateUtils.swift */; };
-		4CF4105D1C4BC044002FD49A /* DateUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF4105B1C4BB732002FD49A /* DateUtils.swift */; };
-		4CF4105E1C4BC045002FD49A /* DateUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF4105B1C4BB732002FD49A /* DateUtils.swift */; };
+		4CF4105C1C4BB732002FD49A /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF4105B1C4BB732002FD49A /* Date.swift */; };
+		4CF4105D1C4BC044002FD49A /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF4105B1C4BB732002FD49A /* Date.swift */; };
+		4CF4105E1C4BC045002FD49A /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF4105B1C4BB732002FD49A /* Date.swift */; };
 		4CF574801C06749B00D12ADB /* DatePickerRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF5747F1C06749B00D12ADB /* DatePickerRowView.swift */; };
 		4CF5FEEF1B58212700F8517D /* GridViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF5FEEE1B58212700F8517D /* GridViewModel.swift */; };
 /* End PBXBuildFile section */
@@ -144,6 +144,7 @@
 		4C3EA9D61E1F058D000D78EA /* Result.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Result.framework; path = Carthage/Build/iOS/Result.framework; sourceTree = "<group>"; };
 		4C5B90271B5D9C590014A87C /* GridHeaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridHeaderView.swift; sourceTree = "<group>"; };
 		4C6299AC1B4CB0AD00B8795E /* PhotoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoViewController.swift; sourceTree = "<group>"; };
+		4C65B5AF1E36137900DF2465 /* IndexSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IndexSet.swift; sourceTree = "<group>"; };
 		4C69E6391DCA73F1004D6F5C /* MediaView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaView.swift; sourceTree = "<group>"; };
 		4C6F48EE1B69850F00CF7E67 /* DismissSegue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DismissSegue.swift; sourceTree = "<group>"; };
 		4C6FF0461CED11E9001994DC /* Memories.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = Memories.entitlements; path = ../Memories.entitlements; sourceTree = "<group>"; };
@@ -160,7 +161,6 @@
 		4C8594D21BB33E2F005CCFAC /* DACircularProgress.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = DACircularProgress.framework.dSYM; path = Carthage/Build/iOS/DACircularProgress.framework.dSYM; sourceTree = "<group>"; };
 		4C91432B1BA958CC001B30A9 /* notification.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = notification.mp3; sourceTree = "<group>"; };
 		4C921FD11C1A038800F0411D /* PhotoViewPresentTransition.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoViewPresentTransition.swift; sourceTree = "<group>"; };
-		4C989BDE1BA7806E00D4C13F /* Dynamic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Dynamic.swift; sourceTree = "<group>"; };
 		4C989BE01BA780BB00D4C13F /* SettingsViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
 		4CA4ECCD1DCCE3AA00A6B664 /* VideoView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoView.swift; sourceTree = "<group>"; };
 		4CA5E1821DEA42950019CA26 /* DateComponentsFormatter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateComponentsFormatter.swift; sourceTree = "<group>"; };
@@ -184,7 +184,7 @@
 		4CF4104D1C4BB099002FD49A /* PHAssetHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PHAssetHelper.h; sourceTree = "<group>"; };
 		4CF4104F1C4BB099002FD49A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4CF410581C4BB112002FD49A /* PHAssetHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PHAssetHelper.swift; sourceTree = "<group>"; };
-		4CF4105B1C4BB732002FD49A /* DateUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateUtils.swift; sourceTree = "<group>"; };
+		4CF4105B1C4BB732002FD49A /* Date.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
 		4CF5747F1C06749B00D12ADB /* DatePickerRowView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatePickerRowView.swift; sourceTree = "<group>"; };
 		4CF5FEEE1B58212700F8517D /* GridViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -241,9 +241,8 @@
 		4C641B8A1C3DB240004B15D7 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
-				4CF4105B1C4BB732002FD49A /* DateUtils.swift */,
+				4CF4105B1C4BB732002FD49A /* Date.swift */,
 				4C6F48EE1B69850F00CF7E67 /* DismissSegue.swift */,
-				4C989BDE1BA7806E00D4C13F /* Dynamic.swift */,
 				4C0410E51BC8787200BBB76C /* UIDevice.swift */,
 				4CABEE211CAAF08500A9F23A /* UITraitEnvironment.swift */,
 				4C3747A61D46BFCA0070734D /* StatusBarViewController.swift */,
@@ -253,6 +252,7 @@
 				4C758BB61DD67A0400AE9D9F /* CALayer.swift */,
 				4C758BB81DD67E7B00AE9D9F /* UIButton.swift */,
 				4CA5E1821DEA42950019CA26 /* DateComponentsFormatter.swift */,
+				4C65B5AF1E36137900DF2465 /* IndexSet.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -604,7 +604,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4C315DF21C4A617C008003E1 /* TodayViewModel.swift in Sources */,
-				4CF4105D1C4BC044002FD49A /* DateUtils.swift in Sources */,
+				4CF4105D1C4BC044002FD49A /* Date.swift in Sources */,
 				4C211F4D1C3DB8270082F4DF /* TodayViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -614,8 +614,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				4C748EB11DE09D94005F44DD /* ScrubberView.swift in Sources */,
-				4C989BDF1BA7806E00D4C13F /* Dynamic.swift in Sources */,
 				4C921FD21C1A038800F0411D /* PhotoViewPresentTransition.swift in Sources */,
+				4C65B5B01E36137900DF2465 /* IndexSet.swift in Sources */,
 				4CEAA8EE1B3340C600774FE8 /* AppDelegate.swift in Sources */,
 				4C3334551B659DAA00D907C8 /* ZoomingPhotoView.swift in Sources */,
 				4C5B90281B5D9C590014A87C /* GridHeaderView.swift in Sources */,
@@ -635,7 +635,7 @@
 				4CBA89671BBC926100913336 /* UpgradeManager.swift in Sources */,
 				4C69E63A1DCA73F1004D6F5C /* MediaView.swift in Sources */,
 				4CA5E1831DEA42950019CA26 /* DateComponentsFormatter.swift in Sources */,
-				4CF4105C1C4BB732002FD49A /* DateUtils.swift in Sources */,
+				4CF4105C1C4BB732002FD49A /* Date.swift in Sources */,
 				4C758BB31DD6712D00AE9D9F /* CAShapeLayer.swift in Sources */,
 				4CEAA90E1B3343F700774FE8 /* GridViewController.swift in Sources */,
 				4C00A4F51C1B7ED30078A43F /* PhotoViewDismissTransition.swift in Sources */,
@@ -654,7 +654,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4CF410591C4BB112002FD49A /* PHAssetHelper.swift in Sources */,
-				4CF4105E1C4BC045002FD49A /* DateUtils.swift in Sources */,
+				4CF4105E1C4BC045002FD49A /* Date.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

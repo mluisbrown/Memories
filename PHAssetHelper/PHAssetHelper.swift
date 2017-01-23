@@ -136,6 +136,10 @@ public class PHAssetHelper {
     }
     
     public func fetchResultsForAllYears(with date : Date) -> [PHFetchResult<PHAsset>] {
+        guard PHPhotoLibrary.authorizationStatus() == .authorized else {
+            return [PHFetchResult<PHAsset>]()
+        }
+
         let options = PHFetchOptions()
         options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
         options.includeAssetSourceTypes = assetSourceTypes
