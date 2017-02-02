@@ -11,20 +11,22 @@ import Cartography
 
 class DatePickerRowView: UIView {
 
-    let dateLabel = UILabel()
-    let countLabel = UILabel()
-    let dateFormatter = DateFormatter()
+    let dateLabel = UILabel().with {
+        $0.translatesAutoresizingMaskIntoConstraints = false
+        $0.textColor = UIColor.white
+    }
+    let countLabel = UILabel().with {
+        $0.translatesAutoresizingMaskIntoConstraints = false
+        $0.textColor = UIColor.white
+    }
+    let dateFormatter = DateFormatter().with {
+        $0.dateFormat = "MMMM dd"
+    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-
-        dateFormatter.dateFormat = "MMMM dd"
         
-        dateLabel.translatesAutoresizingMaskIntoConstraints = false
-        dateLabel.textColor = UIColor.white
         addSubview(dateLabel)
-        countLabel.translatesAutoresizingMaskIntoConstraints = false
-        countLabel.textColor = UIColor.white
         addSubview(countLabel)
         
         constrain(self, dateLabel) {view, dateLabel in

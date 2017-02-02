@@ -11,6 +11,8 @@ import Photos
 import DACircularProgress
 import Cartography
 import PHAssetHelper
+import ReactiveSwift
+import Result
 
 class DatePickerViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
 
@@ -18,15 +20,15 @@ class DatePickerViewController: UIViewController, UIPickerViewDataSource, UIPick
     @IBOutlet weak var goButton: UIButton!
     @IBOutlet weak var todayButton: UIButton!
 
-    let gregorian = Date.gregorianCalendar
+    private let gregorian = Date.gregorianCalendar
     
-    var newDateSelected = false
     var initialDate: Date?
     var selectedDate: Date?
-    var datesWithCount: [(date: Date, count: Int)] = []
+
+    private let datesWithCount = MutableProperty([(date: Date, count: Int)]())
     
-    let progressView = DACircularProgressView()
-    let assetHelper = PHAssetHelper()
+    private let progressView = DACircularProgressView()
+    private let assetHelper = PHAssetHelper()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -50,49 +52,50 @@ class DatePickerViewController: UIViewController, UIPickerViewDataSource, UIPick
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        self.progressView.setProgress(0.33, animated: false)
-        self.progressView.indeterminateDuration = 1
-        self.progressView.indeterminate = 1
-        
-        self.buildDatesWithCount {
-            self.datesWithCount = $0
-            self.progressView.indeterminate = 0
-            self.progressView.isHidden = true
-            self.datePicker.reloadAllComponents()
+        progressView.setProgress(0.33, animated: false)
+        progressView.indeterminateDuration = 1
+        progressView.indeterminate = 1
+
+        createBindings()
+    }
+
+    private func createBindings() {
+        datesWithCount.signal.observeValues { [weak self] _ in
+            self?.progressView.indeterminate = 0
+            self?.progressView.isHidden = true
+            self?.datePicker.reloadAllComponents()
             
-            if let initialDate = self.initialDate {
-                if let initialRow = self.getInitialRow(forDate: initialDate) {
-                    self.datePicker.selectRow(initialRow, inComponent: 0, animated: false)
-                }
+            if let initialDate = self?.initialDate,
+                let initialRow = self?.getInitialRow(forDate: initialDate) {
+                self?.datePicker.selectRow(initialRow, inComponent: 0, animated: false)
             }
         }
+        
+        datesWithCount <~ buildDatesWithCount().observe(on: QueueScheduler.main)
     }
     
-// MARK: UIPickerViewDataSource
+// MARK: - UIPickerViewDataSource
     
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
     }
     
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return datesWithCount.count;
+        return datesWithCount.value.count;
     }
     
-// MARK: UIPickerViewDelegate
+// MARK: - UIPickerViewDelegate
     
     func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
-        var pickerRowView = view as! DatePickerRowView!
-        if view == nil {
-            pickerRowView = DatePickerRowView()
-        }
+        let pickerRowView = view as? DatePickerRowView ?? DatePickerRowView()
 
-        pickerRowView?.setData(date: datesWithCount[row].date, count: datesWithCount[row].count)
-        return pickerRowView!
+        pickerRowView.setData(date: datesWithCount.value[row].date, count: datesWithCount.value[row].count)
+        return pickerRowView
     }
     
-// Actions
+// MARK: - Actions
     @IBAction func selectDateAndClose(_ sender: UIButton) {
-        selectedDate = datesWithCount[datePicker.selectedRow(inComponent: 0)].date
+        selectedDate = datesWithCount.value[datePicker.selectedRow(inComponent: 0)].date
 
         if let ppc = self.popoverPresentationController {
             presentingViewController?.dismiss(animated: true) {
@@ -110,11 +113,11 @@ class DatePickerViewController: UIViewController, UIPickerViewDataSource, UIPick
     }
     
     
-// MARK: helpers
+// MARK: - Helpers
     private func getInitialRow(forDate initialDate : Date) -> Int? {
         let initialDay = gregorian.ordinality(of: .day, in: .era, for: initialDate)
         
-        let diffs: [Int] = datesWithCount.map() {
+        let diffs: [Int] = datesWithCount.value.map() {
             let countDay = gregorian.ordinality(of: .day, in: .era, for: $0.date)
             return abs(countDay! - initialDay!)
         }
@@ -123,25 +126,18 @@ class DatePickerViewController: UIViewController, UIPickerViewDataSource, UIPick
         return zip(diffs, diffs.indices).min { $0.0 < $1.0 }.map { $0.1 }
     }
     
-    private func buildDatesWithCount(thenCall completion: @escaping (_ datesWithCount: [(date: Date, count: Int)]) -> ()) {
-        var datesMap = [Date : Int]()
-        
+    private func buildDatesWithCount() -> SignalProducer<[(date: Date, count: Int)], NoError> {
         // don't want to trigger a "Allow Photos?"
         guard PHPhotoLibrary.authorizationStatus() == .authorized else {
-            completion([])
-            return
+            return SignalProducer<[(date: Date, count: Int)], NoError>(value: [])
         }
         
-        DispatchQueue.global(qos: .userInitiated).async {
-            datesMap = self.assetHelper.datesMap()
-
-            DispatchQueue.main.async {
-                completion(datesMap.map {
-                    (date: $0.0, count: $0.1)
-                }.sorted {
-                    $0.date.compare($1.date) == .orderedAscending
-                })
-            }
+        return SignalProducer<[(date: Date, count: Int)], NoError> { observer, _ in
+            observer.send(value: self.assetHelper.datesMap()
+                .map { (date: $0.0, count: $0.1) }
+                .sorted { $0.date.compare($1.date) == .orderedAscending })
+            observer.sendCompleted()
         }
+        .start(on: QueueScheduler(qos: .userInitiated))
     }
 }

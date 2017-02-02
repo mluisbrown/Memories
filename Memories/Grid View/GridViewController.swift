@@ -36,7 +36,6 @@ class GridViewController: UICollectionViewController
     let gridThumbnailSize = CGSize(width: 256, height: 256)
     
     var model : GridViewModel!
-    var disposeables = [Disposable?]()
 
     var statusBarVisible = true
     
@@ -44,8 +43,18 @@ class GridViewController: UICollectionViewController
     var previousPreheatRect : CGRect = .zero
     var cellSize : CGSize = .zero
     
-    var titleView : UILabel!
-    let noPhotosLabel : UILabel
+    let titleView = UILabel().with {
+        $0.backgroundColor = UIColor.clear
+        $0.font = UIFont.systemFont(ofSize: 16)
+        $0.textColor = UIColor.white
+        $0.isUserInteractionEnabled = true
+    }
+    
+    let noPhotosLabel = UILabel().with {
+        $0.backgroundColor = UIColor.clear
+        $0.font = UIFont.systemFont(ofSize: 16)
+        $0.textColor = UIColor.white
+    }
     let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
     
     var topPullView : PullView? = nil
@@ -57,31 +66,15 @@ class GridViewController: UICollectionViewController
     
     let timeFormatter = DateComponentsFormatter()
     
-    required init?(coder aDecoder: NSCoder) {
-        noPhotosLabel = UILabel()
-        noPhotosLabel.backgroundColor = UIColor.clear
-        noPhotosLabel.font = UIFont.systemFont(ofSize: 16)
-        noPhotosLabel.textColor = UIColor.white
-        
-        super.init(coder: aDecoder)
-    }
-    
-    deinit {
-        disposeables.forEach {
-            $0?.dispose()
-        }
-    }
-    
     private func bindToModel() {
         model.resultsDate.signal.observe(on: QueueScheduler.main)
             .skipRepeats(==)
             .observeValues { [weak self] date in
-                print("resultsDate changed: \(date)")
                 self?.refreshData(for: date)
         }
         
-        model.title.signal.observe(on: QueueScheduler.main)
-            .observeValues { [weak self] title in
+        model.title.producer.observe(on: QueueScheduler.main)
+            .startWithValues { [weak self] title in
                 self?.titleView.text = title
                 self?.titleView.sizeToFit()
         }
@@ -106,8 +99,6 @@ class GridViewController: UICollectionViewController
                     } else {
                         self?.model.date.value = startDate
                     }
-                    
-                    self?.registerObservers()
                 case .denied, .restricted:
                     self?.showHideNoPhotosLabel(NSLocalizedString("No access to Photo Library :(", comment: ""))
                 case .notDetermined:
@@ -116,25 +107,8 @@ class GridViewController: UICollectionViewController
         }
     }
     
-    private func registerObservers() {
-        disposeables = [
-            NotificationCenter.default.reactive
-                .notifications(forName: NSNotification.Name.UIApplicationDidBecomeActive)
-                .observeValues{ [weak self] _ in
-                    self?.appDidBecomeActive()
-            }]
-    }
-    
-    private func createTitleView() {
-        titleView = UILabel(frame: CGRect.zero).with {
-            $0.backgroundColor = UIColor.clear
-            $0.font = UIFont.systemFont(ofSize: 16)
-            $0.textColor = UIColor.white
-            $0.isUserInteractionEnabled = true
-            $0.text = NSLocalizedString("Memories", comment: "")
-        }
-        self.navigationItem.titleView = titleView
-        titleView.sizeToFit()
+    private func configureTitleView() {
+        navigationItem.titleView = titleView
         
         let tgr = UITapGestureRecognizer(target: self, action: #selector(GridViewController.titleTapped(_:)))
         titleView.addGestureRecognizer(tgr)
@@ -145,7 +119,7 @@ class GridViewController: UICollectionViewController
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        createTitleView()
+        configureTitleView()
         
         model = GridViewModel()
         bindToModel()
@@ -171,20 +145,22 @@ class GridViewController: UICollectionViewController
         configureCellSize(for: size)
         updateCachedAssets()
         
-        coordinator.animate(alongsideTransition: { (context : UIViewControllerTransitionCoordinatorContext) -> Void in
+        coordinator.animate(alongsideTransition: { _ in
             self.collectionView?.performBatchUpdates(nil, completion: nil)
-            }, completion: {(context : UIViewControllerTransitionCoordinatorContext) -> Void in
-                self.adjustPullViewPositions()
-            })
+        }, completion: { _ in
+            self.adjustPullViewPositions()
+        })
     }
     
     override func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.willTransition(to: newCollection, with: coordinator)
+        
         let largeScreen = newCollection.verticalSizeClass == .regular &&
                         newCollection.horizontalSizeClass == .regular
         let contentMode: UIViewContentMode = largeScreen ? .scaleAspectFit : .scaleAspectFill
         
-        coordinator.animate(alongsideTransition: { (context : UIViewControllerTransitionCoordinatorContext) -> Void in
-            self.collectionView!.visibleCells.forEach {
+        coordinator.animate(alongsideTransition: { _ in
+            self.collectionView?.visibleCells.forEach {
                 let gridCell = $0 as! GridViewCell
                 gridCell.imageView?.contentMode = contentMode
             }
@@ -202,12 +178,6 @@ class GridViewController: UICollectionViewController
     }
 
     // MARK: - Observer handlers
-    private func appDidBecomeActive() {
-        if let date = NotificationManager.launchDate() , self.model.photosAllowed.value {
-            self.model.date.value = date
-        }
-    }
-    
     private func updateSection(with changes: SectionChanges) {
         if changes.nonIncremental {
             collectionView?.reloadSections(IndexSet(integer: changes.section))
@@ -230,7 +200,7 @@ class GridViewController: UICollectionViewController
     private func refreshData(for date: Date) {
         resetCachedAssets()
         collectionView?.reloadData()
-        collectionView!.setContentOffset(CGPoint(x: 0, y: -collectionView!.contentInset.top), animated: false)
+        collectionView?.setContentOffset(CGPoint(x: 0, y: -collectionView!.contentInset.top), animated: false)
         showHideNoPhotosLabel()
         
         createOrUpdatePullViews(with: date as Date)
@@ -422,36 +392,38 @@ extension GridViewController {
             topPullView = PullView(frame: CGRect(x: 0, y: 0, width: collectionView!.frame.width, height: 0), date: date.previousDay())
             bottomPullView = PullView(frame: CGRect(x: 0, y: 0, width: collectionView!.frame.width, height: 0), date: date.nextDay())
             
-            collectionView!.addSubview(topPullView!)
-            collectionView!.addSubview(bottomPullView!)
+            collectionView?.addSubview(topPullView!)
+            collectionView?.addSubview(bottomPullView!)
         }
     }
     
     func adjustPullViewPositions() {
-        guard let tpv = topPullView, let bpv = bottomPullView else {
+        guard let tpv = topPullView,
+            let bpv = bottomPullView,
+            let collectionView = collectionView else {
             return
         }
         
         let topOffset = topLayoutGuide.length
         
         let resizeView = { (view: PullView, yPosition: CGFloat, viewHeight: CGFloat) -> Void in
-            view.frame = CGRect(x: 0, y: yPosition, width: self.collectionView!.frame.width, height: viewHeight)
+            view.frame = CGRect(x: 0, y: yPosition, width: collectionView.frame.width, height: viewHeight)
             view.alpha = pow(fabs(viewHeight), 2) / pow(self.RELEASE_THRESHOLD, 2)
             view.willRelease = fabs(viewHeight) >= self.RELEASE_THRESHOLD
         }
         
         // handle top pull view
-        if collectionView!.contentOffset.y <= -topOffset {
-            let viewHeight = topOffset + collectionView!.contentOffset.y
+        if collectionView.contentOffset.y <= -topOffset {
+            let viewHeight = topOffset + collectionView.contentOffset.y
             resizeView(tpv, 0, viewHeight)
         } else if tpv.frame.height > 0 {
-            tpv.frame = CGRect(x: 0, y: 0, width: collectionView!.frame.width, height: 0)
+            tpv.frame = CGRect(x: 0, y: 0, width: collectionView.frame.width, height: 0)
         }
         
         // handle bottom pull view
-        let offset = collectionView!.contentOffset.y
-        let boundsHeight = collectionView!.bounds.height
-        let sizeHeight = collectionView!.contentSize.height
+        let offset = collectionView.contentOffset.y
+        let boundsHeight = collectionView.bounds.height
+        let sizeHeight = collectionView.contentSize.height
         let bottomOfView = max(sizeHeight, boundsHeight - topOffset)
         let y = offset + boundsHeight;
         
@@ -461,7 +433,7 @@ extension GridViewController {
             
             resizeView(bpv, yPosition, viewHeight)
         } else if bpv.frame.height > 0 {
-            bpv.frame = CGRect(x: 0, y: 0, width: collectionView!.frame.width, height: 0)
+            bpv.frame = CGRect(x: 0, y: 0, width: collectionView.frame.width, height: 0)
         }
     }
 }
@@ -476,12 +448,14 @@ extension GridViewController {
     
     fileprivate func updateCachedAssets() {
         guard let imageManager = imageManager,
-            isViewLoaded && view.window != nil else {
+            let _ = view.window,
+            let collectionView = collectionView,
+            isViewLoaded else {
                 return
         }
         
         // The preheat window is twice the height of the visible rect
-        let bounds = collectionView!.bounds;
+        let bounds = collectionView.bounds;
         let preheatRect = bounds.insetBy(dx: 0.0, dy: -0.5 * bounds.height);
         
         // If scrolled by a "reasonable" amount...
@@ -492,10 +466,10 @@ extension GridViewController {
             
             computeDifferenceBetweenRects(previousPreheatRect, preheatRect,
                                           removedHandler: {
-                                            removedIndexPaths += self.collectionView!.indexPathsForElements(in: $0)
+                                            removedIndexPaths += collectionView.indexPathsForElements(in: $0)
             },
                                           addedHandler: {
-                                            addedIndexPaths += self.collectionView!.indexPathsForElements(in: $0)
+                                            addedIndexPaths += collectionView.indexPathsForElements(in: $0)
             })
             
             let assetsToStartCaching = assets(at: addedIndexPaths)
@@ -605,38 +579,35 @@ extension GridViewController {
             
             switch authStatus {
             case .authorized:
-                observer.send(value: authStatus)
                 observer.sendCompleted()
             case .notDetermined:
                 alert = UIAlertController(title: NSLocalizedString("Let Memories access Photos?", comment: ""), message: NSLocalizedString("Memories can only work if it has access to your photos. If you tap 'Allow' iOS will ask your permission.", comment: ""), preferredStyle: .alert)
-                let allow = UIAlertAction(title: NSLocalizedString("Allow", comment: ""), style: .default) { (action) -> Void in
+                let allow = UIAlertAction(title: NSLocalizedString("Allow", comment: ""), style: .default) { _ in
                     PHPhotoLibrary.requestAuthorization { status in
                         observer.send(value: status)
+                        observer.sendCompleted()
                     }
                 }
-                let deny = UIAlertAction(title: NSLocalizedString("Not Now", comment: ""), style: .cancel)
+                let deny = UIAlertAction(title: NSLocalizedString("Not Now", comment: ""), style: .cancel) { _ in  observer.sendCompleted() }
                 alert?.addAction(deny)
                 alert?.addAction(allow)
             case .denied:
                 alert = UIAlertController(title: NSLocalizedString("No Access to Photos", comment: ""), message: NSLocalizedString("You have Denied access to Photos for Memories. In order for Memories to work you must enable this access in Settings. Would you like to do this now?", comment: ""), preferredStyle: .alert)
-                let settings = UIAlertAction(title: NSLocalizedString("Settings", comment: ""), style: .default) { (action) -> Void in
+                let settings = UIAlertAction(title: NSLocalizedString("Settings", comment: ""), style: .default) { _ in
                     let url = URL(string: UIApplicationOpenSettingsURLString)
                     UIApplication.shared.openURL(url!);
+                    observer.sendCompleted()
                 }
-                let nothanks = UIAlertAction(title: NSLocalizedString("No thanks", comment: ""), style: .cancel)
+                let nothanks = UIAlertAction(title: NSLocalizedString("No thanks", comment: ""), style: .cancel)  { _ in  observer.sendCompleted() }
                 alert?.addAction(nothanks)
                 alert?.addAction(settings)
             case .restricted:
                 alert = UIAlertController(title: NSLocalizedString("No Access to Photos", comment: ""), message: NSLocalizedString("Access to Photos has been restricted on this device. Unfortunately this means Memories will not work until this is changed.", comment: ""), preferredStyle: .alert)
-                let ok = UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default)
+                let ok = UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default)  { _ in  observer.sendCompleted() }
                 alert?.addAction(ok)
             }
             
             if let alert = alert {
-                alert.reactive.trigger(for: #selector(alert.viewWillDisappear(_:))).observeValues {
-                    observer.sendCompleted()
-                }
-                
                 UIApplication.shared.keyWindow?.rootViewController?.present(alert, animated: true)
             }
         }

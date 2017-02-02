@@ -43,7 +43,7 @@ class GridViewModel: NSObject {
     let photosAllowed = MutableProperty(false)
     let date = MutableProperty(Date())
     let resultsDate = MutableProperty(Date())
-    let title = MutableProperty("")
+    let title = MutableProperty("Memories")
     var sectionChanged: Signal<SectionChanges, NoError> {
         get {
             return sectionChangesPipe.output
@@ -76,11 +76,20 @@ class GridViewModel: NSObject {
         disposeables = [
             NotificationCenter.default.reactive
                 .notifications(forName: NSNotification.Name(PHAssetHelper.sourceTypesChangedNotification))
-                .observeValues{ [weak self] _ in
+                .observeValues { [weak self] _ in
                     guard let me = self else { return }
                     // make a non-significant change to the date to force a reload of fetch results
                     me.date.value = me.date.value.addingTimeInterval(60)
-            }]
+            },
+            NotificationCenter.default.reactive
+                .notifications(forName: NSNotification.Name.UIApplicationDidBecomeActive)
+                .combineLatest(with: photosAllowed.signal)
+                .observeValues { [weak self] _ in
+                    if let date = NotificationManager.launchDate() {
+                        self?.date.value = date
+                    }
+            }
+        ]
     }
     
     private func createBindings() {
