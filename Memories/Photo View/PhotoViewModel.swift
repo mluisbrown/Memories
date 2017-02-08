@@ -11,15 +11,15 @@ import Photos
 
 struct PhotoViewModel {
     let assets : [PHAsset]
-    var selectedIndex : Int
+    var currentIndex : Int
     
-    init (assets: [PHAsset], selectedAsset: Int) {
+    init (assets: [PHAsset], currentIndex: Int) {
         self.assets = assets
-        self.selectedIndex = selectedAsset
+        self.currentIndex = currentIndex
     }
 
-    var selectedAsset: PHAsset {
-        return assets[selectedIndex]
+    var currentAsset: PHAsset {
+        return assets[currentIndex]
     }
     
 }

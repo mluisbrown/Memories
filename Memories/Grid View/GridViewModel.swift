@@ -177,7 +177,7 @@ class GridViewModel: NSObject {
             })
         }            
         
-        return PhotoViewModel(assets: assets, selectedAsset: selectedIndex)
+        return PhotoViewModel(assets: assets, currentIndex: selectedIndex)
     }
     
     func indexPath(for selectedIndex: Int) -> IndexPath {

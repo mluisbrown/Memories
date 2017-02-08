@@ -322,8 +322,8 @@ extension GridViewController {
 
 // MARK: - PhotoViewControllerDelegate
 extension GridViewController: PhotoViewControllerDelegate {
-    func setSelected(index: Int) {
-        collectionView?.selectItem(at: model.indexPath(for: index), animated: false, scrollPosition: .centeredVertically)
+    func setCurrent(index: Int) {
+        collectionView?.scrollToItem(at: model.indexPath(for: index), at: .centeredVertically, animated: false)
     }
     
     func imageView(atIndex index: Int) -> UIImageView? {

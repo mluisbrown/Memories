@@ -12,7 +12,7 @@ import DACircularProgress
 import Cartography
 
 protocol PhotoViewControllerDelegate {
-    func setSelected(index: Int)
+    func setCurrent(index: Int)
     func imageView(atIndex: Int) -> UIImageView?
 }
 
@@ -64,7 +64,7 @@ class PhotoViewController: UIViewController,
         let panHeight: CGFloat
     }
     
-    var initialPanState = PanState(pageView: nil, imageView: nil, destImageView: nil, transform: CGAffineTransform.identity, center: .zero, panHeight: 0)
+    var initialPanState: PanState? // = PanState(pageView: nil, imageView: nil, destImageView: nil, transform: CGAffineTransform.identity, center: .zero, panHeight: 0)
     
     var presentTransition: PhotoViewPresentTransition?
     var dismissTransition: PhotoViewDismissTransition?
@@ -99,7 +99,7 @@ class PhotoViewController: UIViewController,
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        initialPage = model.selectedIndex
+        initialPage = model.currentIndex
         imageManager.startCachingImages(for: model.assets, targetSize: cacheSize, contentMode: .aspectFill, options: nil)
         PHPhotoLibrary.shared().register(self);
         
@@ -130,7 +130,7 @@ class PhotoViewController: UIViewController,
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
-        initialPage = model.selectedIndex
+        initialPage = model.currentIndex
         initialOffsetSet = false
         
         // disable delegate to avoid calls to scrollViewDidScroll
@@ -145,7 +145,7 @@ class PhotoViewController: UIViewController,
 
     // MARK: Actions
     @IBAction func sharePhoto(_ sender: UIButton) {
-        let page = model.selectedIndex
+        let page = model.currentIndex
         let asset = model.assets[page]
         let pageView = pageViews[page]
         
@@ -160,10 +160,9 @@ class PhotoViewController: UIViewController,
             options.isNetworkAccessAllowed = true
             PHImageManager.default().requestImageData(for: asset, options: options) {
                 [weak self] imageData, dataUTI, orientation, info in
-                guard let `self` = self else { return }
                 
                 if let imageData = imageData {
-                    self.share(media: [imageData], from: sender)
+                    self?.share(media: [imageData], from: sender)
                 }
             }
         case .video:
@@ -178,14 +177,12 @@ class PhotoViewController: UIViewController,
             }
             
             PHImageManager.default().requestAVAsset(forVideo: asset, options: options) { [weak self] asset, audioMix, info in
-                guard let `self` = self else { return }
-
                 UIView.animate(withDuration: 0.25, animations: {
-                    self.shareProgressView.show(loading: false)
+                    self?.shareProgressView.show(loading: false)
                     sender.alpha = 1
                 }) { _ in
                     if let urlAsset = asset as? AVURLAsset {
-                        self.share(media: [urlAsset.url], from: sender)
+                        self?.share(media: [urlAsset.url], from: sender)
                     }
                 }
             }
@@ -208,7 +205,7 @@ class PhotoViewController: UIViewController,
     }
     
     @IBAction func deletePhoto(_ sender: UIButton) {
-        let asset = model.selectedAsset
+        let asset = model.currentAsset
         
         PHPhotoLibrary.shared().performChanges({
             PHAssetChangeRequest.deleteAssets(NSArray(array: [asset]))
@@ -216,7 +213,7 @@ class PhotoViewController: UIViewController,
     }
     
     @IBAction func toggleFavorite(_ sender: UIButton) {
-        let asset = model.selectedAsset
+        let asset = model.currentAsset
         let newState = !asset.isFavorite
         
         PHPhotoLibrary.shared().performChanges({
@@ -230,10 +227,8 @@ class PhotoViewController: UIViewController,
             return
         }
         
-        delegate.setSelected(index: model.selectedIndex)
-        
-        if let imageView = delegate.imageView(atIndex: model.selectedIndex),
-            let pageView = pageViews[model.selectedIndex] {
+        if let imageView = delegate.imageView(atIndex: model.currentIndex),
+            let pageView = pageViews[model.currentIndex] {
             dismissTransition = PhotoViewDismissTransition(destImageView: imageView, sourceImageView: pageView.mediaView)
         }
         else {
@@ -256,45 +251,51 @@ class PhotoViewController: UIViewController,
         case .began:
             let startPoint = gr.location(in: gr.view)
             
-            let pageView = pageViews[model.selectedIndex]
-            let imageView = pageViews[model.selectedIndex]!.mediaView
+            let pageView = pageViews[model.currentIndex]
+            let imageView = pageViews[model.currentIndex]!.mediaView
             initialPanState = PanState(pageView: pageView,
                                        imageView: imageView,
-                                       destImageView: delegate?.imageView(atIndex: model.selectedIndex),
+                                       destImageView: delegate?.imageView(atIndex: model.currentIndex),
                                        transform: imageView.transform,
                                        center: imageView.center,
                                        panHeight: gr.view!.bounds.height - startPoint.y)
-            initialPanState.destImageView?.isHidden = true
-            initialPanState.pageView?.prepareForDragging()
+            initialPanState?.destImageView?.isHidden = true
+            initialPanState?.pageView?.prepareForDragging()
+            
         case .changed:
+            guard let panState = initialPanState else { break }
             let translation = gr.translation(in: gr.view)
-            let yPercent = translation.y / initialPanState.panHeight
+            let yPercent = translation.y / panState.panHeight
             let percent = yPercent <= 0 ? 0 : yPercent
             let alpha = 1 - percent
             let scale = (1 - percent / 2)
             
-            initialPanState.imageView?.center = CGPoint(x: initialPanState.center.x + translation.x, y: initialPanState.center.y + translation.y)
-            initialPanState.imageView?.transform = initialPanState.transform.scaledBy(x: scale, y: scale)
+            panState.imageView?.center = CGPoint(x: panState.center.x + translation.x, y: panState.center.y + translation.y)
+            panState.imageView?.transform = panState.transform.scaledBy(x: scale, y: scale)
             
             view.backgroundColor = UIColor.black.withAlphaComponent(alpha)
             if !controlsHidden { setControls(alpha: alpha) }
 
         case .ended, .cancelled:
+            guard let panState = initialPanState else { break }
+
             let velocity = gr.velocity(in: gr.view)
             if velocity.y < 0 || gr.state == .cancelled {
                 UIView.animate(withDuration: 0.25, animations: {
-                    self.initialPanState.imageView?.center = self.initialPanState.center
-                    self.initialPanState.imageView?.transform = self.initialPanState.transform
+                    panState.imageView?.center = panState.center
+                    panState.imageView?.transform = panState.transform
                     self.view.backgroundColor = UIColor.black
                     if !self.controlsHidden { self.setControls(alpha: 1) }
                 }) { finished in
-                    self.initialPanState.destImageView?.isHidden = false
-                    self.initialPanState.pageView?.dragWasCancelled()
+                    panState.destImageView?.isHidden = false
+                    panState.pageView?.dragWasCancelled()
                 }
             }
             else {
                 doClose()
             }
+
+            initialPanState = nil
 
         default:
             break
@@ -306,10 +307,10 @@ class PhotoViewController: UIViewController,
         let pageCount = model.assets.count
 
         if pageViews.count == 0 {
-            for _ in 0..<pageCount {
+            for _ in 0 ..< pageCount {
                 pageViews.append(nil)
             }
-            initialPage = model.selectedIndex
+            initialPage = model.currentIndex
             initialOffsetSet = false
         }
 
@@ -332,10 +333,10 @@ class PhotoViewController: UIViewController,
         scrollView.delegate = self
     }
     
-    func page(view pageView: ZoomingPhotoView, didLoad enable: Bool, for asset: PHAsset) {
-        shareButton.isEnabled = enable
-        deleteButton.isEnabled = enable
-        heartButton.isEnabled = !asset.sourceType.contains(.typeiTunesSynced) && enable
+    func didLoad(pageView: ZoomingPhotoView, for asset: PHAsset, hiRes: Bool) {
+        shareButton.isEnabled = hiRes
+        deleteButton.isEnabled = hiRes
+        heartButton.isEnabled = !asset.sourceType.contains(.typeiTunesSynced) && hiRes
         
         pageView.didBecomeVisible()
     }
@@ -346,11 +347,12 @@ class PhotoViewController: UIViewController,
         let fractionalPage = scrollView.contentOffset.x / pageWidth;
         let page = lround(Double(fractionalPage))
         
-        guard initialLoad || page != model.selectedIndex else {
+        guard initialLoad || page != model.currentIndex else {
             return
         }
         
-        model.selectedIndex = page
+        model.currentIndex = page
+        delegate?.setCurrent(index: model.currentIndex)
         
         // Work out which pages you want to load
         let firstPage = page - 1
@@ -379,7 +381,7 @@ class PhotoViewController: UIViewController,
         frame.origin.y = 0.0
 
         let asset = model.assets[page]
-        if page == self.model.selectedIndex {
+        if page == self.model.currentIndex {
             heartButton.setImage(buttonImage(forFavorite: asset.isFavorite), for: UIControlState())
             yearLabel.text = String("  \(asset.creationDate!.year)  ")
         }
@@ -391,7 +393,7 @@ class PhotoViewController: UIViewController,
             if !requestFullImage || !pageView.imageIsDegraded {
                 pageView.frame = frame
                 if requestFullImage {
-                    self.page(view: pageView, didLoad: true, for: asset)
+                    didLoad(pageView: pageView, for: asset, hiRes: true)
                 } else {
                     pageView.willBecomeHidden()
                 }
@@ -399,10 +401,10 @@ class PhotoViewController: UIViewController,
             }
         }
 
-        let pageView: ZoomingPhotoView!
+        let pageView: ZoomingPhotoView
         
-        if pageViews[page] != nil {
-            pageView = pageViews[page]
+        if let pv = pageViews[page] {
+            pageView = pv
         } else {
             pageView = ZoomingPhotoView()
             pageView.photoViewDelegate = self
@@ -417,8 +419,8 @@ class PhotoViewController: UIViewController,
             if let image = result {
                 // NSLog("Cache Result with image for page \(page) requestFullImage: \(requestFullImage) iamgeSize: \(image.size.width), \(image.size.height)");
                 pageView.photo = image
-                if page == self.model.selectedIndex {
-                    self.page(view: pageView, didLoad: false, for: asset)
+                if page == self.model.currentIndex {
+                    self.didLoad(pageView: pageView, for: asset, hiRes: false)
                 }
             }
         })
@@ -473,8 +475,8 @@ class PhotoViewController: UIViewController,
                     }
                     
                     pageView.imageIsDegraded = false
-                    if page == self.model.selectedIndex {
-                        self.page(view: pageView, didLoad: true, for: asset)
+                    if page == self.model.currentIndex {
+                        self.didLoad(pageView: pageView, for: asset, hiRes: true)
                     }
                 }
             }
@@ -496,7 +498,7 @@ class PhotoViewController: UIViewController,
         }
     }
     
-    func loadPhoto(for asset: PHAsset, progressHandler: @escaping PHAssetImageProgressHandler, completion: @escaping (AssetData?) -> ()) -> PHImageRequestID {
+    func loadPhoto(for asset: PHAsset, progressHandler: @escaping PHAssetImageProgressHandler, completion: @escaping (AssetData?) -> Void) -> PHImageRequestID {
         let options = PHImageRequestOptions()
         
         options.progressHandler = progressHandler
@@ -515,7 +517,7 @@ class PhotoViewController: UIViewController,
         }
     }
     
-    func loadLivePhoto(for asset: PHAsset, progressHandler: @escaping PHAssetImageProgressHandler, completion: @escaping (AssetData?) -> ()) -> PHImageRequestID {
+    func loadLivePhoto(for asset: PHAsset, progressHandler: @escaping PHAssetImageProgressHandler, completion: @escaping (AssetData?) -> Void) -> PHImageRequestID {
         let options = PHLivePhotoRequestOptions()
         
         options.progressHandler = progressHandler
@@ -533,7 +535,7 @@ class PhotoViewController: UIViewController,
         }
     }
 
-    func loadVideo(for asset: PHAsset, progressHandler: @escaping PHAssetImageProgressHandler, completion: @escaping (AssetData?) -> ()) -> PHImageRequestID {
+    func loadVideo(for asset: PHAsset, progressHandler: @escaping PHAssetImageProgressHandler, completion: @escaping (AssetData?) -> Void) -> PHImageRequestID {
         let options = PHVideoRequestOptions()
         
         options.progressHandler = progressHandler
@@ -645,8 +647,8 @@ class PhotoViewController: UIViewController,
         }
         
         let assetsDeleted = newAssets.count < model.assets.count
-        let newSelectedAsset = min(model.selectedIndex, newAssets.count - 1)
-        model = PhotoViewModel(assets: newAssets, selectedAsset: newSelectedAsset)
+        let newCurrentIndex = min(model.currentIndex, newAssets.count - 1)
+        model = PhotoViewModel(assets: newAssets, currentIndex: newCurrentIndex)
         
         if assetsDeleted {
             purgeAllViews()
@@ -655,7 +657,7 @@ class PhotoViewController: UIViewController,
             setupViews()
         }
         else {
-            let asset = model.selectedAsset
+            let asset = model.currentAsset
             heartButton.setImage(buttonImage(forFavorite: asset.isFavorite), for: UIControlState())
         }
     }

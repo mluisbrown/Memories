@@ -107,8 +107,6 @@ class PlayerController: NSObject {
             return Float(CMTimebaseGetRate(timebase))
         }
     }
-
-    
     
     init(player: AVPlayer) {
         self.player = player
@@ -165,22 +163,22 @@ class PlayerController: NSObject {
         let seekTimeInProgress = chaseTime
         
         player.seek(to: seekTimeInProgress, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero) { [weak self] _ in
-            guard let `self` = self else {
+            guard let sself = self else {
                 return
             }
             
-            if CMTimeCompare(seekTimeInProgress, self.chaseTime) == 0 {
-                self.isSeekInProgress = false
+            if CMTimeCompare(seekTimeInProgress, sself.chaseTime) == 0 {
+                sself.isSeekInProgress = false
                 
-                if let slider = self.slider,
+                if let slider = sself.slider,
                     slider.value < slider.maximumValue,
-                    self.scrubEnded,
-                    self.playAfterScrub {
-                    self.player.play()
+                    sself.scrubEnded,
+                    sself.playAfterScrub {
+                    sself.player.play()
                 }
             }
             else {
-                self.tryToSeekToChaseTime()
+                sself.tryToSeekToChaseTime()
             }
         }
     }
@@ -241,11 +239,7 @@ class PlayerController: NSObject {
         let frameDuration = 1 / frameRate
         
         timeObserver = player.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(Float64(frameDuration), Int32(NSEC_PER_SEC)), queue: nil) { [weak self] _ in
-            guard let `self` = self else {
-                return
-            }
-            
-            self.playerTimeChanged()
+            self?.playerTimeChanged()
         }
     }
     
