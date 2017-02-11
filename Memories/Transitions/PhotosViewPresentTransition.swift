@@ -9,7 +9,7 @@
 import UIKit
 import AVFoundation
 
-class PhotoViewPresentTransition: NSObject, UIViewControllerAnimatedTransitioning {
+class PhotosViewPresentTransition: NSObject, UIViewControllerAnimatedTransitioning {
     let sourceImageView : UIImageView
     let duration = TimeInterval(0.25)
     let buttonOffset = CGFloat(50)

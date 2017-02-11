@@ -11,18 +11,12 @@ import Photos
 import DACircularProgress
 import Cartography
 
-protocol PhotoViewControllerDelegate {
+protocol PhotosViewControllerDelegate {
     func setCurrent(index: Int)
     func imageView(atIndex: Int) -> UIImageView?
 }
 
-enum AssetData {
-    case photo(image: UIImage)
-    case livePhoto(livePhoto: PHLivePhoto)
-    case video(playerItem: AVPlayerItem)
-}
-
-class PhotoViewController: UIViewController,
+class PhotosViewController: UIViewController,
     UIScrollViewDelegate,
     UIViewControllerTransitioningDelegate,
     UIGestureRecognizerDelegate,
@@ -47,10 +41,10 @@ class PhotoViewController: UIViewController,
     var upgradePromptShown = false
     var initialOffsetSet = false
     var initialPage : Int!
-    var model : PhotoViewModel!
+    var model : PhotosViewModel!
     var pageViews = [ZoomingPhotoView?]()
     let imageManager : PHCachingImageManager
-    var delegate: PhotoViewControllerDelegate?
+    var delegate: PhotosViewControllerDelegate?
     // If the size is too large then PhotoKit doesn't return an optimal image size
     // see rdar://25181601 (https://openradar.appspot.com/radar?id=6158824289337344)
     let cacheSize = CGSize(width: 256, height: 256)
@@ -64,10 +58,10 @@ class PhotoViewController: UIViewController,
         let panHeight: CGFloat
     }
     
-    var initialPanState: PanState? // = PanState(pageView: nil, imageView: nil, destImageView: nil, transform: CGAffineTransform.identity, center: .zero, panHeight: 0)
+    var initialPanState: PanState?
     
-    var presentTransition: PhotoViewPresentTransition?
-    var dismissTransition: PhotoViewDismissTransition?
+    var presentTransition: PhotosViewPresentTransition?
+    var dismissTransition: PhotosViewDismissTransition?
     
     required init?(coder aDecoder: NSCoder) {
         self.imageManager = PHCachingImageManager()
@@ -94,7 +88,7 @@ class PhotoViewController: UIViewController,
         return favorite ? heartFullImg : heartEmptyImg
     }
     
-    // MARK: UIViewController
+    // MARK: - UIViewController
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -103,7 +97,7 @@ class PhotoViewController: UIViewController,
         imageManager.startCachingImages(for: model.assets, targetSize: cacheSize, contentMode: .aspectFill, options: nil)
         PHPhotoLibrary.shared().register(self);
         
-        let panRecognizer = UIPanGestureRecognizer(target: self, action: #selector(PhotoViewController.viewDidPan)).with {
+        let panRecognizer = UIPanGestureRecognizer(target: self, action: #selector(PhotosViewController.viewDidPan)).with {
             $0.delegate = self
         }
         view.addGestureRecognizer(panRecognizer)
@@ -143,7 +137,7 @@ class PhotoViewController: UIViewController,
         super.didReceiveMemoryWarning()
     }
 
-    // MARK: Actions
+    // MARK: - Actions
     @IBAction func sharePhoto(_ sender: UIButton) {
         let page = model.currentIndex
         let asset = model.assets[page]
@@ -222,14 +216,14 @@ class PhotoViewController: UIViewController,
         }, completionHandler: nil)
     }
     
-    func doClose() {
+    private func doClose() {
         guard let delegate = delegate else {
             return
         }
         
         if let imageView = delegate.imageView(atIndex: model.currentIndex),
             let pageView = pageViews[model.currentIndex] {
-            dismissTransition = PhotoViewDismissTransition(destImageView: imageView, sourceImageView: pageView.mediaView)
+            dismissTransition = PhotosViewDismissTransition(destImageView: imageView, sourceImageView: pageView.mediaView)
         }
         else {
             dismissTransition = nil
@@ -302,8 +296,8 @@ class PhotoViewController: UIViewController,
         }
     }
     
-    // MARK: Internal implementation
-    func setupViews() {
+    // MARK: - Internal implementation
+    private func setupViews() {
         let pageCount = model.assets.count
 
         if pageViews.count == 0 {
@@ -327,13 +321,13 @@ class PhotoViewController: UIViewController,
         }
     }
     
-    func doWithScrollViewDelegateDisabled(block: () -> ()) {
+    private func doWithScrollViewDelegateDisabled(block: () -> ()) {
         scrollView.delegate = nil
         block()
         scrollView.delegate = self
     }
     
-    func didLoad(pageView: ZoomingPhotoView, for asset: PHAsset, hiRes: Bool) {
+    private func didLoad(pageView: ZoomingPhotoView, for asset: PHAsset, hiRes: Bool) {
         shareButton.isEnabled = hiRes
         deleteButton.isEnabled = hiRes
         heartButton.isEnabled = !asset.sourceType.contains(.typeiTunesSynced) && hiRes
@@ -341,7 +335,7 @@ class PhotoViewController: UIViewController,
         pageView.didBecomeVisible()
     }
     
-    func loadVisiblePages(initialLoad: Bool = false) {
+    private func loadVisiblePages(initialLoad: Bool = false) {
         // First, determine which page is currently visible
         let pageWidth = scrollView.bounds.size.width
         let fractionalPage = scrollView.contentOffset.x / pageWidth;
@@ -368,7 +362,7 @@ class PhotoViewController: UIViewController,
         stride(from: model.assets.count, to: lastPage, by: -1).forEach(purge)
     }
     
-    func load(page: Int, requestFullImage: Bool) {
+    private func load(page: Int, requestFullImage: Bool) {
         guard page >= 0 && page < model.assets.count else {
             return
         }
@@ -443,7 +437,7 @@ class PhotoViewController: UIViewController,
         }
     }
 
-    func loadHighQualityVersion(of asset: PHAsset, page: Int) {
+    private func loadHighQualityVersion(of asset: PHAsset, page: Int) {
         let pageView = pageViews[page]!
         let progressHandler: PHAssetImageProgressHandler = { progress, error, stop, userInfo in
             DispatchQueue.main.async {
@@ -498,7 +492,7 @@ class PhotoViewController: UIViewController,
         }
     }
     
-    func loadPhoto(for asset: PHAsset, progressHandler: @escaping PHAssetImageProgressHandler, completion: @escaping (AssetData?) -> Void) -> PHImageRequestID {
+    private func loadPhoto(for asset: PHAsset, progressHandler: @escaping PHAssetImageProgressHandler, completion: @escaping (AssetData?) -> Void) -> PHImageRequestID {
         let options = PHImageRequestOptions()
         
         options.progressHandler = progressHandler
@@ -517,7 +511,7 @@ class PhotoViewController: UIViewController,
         }
     }
     
-    func loadLivePhoto(for asset: PHAsset, progressHandler: @escaping PHAssetImageProgressHandler, completion: @escaping (AssetData?) -> Void) -> PHImageRequestID {
+    private func loadLivePhoto(for asset: PHAsset, progressHandler: @escaping PHAssetImageProgressHandler, completion: @escaping (AssetData?) -> Void) -> PHImageRequestID {
         let options = PHLivePhotoRequestOptions()
         
         options.progressHandler = progressHandler
@@ -535,7 +529,7 @@ class PhotoViewController: UIViewController,
         }
     }
 
-    func loadVideo(for asset: PHAsset, progressHandler: @escaping PHAssetImageProgressHandler, completion: @escaping (AssetData?) -> Void) -> PHImageRequestID {
+    private func loadVideo(for asset: PHAsset, progressHandler: @escaping PHAssetImageProgressHandler, completion: @escaping (AssetData?) -> Void) -> PHImageRequestID {
         let options = PHVideoRequestOptions()
         
         options.progressHandler = progressHandler
@@ -553,11 +547,11 @@ class PhotoViewController: UIViewController,
         }
     }
     
-    func cancelAllImageRequests() {
+    private func cancelAllImageRequests() {
         pageViews.indices.forEach(cancelPageImageRequest)
     }
     
-    func cancelPageImageRequest(for page: Int) {
+    private func cancelPageImageRequest(for page: Int) {
         guard page >= 0 && page < pageViews.count else {
             return
         }
@@ -570,11 +564,11 @@ class PhotoViewController: UIViewController,
         }
     }
     
-    func purgeAllViews() {
+    private func purgeAllViews() {
         pageViews.indices.forEach(purge)
     }
     
-    func purge(page: Int) {
+    private func purge(page: Int) {
         guard page >= 0 && page < pageViews.count else {
             return
         }
@@ -590,13 +584,13 @@ class PhotoViewController: UIViewController,
         }
     }
     
-    func contentOffsetForPage(at index : Int) -> CGPoint {
+    private func contentOffsetForPage(at index : Int) -> CGPoint {
         let pageWidth = scrollView.bounds.size.width;
         let newOffset = CGFloat(index) * pageWidth;
         return CGPoint(x: newOffset, y: 0);
     }
     
-    // MARK: UIScrollViewDelegate
+    // MARK: - UIScrollViewDelegate
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if scrollView == self.scrollView {
@@ -604,7 +598,7 @@ class PhotoViewController: UIViewController,
         }
     }
 
-    // MARK: UIGestureRecognizerDelegate
+    // MARK: - UIGestureRecognizerDelegate
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         if touch.view is UISlider {
             return false
@@ -614,7 +608,7 @@ class PhotoViewController: UIViewController,
     }
     
     
-    // MARK: UIViewControllerTransitioningDelegate
+    // MARK: - UIViewControllerTransitioningDelegate
     func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         return presentTransition
     }
@@ -623,7 +617,7 @@ class PhotoViewController: UIViewController,
         return dismissTransition
     }
     
-    // MARK: PHPhotoLibraryChangeObserver
+    // MARK: - PHPhotoLibraryChangeObserver
     
     func photoLibraryDidChange(_ changeInstance: PHChange) {
         DispatchQueue.main.async {
@@ -648,7 +642,7 @@ class PhotoViewController: UIViewController,
         
         let assetsDeleted = newAssets.count < model.assets.count
         let newCurrentIndex = min(model.currentIndex, newAssets.count - 1)
-        model = PhotoViewModel(assets: newAssets, currentIndex: newCurrentIndex)
+        model = PhotosViewModel(assets: newAssets, currentIndex: newCurrentIndex)
         
         if assetsDeleted {
             purgeAllViews()
@@ -662,7 +656,7 @@ class PhotoViewController: UIViewController,
         }
     }
     
-    // MARK: ZoomingPhotoViewDelegate
+    // MARK: - ZoomingPhotoViewDelegate
     func viewWasZoomedIn() {
         guard !controlsHidden else {
             return

@@ -83,7 +83,7 @@ class ZoomingPhotoView: UIView, UIScrollViewDelegate {
         $0.layer.cornerRadius = 5
     }
     
-    var videoViews: [UIView]?
+    var accessoryViews: [UIView]?
     
     var playerController: PlayerController?
     
@@ -98,7 +98,7 @@ class ZoomingPhotoView: UIView, UIScrollViewDelegate {
     init() {
         super.init(frame: .zero)
         
-        videoViews = [videoPlayButton, scrubberView, videoLoadingSpinner]
+        accessoryViews = [videoPlayButton, scrubberView, videoLoadingSpinner, progressView, errorIndicator]
         
         scrollView.delegate = self
         
@@ -253,7 +253,7 @@ class ZoomingPhotoView: UIView, UIScrollViewDelegate {
         playerController?.pause(andReset: false)
         
         UIView.animate(withDuration: 0.25) {
-            self.videoViews?.forEach {
+            self.accessoryViews?.forEach {
                 if $0.alpha == 1 { $0.alpha = 0.01 }
             }
         }
@@ -261,7 +261,7 @@ class ZoomingPhotoView: UIView, UIScrollViewDelegate {
     
     func dragWasCancelled() {
         UIView.animate(withDuration: 0.25) {
-            self.videoViews?.forEach {
+            self.accessoryViews?.forEach {
                 if $0.alpha != 0 { $0.alpha = 1 }
             }
         }

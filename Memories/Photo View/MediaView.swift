@@ -45,8 +45,6 @@ class MediaView: UIView {
         return AVPlayerLayer.self
     }
     
-    //var player: AVPlayer?
-    
     var photo: UIImage? {
         set {
             switch contentView {

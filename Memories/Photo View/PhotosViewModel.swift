@@ -9,7 +9,15 @@
 import Foundation
 import Photos
 
-struct PhotoViewModel {
+enum AssetData {
+    case photo(image: UIImage)
+    case livePhoto(livePhoto: PHLivePhoto)
+    case video(playerItem: AVPlayerItem)
+}
+
+
+
+struct PhotosViewModel {
     let assets : [PHAsset]
     var currentIndex : Int
     

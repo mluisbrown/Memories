@@ -162,7 +162,7 @@ class GridViewModel: NSObject {
         return assetFetchResults.value[section]
     }
     
-    func photoViewModel(for indexPath: IndexPath) -> PhotoViewModel {
+    func photoViewModel(for indexPath: IndexPath) -> PhotosViewModel {
         var assets : [PHAsset] = [PHAsset]()
         var selectedIndex = 0
         var currentIndex = 0
@@ -177,7 +177,7 @@ class GridViewModel: NSObject {
             })
         }            
         
-        return PhotoViewModel(assets: assets, currentIndex: selectedIndex)
+        return PhotosViewModel(assets: assets, currentIndex: selectedIndex)
     }
     
     func indexPath(for selectedIndex: Int) -> IndexPath {

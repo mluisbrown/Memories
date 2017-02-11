@@ -8,7 +8,7 @@
 
 import UIKit
 
-class PhotoViewDismissTransition: NSObject, UIViewControllerAnimatedTransitioning {
+class PhotosViewDismissTransition: NSObject, UIViewControllerAnimatedTransitioning {
     
     let destImageView: UIImageView
     let sourceImageView: UIView

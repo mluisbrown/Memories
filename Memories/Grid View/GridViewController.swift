@@ -266,15 +266,15 @@ extension GridViewController: UIPopoverPresentationControllerDelegate {
 // MARK: - UICollectionViewDelegate
 extension GridViewController {
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if let photoViewController = storyboard?.instantiateViewController(withIdentifier: "photoViewController") as? PhotoViewController {
-            photoViewController.model = model.photoViewModel(for: indexPath)
-            photoViewController.delegate = self
+        if let photosViewController = storyboard?.instantiateViewController(withIdentifier: "photosViewController") as? PhotosViewController {
+            photosViewController.model = model.photoViewModel(for: indexPath)
+            photosViewController.delegate = self
             if let cell = collectionView.cellForItem(at: indexPath) as? GridViewCell, let imageView = cell.imageView {
-                photoViewController.presentTransition = PhotoViewPresentTransition(sourceImageView: imageView)
-                photoViewController.transitioningDelegate = photoViewController
-                photoViewController.modalPresentationStyle = .custom
+                photosViewController.presentTransition = PhotosViewPresentTransition(sourceImageView: imageView)
+                photosViewController.transitioningDelegate = photosViewController
+                photosViewController.modalPresentationStyle = .custom
                 
-                present(photoViewController, animated: true, completion: nil)
+                present(photosViewController, animated: true, completion: nil)
             }
         }
     }
@@ -320,8 +320,8 @@ extension GridViewController {
     }
 }
 
-// MARK: - PhotoViewControllerDelegate
-extension GridViewController: PhotoViewControllerDelegate {
+// MARK: - PhotosViewControllerDelegate
+extension GridViewController: PhotosViewControllerDelegate {
     func setCurrent(index: Int) {
         collectionView?.scrollToItem(at: model.indexPath(for: index), at: .centeredVertically, animated: false)
     }
