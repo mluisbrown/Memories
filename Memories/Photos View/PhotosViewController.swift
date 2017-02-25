@@ -10,6 +10,7 @@ import UIKit
 import Photos
 import DACircularProgress
 import Cartography
+import ReactiveSwift
 
 protocol PhotosViewControllerDelegate {
     func setCurrent(index: Int)
@@ -35,20 +36,16 @@ class PhotosViewController: UIViewController,
 
     let padding = CGFloat(10);
     
-    let heartFullImg = UIImage(named: "heart-full")!.withRenderingMode(.alwaysTemplate)
-    let heartEmptyImg = UIImage(named: "heart-empty")!.withRenderingMode(.alwaysTemplate)
+    let heartFullImg = #imageLiteral(resourceName: "heart-full").withRenderingMode(.alwaysTemplate)
+    let heartEmptyImg = #imageLiteral(resourceName: "heart-empty").withRenderingMode(.alwaysTemplate)
     
     var upgradePromptShown = false
     var initialOffsetSet = false
     var initialPage : Int!
     var model : PhotosViewModel!
     var pageViews = [ZoomingPhotoView?]()
-    let imageManager : PHCachingImageManager
     var delegate: PhotosViewControllerDelegate?
-    // If the size is too large then PhotoKit doesn't return an optimal image size
-    // see rdar://25181601 (https://openradar.appspot.com/radar?id=6158824289337344)
-    let cacheSize = CGSize(width: 256, height: 256)
-    
+
     struct PanState {
         let pageView: ZoomingPhotoView?
         let imageView: UIView?
@@ -64,7 +61,6 @@ class PhotosViewController: UIViewController,
     var dismissTransition: PhotosViewDismissTransition?
     
     required init?(coder aDecoder: NSCoder) {
-        self.imageManager = PHCachingImageManager()
         super.init(coder: aDecoder)
     }
     
@@ -72,6 +68,20 @@ class PhotosViewController: UIViewController,
         PHPhotoLibrary.shared().unregisterChangeObserver(self)
     }
 
+    func bindToModel() {
+        model.indexLoadedAndVisible.signal
+        .observeValues { [weak self] in
+            guard let sself = self,
+                let pageView = sself.pageViews[$0] else {
+                return
+            }
+            
+            let photoViewModel = sself.model.photoViewModels[$0]
+            
+            self?.didLoad(pageView: pageView, for: photoViewModel.asset, hiRes: !photoViewModel.imageIsPreview.value)
+        }
+    }
+    
     var controlsHidden: Bool {
         get {
             return closeButton.alpha == 0
@@ -92,16 +102,17 @@ class PhotosViewController: UIViewController,
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        bindToModel()
 
         initialPage = model.currentIndex
-        imageManager.startCachingImages(for: model.assets, targetSize: cacheSize, contentMode: .aspectFill, options: nil)
         PHPhotoLibrary.shared().register(self);
         
         let panRecognizer = UIPanGestureRecognizer(target: self, action: #selector(PhotosViewController.viewDidPan)).with {
             $0.delegate = self
         }
         view.addGestureRecognizer(panRecognizer)
-        
+    
         shareProgressView.with {
             $0.trackTintColor = UIColor.clear
             $0.thicknessRatio = 0.1
@@ -140,12 +151,13 @@ class PhotosViewController: UIViewController,
     // MARK: - Actions
     @IBAction func sharePhoto(_ sender: UIButton) {
         let page = model.currentIndex
-        let asset = model.assets[page]
-        let pageView = pageViews[page]
+        let pageModel = model.photoViewModels[page]
+        let asset = pageModel.asset
         
         switch asset.mediaType {
         case .image where asset.mediaSubtypes == .photoLive:
-            if let livePhoto = pageView?.livePhoto {
+            if let assetResource = pageModel.assetResource.value,
+               case let .livePhoto(livePhoto) = assetResource {
                 share(media: [livePhoto], from: sender)
             }
         case .image:
@@ -298,7 +310,7 @@ class PhotosViewController: UIViewController,
     
     // MARK: - Internal implementation
     private func setupViews() {
-        let pageCount = model.assets.count
+        let pageCount = model.count
 
         if pageViews.count == 0 {
             for _ in 0 ..< pageCount {
@@ -359,11 +371,11 @@ class PhotosViewController: UIViewController,
         (firstPage...lastPage).forEach { load(page: $0, requestFullImage: $0 == page) }
         
         // Purge anything after the last page
-        stride(from: model.assets.count, to: lastPage, by: -1).forEach(purge)
+        stride(from: model.count, to: lastPage, by: -1).forEach(purge)
     }
     
     private func load(page: Int, requestFullImage: Bool) {
-        guard page >= 0 && page < model.assets.count else {
+        guard page >= 0 && page < model.count else {
             return
         }
 
@@ -374,17 +386,19 @@ class PhotosViewController: UIViewController,
         frame.origin.x = bounds.size.width * CGFloat(page) + padding
         frame.origin.y = 0.0
 
-        let asset = model.assets[page]
+        let asset = model.photoViewModels[page].asset
         if page == self.model.currentIndex {
             heartButton.setImage(buttonImage(forFavorite: asset.isFavorite), for: UIControlState())
             yearLabel.text = String("  \(asset.creationDate!.year)  ")
         }
         
+        let photoViewModel = model.photoViewModels[page]
+        
         // if we already have a view with a full image or
         // if we don't need the full image
         // make sure it's layed out correctly
         if let pageView = pageViews[page] {
-            if !requestFullImage || !pageView.imageIsDegraded {
+            if !requestFullImage || !photoViewModel.imageIsPreview.value {
                 pageView.frame = frame
                 if requestFullImage {
                     didLoad(pageView: pageView, for: asset, hiRes: true)
@@ -400,7 +414,7 @@ class PhotosViewController: UIViewController,
         if let pv = pageViews[page] {
             pageView = pv
         } else {
-            pageView = ZoomingPhotoView()
+            pageView = ZoomingPhotoView(model: photoViewModel)
             pageView.photoViewDelegate = self
             scrollView.addSubview(pageView)
             pageViews[page] = pageView
@@ -408,16 +422,7 @@ class PhotosViewController: UIViewController,
         pageView.frame = frame
 
         // always get a thumbnail first
-        pageView.imageIsDegraded = true
-        imageManager.requestImage(for: asset, targetSize: cacheSize, contentMode: .aspectFill, options: nil, resultHandler: { result, userInfo in
-            if let image = result {
-                // NSLog("Cache Result with image for page \(page) requestFullImage: \(requestFullImage) iamgeSize: \(image.size.width), \(image.size.height)");
-                pageView.photo = image
-                if page == self.model.currentIndex {
-                    self.didLoad(pageView: pageView, for: asset, hiRes: false)
-                }
-            }
-        })
+        model.loadPreviewImageFor(index: page)
         
         // then get the full size image if required
         if requestFullImage {
@@ -426,142 +431,19 @@ class PhotosViewController: UIViewController,
                     if !$0 {
                         pageView.hideProgressView(true)
                     } else {
-                        self.loadHighQualityVersion(of: asset, page: page)
+                        self.model.loadHighQualityAssetFor(index: page)
                     }
                 }
                 
                 return
             }
             
-            loadHighQualityVersion(of: asset, page: page)
+            self.model.loadHighQualityAssetFor(index: page)
         }
     }
 
-    private func loadHighQualityVersion(of asset: PHAsset, page: Int) {
-        let pageView = pageViews[page]!
-        let progressHandler: PHAssetImageProgressHandler = { progress, error, stop, userInfo in
-            DispatchQueue.main.async {
-                pageView.updateProgress(progress)
-                
-                if error != nil {
-                    pageView.fullImageUnavailable = true
-                }
-            }
-        }
-        
-        let configurePageView = { (asset: PHAsset) in
-            return { (data: AssetData?) in
-                DispatchQueue.main.async {
-                    guard let data = data else {
-                        pageView.fullImageUnavailable = true
-                        return
-                    }
-                    UpgradeManager.highQualityViewCount += 1
-                    
-                    switch data {
-                    case .photo(let image):
-                        pageView.photo = image
-                    case .livePhoto(let livePhoto):
-                        pageView.livePhoto = livePhoto
-                    case .video(let playerItem):
-                        pageView.video = playerItem
-                        break
-                    }
-                    
-                    pageView.imageIsDegraded = false
-                    if page == self.model.currentIndex {
-                        self.didLoad(pageView: pageView, for: asset, hiRes: true)
-                    }
-                }
-            }
-        }
-
-        
-        switch asset.mediaType {
-        case .image where asset.mediaSubtypes == .photoLive:
-            pageView.updateProgress(indeterminate: true)
-            pageView.imageRequestId = loadLivePhoto(for: asset, progressHandler: progressHandler, completion: configurePageView(asset))
-        case .image:
-            pageView.imageRequestId = loadPhoto(for: asset, progressHandler: progressHandler, completion: configurePageView(asset))
-        case .video:
-            pageView.updateProgress(indeterminate: true)
-            pageView.imageRequestId = loadVideo(for: asset, progressHandler: progressHandler, completion: configurePageView(asset))
-            break
-        default:
-            break
-        }
-    }
-    
-    private func loadPhoto(for asset: PHAsset, progressHandler: @escaping PHAssetImageProgressHandler, completion: @escaping (AssetData?) -> Void) -> PHImageRequestID {
-        let options = PHImageRequestOptions()
-        
-        options.progressHandler = progressHandler
-        options.isNetworkAccessAllowed = true
-        options.deliveryMode = .highQualityFormat
-        options.isSynchronous = false
-        
-        return PHImageManager.default().requestImage(for: asset, targetSize: PHImageManagerMaximumSize, contentMode: .aspectFit, options: options) { (result, userInfo) -> Void in
-            if let image = result {
-                completion(AssetData.photo(image: image))
-            }
-            
-            if let _ = userInfo?[PHImageErrorKey] as? NSError {
-                completion(nil)
-            }
-        }
-    }
-    
-    private func loadLivePhoto(for asset: PHAsset, progressHandler: @escaping PHAssetImageProgressHandler, completion: @escaping (AssetData?) -> Void) -> PHImageRequestID {
-        let options = PHLivePhotoRequestOptions()
-        
-        options.progressHandler = progressHandler
-        options.isNetworkAccessAllowed = true
-        options.deliveryMode = .highQualityFormat
-        
-        return PHImageManager.default().requestLivePhoto(for: asset, targetSize: PHImageManagerMaximumSize, contentMode: .aspectFit, options: options) { (result, userInfo) -> Void in
-            if let livePhoto = result {
-                completion(AssetData.livePhoto(livePhoto: livePhoto))
-            }
-            
-            if let _ = userInfo?[PHImageErrorKey] as? NSError {
-                completion(nil)
-            }
-        }
-    }
-
-    private func loadVideo(for asset: PHAsset, progressHandler: @escaping PHAssetImageProgressHandler, completion: @escaping (AssetData?) -> Void) -> PHImageRequestID {
-        let options = PHVideoRequestOptions()
-        
-        options.progressHandler = progressHandler
-        options.isNetworkAccessAllowed = true
-        options.deliveryMode = .automatic
-        
-        return PHImageManager.default().requestPlayerItem(forVideo: asset, options: options) { (result, userInfo) -> Void in
-            if let video = result {
-                completion(AssetData.video(playerItem: video))
-            }
-            
-            if let _ = userInfo?[PHImageErrorKey] as? NSError {
-                completion(nil)
-            }
-        }
-    }
-    
     private func cancelAllImageRequests() {
-        pageViews.indices.forEach(cancelPageImageRequest)
-    }
-    
-    private func cancelPageImageRequest(for page: Int) {
-        guard page >= 0 && page < pageViews.count else {
-            return
-        }
-        
-        if let pageView = pageViews[page] {
-            if let requestId = pageView.imageRequestId {
-                PHImageManager.default().cancelImageRequest(requestId)
-                pageView.imageRequestId = nil
-            }
-        }
+        model.cancelAllAssetRequests()
     }
     
     private func purgeAllViews() {
@@ -575,12 +457,10 @@ class PhotosViewController: UIViewController,
         
         // Remove a page from the scroll view and reset the container array
         if let pageView = pageViews[page] {
-            if let requestId = pageView.imageRequestId {
-                PHImageManager.default().cancelImageRequest(requestId)
-                pageView.imageRequestId = nil
-            }
             pageView.removeFromSuperview()
             pageViews[page] = nil
+            
+            model.resetPhotoViewModelFor(index: page)
         }
     }
     
@@ -626,12 +506,12 @@ class PhotosViewController: UIViewController,
     }
     
     private func processLibraryChange(_ changeInstance: PHChange) {
-        let newAssets:[PHAsset] = model.assets.flatMap {
-            if let changeDetails = changeInstance.changeDetails(for: $0) {
+        let newAssets:[PHAsset] = model.photoViewModels.flatMap {
+            if let changeDetails = changeInstance.changeDetails(for: $0.asset) {
                 return changeDetails.objectWasDeleted ? nil : changeDetails.objectAfterChanges as? PHAsset
             }
             else {
-                return $0
+                return $0.asset
             }
         }
         
@@ -640,9 +520,10 @@ class PhotosViewController: UIViewController,
             return
         }
         
-        let assetsDeleted = newAssets.count < model.assets.count
+        let assetsDeleted = newAssets.count < model.count
         let newCurrentIndex = min(model.currentIndex, newAssets.count - 1)
         model = PhotosViewModel(assets: newAssets, currentIndex: newCurrentIndex)
+        bindToModel()
         
         if assetsDeleted {
             purgeAllViews()

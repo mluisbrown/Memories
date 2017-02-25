@@ -36,6 +36,7 @@
 		4C758BB71DD67A0400AE9D9F /* CALayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C758BB61DD67A0400AE9D9F /* CALayer.swift */; };
 		4C758BB91DD67E7B00AE9D9F /* UIButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C758BB81DD67E7B00AE9D9F /* UIButton.swift */; };
 		4C758BBB1DD685E700AE9D9F /* PlayerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C758BBA1DD685E700AE9D9F /* PlayerController.swift */; };
+		4C7C12DF1E4F376A0061C9E5 /* PhotoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C7C12DE1E4F376A0061C9E5 /* PhotoViewModel.swift */; };
 		4C8594CC1BB33D49005CCFAC /* Cartography.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C8594C51BB33CF5005CCFAC /* Cartography.framework */; };
 		4C8594CD1BB33D4C005CCFAC /* DACircularProgress.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C8594C91BB33D02005CCFAC /* DACircularProgress.framework */; };
 		4C8594D11BB33E27005CCFAC /* Cartography.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4C8594D01BB33E27005CCFAC /* Cartography.framework.dSYM */; };
@@ -155,6 +156,7 @@
 		4C758BB61DD67A0400AE9D9F /* CALayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CALayer.swift; sourceTree = "<group>"; };
 		4C758BB81DD67E7B00AE9D9F /* UIButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIButton.swift; sourceTree = "<group>"; };
 		4C758BBA1DD685E700AE9D9F /* PlayerController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlayerController.swift; sourceTree = "<group>"; };
+		4C7C12DE1E4F376A0061C9E5 /* PhotoViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoViewModel.swift; sourceTree = "<group>"; };
 		4C8594C51BB33CF5005CCFAC /* Cartography.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cartography.framework; path = Carthage/Build/iOS/Cartography.framework; sourceTree = "<group>"; };
 		4C8594C91BB33D02005CCFAC /* DACircularProgress.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DACircularProgress.framework; path = Carthage/Build/iOS/DACircularProgress.framework; sourceTree = "<group>"; };
 		4C8594D01BB33E27005CCFAC /* Cartography.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = Cartography.framework.dSYM; path = Carthage/Build/iOS/Cartography.framework.dSYM; sourceTree = "<group>"; };
@@ -306,8 +308,8 @@
 				4CA4ECCD1DCCE3AA00A6B664 /* VideoView.swift */,
 				4C758BBA1DD685E700AE9D9F /* PlayerController.swift */,
 				4C748EB01DE09D94005F44DD /* ScrubberView.swift */,
+				4C7C12DE1E4F376A0061C9E5 /* PhotoViewModel.swift */,
 			);
-			name = "Photos View";
 			path = "Photos View";
 			sourceTree = "<group>";
 		};
@@ -637,6 +639,7 @@
 				4C69E63A1DCA73F1004D6F5C /* MediaView.swift in Sources */,
 				4CA5E1831DEA42950019CA26 /* DateComponentsFormatter.swift in Sources */,
 				4CF4105C1C4BB732002FD49A /* Date.swift in Sources */,
+				4C7C12DF1E4F376A0061C9E5 /* PhotoViewModel.swift in Sources */,
 				4C758BB31DD6712D00AE9D9F /* CAShapeLayer.swift in Sources */,
 				4CEAA90E1B3343F700774FE8 /* GridViewController.swift in Sources */,
 				4C00A4F51C1B7ED30078A43F /* PhotosViewDismissTransition.swift in Sources */,

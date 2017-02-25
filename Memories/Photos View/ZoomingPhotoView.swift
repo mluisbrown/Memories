@@ -12,6 +12,8 @@ import PhotosUI
 import AVFoundation
 import Cartography
 import DACircularProgress
+import ReactiveSwift
+import Result
 
 protocol ZoomingPhotoViewDelegate {
     func viewWasZoomedIn()
@@ -32,20 +34,17 @@ extension DACircularProgressView: LoadingSpinner {
 
 class ZoomingPhotoView: UIView, UIScrollViewDelegate {
 
+    private let model: PhotoViewModel
+    
     var imageRequestId : PHImageRequestID?
 
-    let scrollView = UIScrollView().with {
+    private let scrollView = UIScrollView().with {
         $0.showsHorizontalScrollIndicator = false
         $0.showsVerticalScrollIndicator = false
         $0.bounces = false
     }
     
-    let mediaView = MediaView().with {
-        $0.isUserInteractionEnabled = true
-        $0.translatesAutoresizingMaskIntoConstraints = false
-    }
-    
-    let progressView = DACircularProgressView().with {
+    private let progressView = DACircularProgressView().with {
         $0.roundedCorners = Int(false)
         $0.thicknessRatio = 1
         $0.trackTintColor = UIColor.clear
@@ -55,7 +54,7 @@ class ZoomingPhotoView: UIView, UIScrollViewDelegate {
         $0.isHidden = true
     }
     
-    let errorIndicator = UILabel().with {
+    private let errorIndicator = UILabel().with {
         $0.text = "!"
         $0.textAlignment = .center
         $0.font = UIFont.boldSystemFont(ofSize: 14)
@@ -64,7 +63,7 @@ class ZoomingPhotoView: UIView, UIScrollViewDelegate {
         $0.isHidden = true
     }
     
-    let videoLoadingSpinner = DACircularProgressView().with {
+    private let videoLoadingSpinner = DACircularProgressView().with {
         $0.trackTintColor = UIColor.white.withAlphaComponent(0.3)
         $0.thicknessRatio = 0.1
         $0.indeterminateDuration = 1
@@ -73,30 +72,37 @@ class ZoomingPhotoView: UIView, UIScrollViewDelegate {
         $0.setProgress(0.33, animated: false)
     }
     
-    let videoPlayButton = UIButton.circlePlayButton(diameter: 70).with {
+    private let videoPlayButton = UIButton.circlePlayButton(diameter: 70).with {
         $0.translatesAutoresizingMaskIntoConstraints = false
     }
     
-    let scrubberView = ScrubberView().with {
+    private let scrubberView = ScrubberView().with {
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.backgroundColor = UIColor.black.withAlphaComponent(0.5)
         $0.layer.cornerRadius = 5
     }
     
-    var accessoryViews: [UIView]?
+    private var accessoryViews: [UIView]?
     
-    var playerController: PlayerController?
+    private var playerController: PlayerController?
     
+    private var mediaConstraintGroup: ConstraintGroup?
+    private var progressConstraintGroup : ConstraintGroup?
+    
+    private let buttonOffset = CGFloat(50)
+    private var aspectFitZoomScale = CGFloat(0)
+
     var photoViewDelegate: ZoomingPhotoViewDelegate?
+    let mediaView = MediaView().with {
+        $0.isUserInteractionEnabled = true
+        $0.translatesAutoresizingMaskIntoConstraints = false
+    }
     
-    var mediaConstraintGroup: ConstraintGroup?
-    var progressConstraintGroup : ConstraintGroup?
-    
-    let buttonOffset = CGFloat(50)
-    var aspectFitZoomScale = CGFloat(0)
-    
-    init() {
+    init(model: PhotoViewModel) {
+        self.model = model
         super.init(frame: .zero)
+        
+        bindToModel()
         
         accessoryViews = [videoPlayButton, scrubberView, videoLoadingSpinner, progressView, errorIndicator]
         
@@ -140,78 +146,101 @@ class ZoomingPhotoView: UIView, UIScrollViewDelegate {
         singleTapper.require(toFail: doubleTapper)
     }
 
+    private func bindToModel() {
+        model.assetResource.signal
+            .take(during: self.reactive.lifetime)
+            .skipNil()
+            .on(value: { [weak self] _ in
+                self?.model.imageIsPreview.value = false
+            })
+            .observe(on: QueueScheduler.main)
+            .observeValues { [weak self] in
+                switch $0 {
+                case .photo(let image):
+                    self?.mediaView.photo = image
+                case .livePhoto(let livePhoto):
+                    self?.mediaView.livePhoto = livePhoto
+                case .video(let playerItem):
+                    self?.mediaView.video = playerItem
+                    self?.configureVideoAccessoryViews()
+                }
+                self?.adjustZoomScale()
+                
+        }
+        
+        model.previewImage.signal
+            .take(during: self.reactive.lifetime)
+            .skipNil()
+            .on(value: { [weak self] _ in
+                self?.model.imageIsPreview.value = true
+            })
+            .observe(on: QueueScheduler.main)
+            .observeValues { [weak self] in
+                self?.mediaView.photo = $0
+                self?.adjustZoomScale()
+        }
+        
+        model.progress.signal
+            .take(during: self.reactive.lifetime)
+            .observe(on: QueueScheduler.main)
+            .observeValues { [weak self] in
+            self?.updateProgress($0)
+        }
+        
+        model.indeterminateProgress.signal
+            .take(during: self.reactive.lifetime)
+            .observe(on: QueueScheduler.main)
+            .observeValues { [weak self] in
+            self?.updateProgress(indeterminate: $0)
+        }
+        
+        model.fullImageUnavailable.signal
+            .take(during: self.reactive.lifetime)
+            .observe(on: QueueScheduler.main)
+            .filter { $0 }
+            .observeValues { [weak self] _ in
+                self?.errorIndicator.isHidden = false
+                self?.progressView.isHidden = false
+                self?.progressView.setProgress(0.0, animated: false)
+        }
+    }
+    
+    private func configureVideoAccessoryViews() {
+        addSubview(videoLoadingSpinner)
+        constrain(self, videoLoadingSpinner) { view, spinner in
+            spinner.width == 70
+            spinner.height == 70
+            spinner.center == view.center
+        }
+        
+        addSubview(videoPlayButton)
+        constrain(self, videoPlayButton) { view, button in
+            button.width == 70
+            button.height == 70
+            button.center == view.center
+        }
+        
+        addSubview(scrubberView)
+        constrain(self, scrubberView) { view, scrubberView in
+            scrubberView.height == 40
+            scrubberView.bottom == view.bottom - 10
+            scrubberView.left == view.left + buttonOffset + 5
+            scrubberView.right == view.right - buttonOffset - 5
+        }
+        
+        playerController = PlayerController(player: mediaView.player!).with {
+            $0.startPlayButton = videoPlayButton
+            $0.playPauseButton = scrubberView.playPauseButton
+            $0.slider = scrubberView.scrubberSlider
+            $0.currentTimeLabel = scrubberView.currentTimeLabel
+            $0.remainingTimeLabel = scrubberView.remainingTimeLabel
+            $0.loadingSpinner = videoLoadingSpinner as LoadingSpinner
+        }
+    }
+    
     @available(*, unavailable)
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) is not available")
-    }
-    
-    var photo : UIImage? {
-        didSet {
-            mediaView.photo = photo
-            adjustZoomScale()
-        }
-    }
-    
-    var livePhoto: PHLivePhoto? {
-        didSet {
-            mediaView.livePhoto = livePhoto
-            adjustZoomScale()
-        }
-    }
-    
-    var video: AVPlayerItem? {
-        didSet {
-            mediaView.video = video
-
-            addSubview(videoLoadingSpinner)
-            constrain(self, videoLoadingSpinner) { view, spinner in
-                spinner.width == 70
-                spinner.height == 70
-                spinner.center == view.center
-            }
-            
-            addSubview(videoPlayButton)
-            constrain(self, videoPlayButton) { view, button in
-                button.width == 70
-                button.height == 70
-                button.center == view.center
-            }
-            
-            addSubview(scrubberView)
-            constrain(self, scrubberView) { view, scrubberView in
-                scrubberView.height == 40
-                scrubberView.bottom == view.bottom - 10
-                scrubberView.left == view.left + buttonOffset + 5
-                scrubberView.right == view.right - buttonOffset - 5
-            }
-            
-            playerController = PlayerController(player: mediaView.player!).with {
-                $0.startPlayButton = videoPlayButton
-                $0.playPauseButton = scrubberView.playPauseButton
-                $0.slider = scrubberView.scrubberSlider
-                $0.currentTimeLabel = scrubberView.currentTimeLabel
-                $0.remainingTimeLabel = scrubberView.remainingTimeLabel
-                $0.loadingSpinner = videoLoadingSpinner as LoadingSpinner
-            }
-            
-            adjustZoomScale()
-        }
-    }
-    
-    var fullImageUnavailable : Bool = false {
-        didSet {
-            if self.fullImageUnavailable {
-                errorIndicator.isHidden = false
-                progressView.isHidden = false
-                progressView.setProgress(0.0, animated: false)
-            }
-        }
-    }
-    
-    var imageIsDegraded : Bool = true {
-        didSet {
-            progressView.isHidden = !self.imageIsDegraded
-        }
     }
     
     override var frame : CGRect {
@@ -235,7 +264,7 @@ class ZoomingPhotoView: UIView, UIScrollViewDelegate {
         progressView.isHidden = hide
     }
     
-    func updateProgress(_ progress: Double = 0.33, indeterminate: Bool = false) {
+    private func updateProgress(_ progress: Double = 0.33, indeterminate: Bool = false) {
         if indeterminate {
             progressView.setProgress(CGFloat(progress), animated: false)
             progressView.isHidden = false
