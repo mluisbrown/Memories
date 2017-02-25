@@ -43,7 +43,8 @@ extension PhotosViewModel {
     func loadPreviewImageFor(index: Int) {
         let photoViewModel = photoViewModels[index]
         
-        self.imageManager.requestImage(for: photoViewModel.asset, targetSize: self.cacheSize, contentMode: .aspectFill, options: nil, resultHandler: { result, userInfo in
+        self.imageManager.requestImage(for: photoViewModel.asset, targetSize: self.cacheSize,
+                                       contentMode: .aspectFill, options: nil, resultHandler: { result, userInfo in
             if let image = result {
                 photoViewModel.previewImage.value = image
                 
@@ -65,90 +66,144 @@ extension PhotosViewModel {
                 photoViewModel.fullImageUnavailable.value = true
             }
         }
-        
-        let configurePageView = { (asset: PHAsset) in
-            return { (data: AssetResource?) in
-                guard let data = data else {
-                    photoViewModel.fullImageUnavailable.value = true
-                    return
-                }
-                UpgradeManager.highQualityViewCount += 1
-                
-                photoViewModel.assetResource.value = data
-                
-                if index == self.currentIndex {
-                    self.indexLoadedAndVisible.value = index
-                }
-            }
-        }
+
+        let assetProducer: SignalProducer<AssetResource, NSError>?
         
         switch asset.mediaType {
         case .image where asset.mediaSubtypes == .photoLive:
-            photoViewModel.indeterminateProgress.value = true
-            photoViewModel.assetRequestId.value = loadLivePhoto(for: asset, progressHandler: progressHandler, completion: configurePageView(asset))
+            assetProducer = loadLivePhoto(for: photoViewModel, progressHandler: progressHandler)
         case .image:
-            photoViewModel.assetRequestId.value = loadPhoto(for: asset, progressHandler: progressHandler, completion: configurePageView(asset))
+            assetProducer = loadPhoto(for: photoViewModel, progressHandler: progressHandler)
         case .video:
-            photoViewModel.indeterminateProgress.value = true
-            photoViewModel.assetRequestId.value = loadVideo(for: asset, progressHandler: progressHandler, completion: configurePageView(asset))
-            break
+            assetProducer = loadVideo(for: photoViewModel, progressHandler: progressHandler)
         default:
-            break
+            assetProducer = nil
         }
-    }
-    
-    private func loadPhoto(for asset: PHAsset, progressHandler: @escaping PHAssetImageProgressHandler, completion: @escaping (AssetResource?) -> Void) -> PHImageRequestID {
-        let options = PHImageRequestOptions()
         
-        options.progressHandler = progressHandler
-        options.isNetworkAccessAllowed = true
-        options.deliveryMode = .highQualityFormat
-        options.isSynchronous = false
-        
-        return PHImageManager.default().requestImage(for: asset, targetSize: PHImageManagerMaximumSize, contentMode: .aspectFit, options: options) { (result, userInfo) -> Void in
-            if let image = result {
-                completion(AssetResource.photo(image: image))
-            }
-            
-            if let _ = userInfo?[PHImageErrorKey] as? NSError {
-                completion(nil)
+        assetProducer?.startWithResult { result in
+            switch result {
+            case .success(let assetResource):
+                UpgradeManager.highQualityViewCount += 1
+                photoViewModel.assetResource.value = assetResource
+                if index == self.currentIndex {
+                    self.indexLoadedAndVisible.value = index
+                }
+            case .failure:
+                photoViewModel.fullImageUnavailable.value = true
             }
         }
     }
-    
-    private func loadLivePhoto(for asset: PHAsset, progressHandler: @escaping PHAssetImageProgressHandler, completion: @escaping (AssetResource?) -> Void) -> PHImageRequestID {
-        let options = PHLivePhotoRequestOptions()
-        
-        options.progressHandler = progressHandler
-        options.isNetworkAccessAllowed = true
-        options.deliveryMode = .highQualityFormat
-        
-        return PHImageManager.default().requestLivePhoto(for: asset, targetSize: PHImageManagerMaximumSize, contentMode: .aspectFit, options: options) { (result, userInfo) -> Void in
-            if let livePhoto = result {
-                completion(AssetResource.livePhoto(livePhoto: livePhoto))
-            }
+
+    private func loadPhoto(for photoViewModel: PhotoViewModel,
+                           progressHandler: @escaping PHAssetImageProgressHandler) -> SignalProducer<AssetResource, NSError> {
+        return SignalProducer<AssetResource, NSError> { observer, _ in
+            let options = PHImageRequestOptions()
             
-            if let _ = userInfo?[PHImageErrorKey] as? NSError {
-                completion(nil)
+            options.progressHandler = progressHandler
+            options.isNetworkAccessAllowed = true
+            options.deliveryMode = .highQualityFormat
+            options.isSynchronous = false
+
+            photoViewModel.assetRequestId.value = self.imageManager.requestImage(for: photoViewModel.asset,
+                                                                                 targetSize: PHImageManagerMaximumSize,
+                                                                                 contentMode: .aspectFit,
+                                                                                 options: options) { result, userInfo in
+                if let image = result {
+                    observer.send(value: AssetResource.photo(image: image))
+                }
+                if let error = userInfo?[PHImageErrorKey] as? NSError {
+                    observer.send(error: error)
+                }
+                observer.sendCompleted()
             }
         }
     }
     
-    private func loadVideo(for asset: PHAsset, progressHandler: @escaping PHAssetImageProgressHandler, completion: @escaping (AssetResource?) -> Void) -> PHImageRequestID {
-        let options = PHVideoRequestOptions()
-        
-        options.progressHandler = progressHandler
-        options.isNetworkAccessAllowed = true
-        options.deliveryMode = .automatic
-        
-        return PHImageManager.default().requestPlayerItem(forVideo: asset, options: options) { (result, userInfo) -> Void in
-            if let video = result {
-                completion(AssetResource.video(playerItem: video))
-            }
+    private func loadLivePhoto(for photoViewModel: PhotoViewModel,
+                               progressHandler: @escaping PHAssetImageProgressHandler) -> SignalProducer<AssetResource, NSError> {
+        return SignalProducer<AssetResource, NSError> { observer, _ in
+            photoViewModel.indeterminateProgress.value = true
             
-            if let _ = userInfo?[PHImageErrorKey] as? NSError {
-                completion(nil)
+            let options = PHLivePhotoRequestOptions()
+            
+            options.progressHandler = progressHandler
+            options.isNetworkAccessAllowed = true
+            options.deliveryMode = .highQualityFormat
+
+            photoViewModel.assetRequestId.value = self.imageManager.requestLivePhoto(for: photoViewModel.asset,
+                                                                                     targetSize: PHImageManagerMaximumSize,
+                                                                                     contentMode: .aspectFit,
+                                                                                     options: options) { result, userInfo in
+                if let livePhoto = result {
+                    observer.send(value: AssetResource.livePhoto(livePhoto: livePhoto))
+                }
+                if let error = userInfo?[PHImageErrorKey] as? NSError {
+                    observer.send(error: error)
+                }
+                observer.sendCompleted()
             }
+        }
+    }
+    
+    private func loadVideo(for photoViewModel: PhotoViewModel,
+                           progressHandler: @escaping PHAssetImageProgressHandler) -> SignalProducer<AssetResource, NSError> {
+        return SignalProducer<AssetResource, NSError> { observer, _ in
+            photoViewModel.indeterminateProgress.value = true
+
+            let options = PHVideoRequestOptions()
+            
+            options.progressHandler = progressHandler
+            options.isNetworkAccessAllowed = true
+            options.deliveryMode = .automatic
+            
+            photoViewModel.assetRequestId.value = self.imageManager.requestPlayerItem(forVideo: photoViewModel.asset,
+                                                                                      options: options) { result, userInfo in
+                if let video = result {
+                    observer.send(value: AssetResource.video(playerItem: video))
+                }
+                if let error = userInfo?[PHImageErrorKey] as? NSError {
+                    observer.send(error: error)
+                }
+                observer.sendCompleted()
+            }
+        }
+    }
+    
+    func loadAssetDataForSharing(for index: Int) -> SignalProducer<Any, NoError> {
+        return SignalProducer<Any, NoError> { observer, _ in
+            let photoViewModel = self.photoViewModels[index]
+            let asset = photoViewModel.asset
+            
+            switch asset.mediaType {
+            case .image where asset.mediaSubtypes == .photoLive:
+                if let assetResource = photoViewModel.assetResource.value,
+                    case let .livePhoto(livePhoto) = assetResource {
+                    observer.send(value: livePhoto)
+                }
+            case .image:
+                let options = PHImageRequestOptions()
+                options.version = .current
+                options.isNetworkAccessAllowed = true
+                self.imageManager.requestImageData(for: asset, options: options) { imageData, dataUTI, orientation, info in
+                    if let imageData = imageData {
+                        observer.send(value: imageData)
+                    }
+                }
+            case .video:
+                let options = PHVideoRequestOptions()
+                options.version = .current
+                options.deliveryMode = .automatic
+                options.isNetworkAccessAllowed = true
+                
+                self.imageManager.requestAVAsset(forVideo: asset, options: options) { asset, audioMix, info in
+                    if let urlAsset = asset as? AVURLAsset {
+                        observer.send(value: urlAsset.url)
+                    }
+                }
+            default:
+                break
+            }
+            observer.sendCompleted()
         }
     }
     
@@ -156,7 +211,7 @@ extension PhotosViewModel {
         let photoViewModel = photoViewModels[index]
         
         if let requestId = photoViewModel.assetRequestId.value {
-            PHImageManager.default().cancelImageRequest(requestId)
+            imageManager.cancelImageRequest(requestId)
         }
         
         photoViewModel.reset()
@@ -165,7 +220,7 @@ extension PhotosViewModel {
     func cancelAllAssetRequests() {
         photoViewModels.forEach {
             if let requestId = $0.assetRequestId.value {
-                PHImageManager.default().cancelImageRequest(requestId)
+                self.imageManager.cancelImageRequest(requestId)
                 $0.assetRequestId.value = nil
             }
         }

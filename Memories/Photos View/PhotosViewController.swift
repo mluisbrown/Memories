@@ -150,52 +150,18 @@ class PhotosViewController: UIViewController,
 
     // MARK: - Actions
     @IBAction func sharePhoto(_ sender: UIButton) {
-        let page = model.currentIndex
-        let pageModel = model.photoViewModels[page]
-        let asset = pageModel.asset
+        UIView.animate(withDuration: 0.25) {
+            sender.alpha = 0
+            self.shareProgressView.show(loading: true)
+        }
         
-        switch asset.mediaType {
-        case .image where asset.mediaSubtypes == .photoLive:
-            if let assetResource = pageModel.assetResource.value,
-               case let .livePhoto(livePhoto) = assetResource {
-                share(media: [livePhoto], from: sender)
+        model.loadAssetDataForSharing(for: model.currentIndex).startWithValues { [weak self] data in
+            UIView.animate(withDuration: 0.25, animations: {
+                self?.shareProgressView.show(loading: false)
+                sender.alpha = 1
+            }) { _ in
+                self?.share(media: [data], from: sender)
             }
-        case .image:
-            let options = PHImageRequestOptions()
-            options.version = .current
-            options.isNetworkAccessAllowed = true
-            PHImageManager.default().requestImageData(for: asset, options: options) {
-                [weak self] imageData, dataUTI, orientation, info in
-                
-                if let imageData = imageData {
-                    self?.share(media: [imageData], from: sender)
-                }
-            }
-        case .video:
-            let options = PHVideoRequestOptions()
-            options.version = .current
-            options.deliveryMode = .automatic
-            options.isNetworkAccessAllowed = true
-            
-            UIView.animate(withDuration: 0.25) {
-                sender.alpha = 0
-                self.shareProgressView.show(loading: true)
-            }
-            
-            PHImageManager.default().requestAVAsset(forVideo: asset, options: options) { [weak self] asset, audioMix, info in
-                UIView.animate(withDuration: 0.25, animations: {
-                    self?.shareProgressView.show(loading: false)
-                    sender.alpha = 1
-                }) { _ in
-                    if let urlAsset = asset as? AVURLAsset {
-                        self?.share(media: [urlAsset.url], from: sender)
-                    }
-                }
-            }
-            break
-        default:
-            break
-            
         }
     }
     
@@ -302,13 +268,13 @@ class PhotosViewController: UIViewController,
             }
 
             initialPanState = nil
-
         default:
             break
         }
     }
     
     // MARK: - Internal implementation
+    
     private func setupViews() {
         let pageCount = model.count
 
@@ -401,7 +367,7 @@ class PhotosViewController: UIViewController,
             if !requestFullImage || !photoViewModel.imageIsPreview.value {
                 pageView.frame = frame
                 if requestFullImage {
-                    didLoad(pageView: pageView, for: asset, hiRes: true)
+                    model.indexLoadedAndVisible.value = page
                 } else {
                     pageView.willBecomeHidden()
                 }
@@ -479,6 +445,7 @@ class PhotosViewController: UIViewController,
     }
 
     // MARK: - UIGestureRecognizerDelegate
+    
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         if touch.view is UISlider {
             return false
@@ -489,6 +456,7 @@ class PhotosViewController: UIViewController,
     
     
     // MARK: - UIViewControllerTransitioningDelegate
+    
     func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         return presentTransition
     }
