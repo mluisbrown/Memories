@@ -98,10 +98,11 @@ class ZoomingPhotoView: UIView, UIScrollViewDelegate {
         $0.translatesAutoresizingMaskIntoConstraints = false
     }
     
-    init(model: PhotoViewModel) {
+    init( model: PhotoViewModel) {
         self.model = model
-        super.init(frame: .zero)
         
+        super.init(frame: .zero)
+
         bindToModel()
         
         accessoryViews = [videoPlayButton, scrubberView, videoLoadingSpinner, progressView, errorIndicator]
@@ -155,6 +156,8 @@ class ZoomingPhotoView: UIView, UIScrollViewDelegate {
             })
             .observe(on: QueueScheduler.main)
             .observeValues { [weak self] in
+                self?.progressView.isHidden = true
+
                 switch $0 {
                 case .photo(let image):
                     self?.mediaView.photo = image
@@ -176,6 +179,7 @@ class ZoomingPhotoView: UIView, UIScrollViewDelegate {
             })
             .observe(on: QueueScheduler.main)
             .observeValues { [weak self] in
+                self?.progressView.isHidden = false
                 self?.mediaView.photo = $0
                 self?.adjustZoomScale()
         }

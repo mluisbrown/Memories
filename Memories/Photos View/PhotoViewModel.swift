@@ -17,7 +17,7 @@ enum AssetResource {
     case video(playerItem: AVPlayerItem)
 }
 
-struct PhotoViewModel {
+final class PhotoViewModel {
     let asset: PHAsset
     let assetResource = MutableProperty<AssetResource?>(nil)
     let previewImage = MutableProperty<UIImage?>(nil)

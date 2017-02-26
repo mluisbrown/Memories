@@ -23,7 +23,7 @@ struct PhotosViewModel {
 
     init (assets: [PHAsset], currentIndex: Int) {
         self.photoViewModels = assets.map {
-            return PhotoViewModel(asset: $0)
+            PhotoViewModel(asset: $0)
         }
         self.currentIndex = currentIndex
         
@@ -84,6 +84,8 @@ extension PhotosViewModel {
             switch result {
             case .success(let assetResource):
                 UpgradeManager.highQualityViewCount += 1
+//                NSLog("assetProducer success model = \(ObjectIdentifier(photoViewModel)), index = \(index)")
+                
                 photoViewModel.assetResource.value = assetResource
                 if index == self.currentIndex {
                     self.indexLoadedAndVisible.value = index
@@ -108,13 +110,16 @@ extension PhotosViewModel {
                                                                                  targetSize: PHImageManagerMaximumSize,
                                                                                  contentMode: .aspectFit,
                                                                                  options: options) { result, userInfo in
-                if let image = result {
+                let isDegraded = (userInfo?[PHImageResultIsDegradedKey] as? NSNumber) ?? false
+                                                                                    
+                if let image = result, !(isDegraded as (Bool)) {
                     observer.send(value: AssetResource.photo(image: image))
+                    observer.sendCompleted()
                 }
-                if let error = userInfo?[PHImageErrorKey] as? NSError {
+                else if let error = userInfo?[PHImageErrorKey] as? NSError {
                     observer.send(error: error)
+                    observer.sendCompleted()
                 }
-                observer.sendCompleted()
             }
         }
     }
@@ -134,13 +139,15 @@ extension PhotosViewModel {
                                                                                      targetSize: PHImageManagerMaximumSize,
                                                                                      contentMode: .aspectFit,
                                                                                      options: options) { result, userInfo in
-                if let livePhoto = result {
+                let isDegraded = (userInfo?[PHImageResultIsDegradedKey] as? NSNumber) ?? false
+                if let livePhoto = result, !(isDegraded as (Bool)) {
                     observer.send(value: AssetResource.livePhoto(livePhoto: livePhoto))
+                    observer.sendCompleted()
                 }
-                if let error = userInfo?[PHImageErrorKey] as? NSError {
+                else if let error = userInfo?[PHImageErrorKey] as? NSError {
                     observer.send(error: error)
+                    observer.sendCompleted()
                 }
-                observer.sendCompleted()
             }
         }
     }
@@ -160,11 +167,12 @@ extension PhotosViewModel {
                                                                                       options: options) { result, userInfo in
                 if let video = result {
                     observer.send(value: AssetResource.video(playerItem: video))
+                    observer.sendCompleted()
                 }
-                if let error = userInfo?[PHImageErrorKey] as? NSError {
+                else if let error = userInfo?[PHImageErrorKey] as? NSError {
                     observer.send(error: error)
+                    observer.sendCompleted()
                 }
-                observer.sendCompleted()
             }
         }
     }

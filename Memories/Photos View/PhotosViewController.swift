@@ -488,14 +488,14 @@ class PhotosViewController: UIViewController,
         }
         
         let assetsDeleted = newAssets.count < model.count
-        let newCurrentIndex = min(model.currentIndex, newAssets.count - 1)
-        model = PhotosViewModel(assets: newAssets, currentIndex: newCurrentIndex)
-        bindToModel()
         
         if assetsDeleted {
+            let newCurrentIndex = min(model.currentIndex, newAssets.count - 1)
+            model = PhotosViewModel(assets: newAssets, currentIndex: newCurrentIndex)
+            bindToModel()
+
             purgeAllViews()
             pageViews = []
-            
             setupViews()
         }
         else {
