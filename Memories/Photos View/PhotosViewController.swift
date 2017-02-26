@@ -70,15 +70,14 @@ class PhotosViewController: UIViewController,
 
     func bindToModel() {
         model.indexLoadedAndVisible.signal
-        .observeValues { [weak self] in
-            guard let sself = self,
-                let pageView = sself.pageViews[$0] else {
-                return
+            .filter { [weak self] in
+                self?.pageViews[$0] != nil
             }
-            
-            let photoViewModel = sself.model.photoViewModels[$0]
-            
-            self?.didLoad(pageView: pageView, for: photoViewModel.asset, hiRes: !photoViewModel.imageIsPreview.value)
+            .observeValues {
+                let pageView = self.pageViews[$0]!
+                let photoViewModel = self.model.photoViewModels[$0]
+                
+                self.didLoad(pageView: pageView, for: photoViewModel.asset, hiRes: !photoViewModel.imageIsPreview.value)
         }
     }
     
