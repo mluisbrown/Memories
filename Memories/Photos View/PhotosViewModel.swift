@@ -11,39 +11,55 @@ import Photos
 import ReactiveSwift
 import Result
 
-struct PhotosViewModel {
+class PhotosViewModel: NSObject {
     let imageManager = PHCachingImageManager()
     // If the size is too large then PhotoKit doesn't return an optimal image size
     // see rdar://25181601 (https://openradar.appspot.com/radar?id=6158824289337344)
     let cacheSize = CGSize(width: 256, height: 256)
 
     var currentIndex : Int
-    let photoViewModels: [PhotoViewModel]
+    let photoViewModels = MutableProperty([PhotoViewModel]())
     let indexLoadedAndVisible = MutableProperty(0)
+    let currentAssetChanged = MutableProperty(PHAsset())
+    let allAssetsChanged = MutableProperty(false)
 
     init (assets: [PHAsset], currentIndex: Int) {
-        self.photoViewModels = assets.map {
+        self.photoViewModels.value = assets.map {
             PhotoViewModel(asset: $0)
         }
         self.currentIndex = currentIndex
+        super.init()
         
         imageManager.startCachingImages(for: assets, targetSize: cacheSize, contentMode: .aspectFill, options: nil)
+        PHPhotoLibrary.shared().register(self);
+    }
+
+    deinit {
+        PHPhotoLibrary.shared().unregisterChangeObserver(self)
     }
 
     var currentAsset: PHAsset {
-        return photoViewModels[currentIndex].asset
+        return photoViewModels.value[currentIndex].asset.value
     }
     
     var count: Int {
-        return photoViewModels.count
+        return photoViewModels.value.count
+    }
+    
+    func photoViewModel(at index: Int) -> PhotoViewModel {
+        return photoViewModels.value[index]
+    }
+    
+    func asset(at index: Int) -> PHAsset {
+        return photoViewModel(at: index).asset.value
     }
 }
 
 extension PhotosViewModel {
     func loadPreviewImageFor(index: Int) {
-        let photoViewModel = photoViewModels[index]
+        let photoViewModel = photoViewModels.value[index]
         
-        self.imageManager.requestImage(for: photoViewModel.asset, targetSize: self.cacheSize,
+        self.imageManager.requestImage(for: photoViewModel.asset.value, targetSize: self.cacheSize,
                                        contentMode: .aspectFill, options: nil, resultHandler: { result, userInfo in
             if let image = result {
                 photoViewModel.previewImage.value = image
@@ -56,8 +72,8 @@ extension PhotosViewModel {
     }
     
     func loadHighQualityAssetFor(index: Int) {
-        let photoViewModel = photoViewModels[index]
-        let asset = photoViewModel.asset
+        let photoViewModel = photoViewModels.value[index]
+        let asset = photoViewModel.asset.value
         
         let progressHandler: PHAssetImageProgressHandler = { progress, error, stop, userInfo in
             photoViewModel.progress.value = progress
@@ -84,7 +100,6 @@ extension PhotosViewModel {
             switch result {
             case .success(let assetResource):
                 UpgradeManager.highQualityViewCount += 1
-//                NSLog("assetProducer success model = \(ObjectIdentifier(photoViewModel)), index = \(index)")
                 
                 photoViewModel.assetResource.value = assetResource
                 if index == self.currentIndex {
@@ -106,7 +121,7 @@ extension PhotosViewModel {
             options.deliveryMode = .highQualityFormat
             options.isSynchronous = false
 
-            photoViewModel.assetRequestId.value = self.imageManager.requestImage(for: photoViewModel.asset,
+            photoViewModel.assetRequestId.value = self.imageManager.requestImage(for: photoViewModel.asset.value,
                                                                                  targetSize: PHImageManagerMaximumSize,
                                                                                  contentMode: .aspectFit,
                                                                                  options: options) { result, userInfo in
@@ -135,7 +150,7 @@ extension PhotosViewModel {
             options.isNetworkAccessAllowed = true
             options.deliveryMode = .highQualityFormat
 
-            photoViewModel.assetRequestId.value = self.imageManager.requestLivePhoto(for: photoViewModel.asset,
+            photoViewModel.assetRequestId.value = self.imageManager.requestLivePhoto(for: photoViewModel.asset.value,
                                                                                      targetSize: PHImageManagerMaximumSize,
                                                                                      contentMode: .aspectFit,
                                                                                      options: options) { result, userInfo in
@@ -163,7 +178,7 @@ extension PhotosViewModel {
             options.isNetworkAccessAllowed = true
             options.deliveryMode = .automatic
             
-            photoViewModel.assetRequestId.value = self.imageManager.requestPlayerItem(forVideo: photoViewModel.asset,
+            photoViewModel.assetRequestId.value = self.imageManager.requestPlayerItem(forVideo: photoViewModel.asset.value,
                                                                                       options: options) { result, userInfo in
                 if let video = result {
                     observer.send(value: AssetResource.video(playerItem: video))
@@ -179,8 +194,8 @@ extension PhotosViewModel {
     
     func loadAssetDataForSharing(for index: Int) -> SignalProducer<Any, NoError> {
         return SignalProducer<Any, NoError> { observer, _ in
-            let photoViewModel = self.photoViewModels[index]
-            let asset = photoViewModel.asset
+            let photoViewModel = self.photoViewModels.value[index]
+            let asset = photoViewModel.asset.value
             
             switch asset.mediaType {
             case .image where asset.mediaSubtypes == .photoLive:
@@ -216,7 +231,7 @@ extension PhotosViewModel {
     }
     
     func resetPhotoViewModelFor(index: Int) {
-        let photoViewModel = photoViewModels[index]
+        let photoViewModel = photoViewModels.value[index]
         
         if let requestId = photoViewModel.assetRequestId.value {
             imageManager.cancelImageRequest(requestId)
@@ -226,11 +241,52 @@ extension PhotosViewModel {
     }
     
     func cancelAllAssetRequests() {
-        photoViewModels.forEach {
+        photoViewModels.value.forEach {
             if let requestId = $0.assetRequestId.value {
                 self.imageManager.cancelImageRequest(requestId)
                 $0.assetRequestId.value = nil
             }
+        }
+    }
+}
+
+extension PhotosViewModel {
+    func deleteCurrentAsset() {
+        PHPhotoLibrary.shared().performChanges({
+            PHAssetChangeRequest.deleteAssets(NSArray(array: [self.currentAsset]))
+        })
+    }
+    
+    func toggleFavoriteCurrentAsset() {
+        PHPhotoLibrary.shared().performChanges({
+            let request = PHAssetChangeRequest(for: self.currentAsset)
+            request.isFavorite = !self.currentAsset.isFavorite
+        })
+    }
+}
+
+extension PhotosViewModel: PHPhotoLibraryChangeObserver {
+    func photoLibraryDidChange(_ changeInstance: PHChange) {
+        let newAssets:[PHAsset] = photoViewModels.value.flatMap {
+            if let changeDetails = changeInstance.changeDetails(for: $0.asset.value) {
+                return changeDetails.objectWasDeleted ? nil : changeDetails.objectAfterChanges as? PHAsset
+            }
+            else {
+                return $0.asset.value
+            }
+        }
+        
+        if newAssets.count != count {
+            currentIndex = min(currentIndex, newAssets.count - 1)
+            self.photoViewModels.value = newAssets.map {
+                PhotoViewModel(asset: $0)
+            }
+        }
+        else {
+            newAssets.enumerated().forEach {
+                self.photoViewModels.value[$0.offset].asset.value = $0.element
+            }
+            currentAssetChanged.value = currentAsset
         }
     }
 }

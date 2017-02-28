@@ -21,7 +21,6 @@ class PhotosViewController: UIViewController,
     UIScrollViewDelegate,
     UIViewControllerTransitioningDelegate,
     UIGestureRecognizerDelegate,
-    PHPhotoLibraryChangeObserver,
     ZoomingPhotoViewDelegate
 {
     @IBOutlet var scrollView: UIScrollView!
@@ -64,21 +63,37 @@ class PhotosViewController: UIViewController,
         super.init(coder: aDecoder)
     }
     
-    deinit {
-        PHPhotoLibrary.shared().unregisterChangeObserver(self)
-    }
-
     func bindToModel() {
         model.indexLoadedAndVisible.signal
             .filter { [weak self] in
                 self?.pageViews[$0] != nil
             }
+            .observe(on: QueueScheduler.main)
             .observeValues {
                 let pageView = self.pageViews[$0]!
-                let photoViewModel = self.model.photoViewModels[$0]
+                let photoViewModel = self.model.photoViewModel(at: $0)
                 
-                self.didLoad(pageView: pageView, for: photoViewModel.asset, hiRes: !photoViewModel.imageIsPreview.value)
+                self.didLoad(pageView: pageView, for: photoViewModel.asset.value, hiRes: !photoViewModel.imageIsPreview.value)
         }
+        
+        model.photoViewModels.signal
+            .observe(on: QueueScheduler.main)
+            .observeValues { [weak self] in
+                if $0.count == 0 {
+                    self?.presentingViewController?.dismiss(animated: true, completion: nil)
+                }
+                else {
+                    self?.purgeAllViews()
+                    self?.pageViews = []
+                    self?.setupViews()
+                }
+        }
+        
+        model.currentAssetChanged.signal
+            .observe(on: QueueScheduler.main)
+            .observeValues { [weak self] in
+                self?.heartButton.setImage(self?.buttonImage(forFavorite: $0.isFavorite), for: .normal)
+        }        
     }
     
     var controlsHidden: Bool {
@@ -105,7 +120,6 @@ class PhotosViewController: UIViewController,
         bindToModel()
 
         initialPage = model.currentIndex
-        PHPhotoLibrary.shared().register(self);
         
         let panRecognizer = UIPanGestureRecognizer(target: self, action: #selector(PhotosViewController.viewDidPan)).with {
             $0.delegate = self
@@ -176,21 +190,11 @@ class PhotosViewController: UIViewController,
     }
     
     @IBAction func deletePhoto(_ sender: UIButton) {
-        let asset = model.currentAsset
-        
-        PHPhotoLibrary.shared().performChanges({
-            PHAssetChangeRequest.deleteAssets(NSArray(array: [asset]))
-        }, completionHandler: nil)
+        model.deleteCurrentAsset()
     }
     
     @IBAction func toggleFavorite(_ sender: UIButton) {
-        let asset = model.currentAsset
-        let newState = !asset.isFavorite
-        
-        PHPhotoLibrary.shared().performChanges({
-            let request = PHAssetChangeRequest(for: asset)
-            request.isFavorite = newState
-        }, completionHandler: nil)
+        model.toggleFavoriteCurrentAsset()
     }
     
     private func doClose() {
@@ -207,7 +211,6 @@ class PhotosViewController: UIViewController,
         }
         
         presentingViewController?.dismiss(animated: true) {
-            PHPhotoLibrary.shared().unregisterChangeObserver(self)
             self.cancelAllImageRequests()
             self.purgeAllViews()
         }
@@ -351,13 +354,13 @@ class PhotosViewController: UIViewController,
         frame.origin.x = bounds.size.width * CGFloat(page) + padding
         frame.origin.y = 0.0
 
-        let asset = model.photoViewModels[page].asset
+        let asset = model.asset(at: page)
         if page == self.model.currentIndex {
             heartButton.setImage(buttonImage(forFavorite: asset.isFavorite), for: UIControlState())
             yearLabel.text = String("  \(asset.creationDate!.year)  ")
         }
         
-        let photoViewModel = model.photoViewModels[page]
+        let photoViewModel = model.photoViewModel(at: page)
         
         // if we already have a view with a full image or
         // if we don't need the full image
@@ -462,46 +465,6 @@ class PhotosViewController: UIViewController,
     
     func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         return dismissTransition
-    }
-    
-    // MARK: - PHPhotoLibraryChangeObserver
-    
-    func photoLibraryDidChange(_ changeInstance: PHChange) {
-        DispatchQueue.main.async {
-            self.processLibraryChange(changeInstance)
-        }
-    }
-    
-    private func processLibraryChange(_ changeInstance: PHChange) {
-        let newAssets:[PHAsset] = model.photoViewModels.flatMap {
-            if let changeDetails = changeInstance.changeDetails(for: $0.asset) {
-                return changeDetails.objectWasDeleted ? nil : changeDetails.objectAfterChanges as? PHAsset
-            }
-            else {
-                return $0.asset
-            }
-        }
-        
-        if newAssets.isEmpty {
-            presentingViewController?.dismiss(animated: true, completion: nil);
-            return
-        }
-        
-        let assetsDeleted = newAssets.count < model.count
-        
-        if assetsDeleted {
-            let newCurrentIndex = min(model.currentIndex, newAssets.count - 1)
-            model = PhotosViewModel(assets: newAssets, currentIndex: newCurrentIndex)
-            bindToModel()
-
-            purgeAllViews()
-            pageViews = []
-            setupViews()
-        }
-        else {
-            let asset = model.currentAsset
-            heartButton.setImage(buttonImage(forFavorite: asset.isFavorite), for: UIControlState())
-        }
     }
     
     // MARK: - ZoomingPhotoViewDelegate

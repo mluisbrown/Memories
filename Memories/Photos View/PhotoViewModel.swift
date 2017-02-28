@@ -18,7 +18,7 @@ enum AssetResource {
 }
 
 final class PhotoViewModel {
-    let asset: PHAsset
+    let asset: MutableProperty<PHAsset>
     let assetResource = MutableProperty<AssetResource?>(nil)
     let previewImage = MutableProperty<UIImage?>(nil)
     let assetRequestId = MutableProperty<PHImageRequestID?>(nil)
@@ -29,7 +29,7 @@ final class PhotoViewModel {
     let indeterminateProgress = MutableProperty(false)
 
     init(asset: PHAsset) {
-        self.asset = asset
+        self.asset = MutableProperty(asset)
     }
     
     func reset() {

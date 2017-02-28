@@ -167,8 +167,7 @@ class ZoomingPhotoView: UIView, UIScrollViewDelegate {
                     self?.mediaView.video = playerItem
                     self?.configureVideoAccessoryViews()
                 }
-                self?.adjustZoomScale()
-                
+                self?.adjustZoomScale()                
         }
         
         model.previewImage.signal
