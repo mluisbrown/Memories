@@ -202,6 +202,7 @@ extension PhotosViewModel {
                 if let assetResource = photoViewModel.assetResource.value,
                     case let .livePhoto(livePhoto) = assetResource {
                     observer.send(value: livePhoto)
+                    observer.sendCompleted()
                 }
             case .image:
                 let options = PHImageRequestOptions()
@@ -210,6 +211,7 @@ extension PhotosViewModel {
                 self.imageManager.requestImageData(for: asset, options: options) { imageData, dataUTI, orientation, info in
                     if let imageData = imageData {
                         observer.send(value: imageData)
+                        observer.sendCompleted()
                     }
                 }
             case .video:
@@ -221,12 +223,12 @@ extension PhotosViewModel {
                 self.imageManager.requestAVAsset(forVideo: asset, options: options) { asset, audioMix, info in
                     if let urlAsset = asset as? AVURLAsset {
                         observer.send(value: urlAsset.url)
+                        observer.sendCompleted()
                     }
                 }
             default:
                 break
             }
-            observer.sendCompleted()
         }
     }
     

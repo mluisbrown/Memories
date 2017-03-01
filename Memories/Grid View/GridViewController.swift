@@ -48,6 +48,7 @@ class GridViewController: UICollectionViewController
         $0.font = UIFont.systemFont(ofSize: 16)
         $0.textColor = UIColor.white
         $0.isUserInteractionEnabled = true
+        $0.textAlignment = .center
     }
     
     let noPhotosLabel = UILabel().with {
