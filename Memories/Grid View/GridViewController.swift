@@ -92,6 +92,7 @@ class GridViewController: UICollectionViewController
                 switch status {
                 case .authorized:
                     self?.model.photosAllowed.value = true
+                    self?.model.libraryObserver.value = PhotoLibraryObserver(library: PHPhotoLibrary.shared())
                     self?.imageManager = PHCachingImageManager()
                     
                     let startDate = Date()

@@ -31,24 +31,23 @@ struct SectionChanges {
     }
 }
 
-class GridViewModel: NSObject {
-    private var disposeables = [Disposable?]()
+struct GridViewModel {
+    private let token = Lifetime.Token()
+    
     fileprivate let assetHelper = PHAssetHelper()
     private let dateFormatter = DateFormatter().with {
         $0.dateFormat = "MMMM dd"
     }
-    fileprivate let assetFetchResults = MutableProperty([PHFetchResult<PHAsset>]())
-    fileprivate let sectionChangesPipe = Signal<SectionChanges, NoError>.pipe()
     
+    fileprivate let assetFetchResults = MutableProperty([PHFetchResult<PHAsset>]())
+    fileprivate let sectionChangesObserver: Observer<SectionChanges, NoError>
+    let sectionChanged: Signal<SectionChanges, NoError>
+
+    let libraryObserver = MutableProperty<PhotoLibraryObserver?>(nil)
     let photosAllowed = MutableProperty(false)
     let date = MutableProperty(Date())
     let resultsDate = MutableProperty(Date())
     let title = MutableProperty("Memories")
-    var sectionChanged: Signal<SectionChanges, NoError> {
-        get {
-            return sectionChangesPipe.output
-        }
-    }
     
     var sectionCount : Int {
         get {
@@ -56,45 +55,40 @@ class GridViewModel: NSObject {
         }
     }
     
-    override init() {
-        super.init()
+    init() {        
+        (sectionChanged, sectionChangesObserver) = Signal<SectionChanges, NoError>.pipe()
         createBindings()
     }
     
-    deinit {
-        if photosAllowed.value {
-            PHPhotoLibrary.shared().unregisterChangeObserver(self)
-        }
-        disposeables.forEach {
-            $0?.dispose()
-        }
-    }
-    
     private func registerObservers() {
-        PHPhotoLibrary.shared().register(self)
-
-        disposeables = [
-            NotificationCenter.default.reactive
-                .notifications(forName: NSNotification.Name(PHAssetHelper.sourceTypesChangedNotification))
-                .observeValues { [weak self] _ in
-                    guard let me = self else { return }
-                    // make a non-significant change to the date to force a reload of fetch results
-                    me.date.value = me.date.value.addingTimeInterval(60)
-            },
-            NotificationCenter.default.reactive
-                .notifications(forName: NSNotification.Name.UIApplicationDidBecomeActive)
-                .combineLatest(with: photosAllowed.signal)
-                .observeValues { [weak self] _ in
-                    if let date = NotificationManager.launchDate() {
-                        self?.date.value = date
-                    }
-            }
-        ]
+        NotificationCenter.default.reactive
+            .notifications(forName: NSNotification.Name(PHAssetHelper.sourceTypesChangedNotification))
+            .take(during: Lifetime(token))
+            .observeValues { _ in
+                // make a non-significant change to the date to force a reload of fetch results
+                self.date.value = self.date.value.addingTimeInterval(60)
+        }
+        
+        NotificationCenter.default.reactive
+            .notifications(forName: NSNotification.Name.UIApplicationDidBecomeActive)
+            .take(during: Lifetime(token))
+            .combineLatest(with: photosAllowed.signal)
+            .observeValues { _ in
+                if let date = NotificationManager.launchDate() {
+                    self.date.value = date
+                }
+        }
     }
     
     private func createBindings() {
         photosAllowed.signal.observeValues { _ in
             self.registerObservers()
+        }
+
+        libraryObserver.signal.skipNil().observeValues { observer in
+            observer.signal.observeValues {
+                self.handleChange($0)
+            }
         }
         
         date.signal.observeValues { date in
@@ -116,6 +110,41 @@ class GridViewModel: NSObject {
             observer.sendCompleted()
         }
         .start(on: QueueScheduler(qos: .userInitiated))
+    }
+    
+    private func handleChange(_ changeInstance: PHChange) {
+        var cacheNeedsReset = false
+        
+        for section in (0 ..< sectionCount).reversed() {
+            if let fetchResult = fetchResult(for: section),
+                let changes = changeInstance.changeDetails(for: fetchResult) {
+                let newFetchResult = changes.fetchResultAfterChanges
+                
+                if newFetchResult.count == 0 {
+                    assetFetchResults.value.remove(at: section)
+                } else {
+                    assetFetchResults.value[section] = newFetchResult
+                }
+                
+                let sectionChanges: SectionChanges
+                if !changes.hasIncrementalChanges || changes.hasMoves {
+                    sectionChanges = SectionChanges(section: section, newItemCount: newFetchResult.count)
+                } else {
+                    sectionChanges = SectionChanges(section: section,
+                                                    removed: changes.removedIndexes?.indexPathsFromIndexes(in: section) ?? [],
+                                                    inserted: changes.insertedIndexes?.indexPathsFromIndexes(in: section) ?? [],
+                                                    changed: changes.changedIndexes?.indexPathsFromIndexes(in: section) ?? [],
+                                                    newItemCount: newFetchResult.count)
+                }
+                
+                sectionChangesObserver.send(value: sectionChanges)
+                cacheNeedsReset = true
+            }
+        }
+        
+        if (cacheNeedsReset) {
+            assetHelper.refreshDatesMapCache()
+        }
     }
     
     // MARK: - API
@@ -177,7 +206,9 @@ class GridViewModel: NSObject {
             })
         }            
         
-        return PhotosViewModel(assets: assets, currentIndex: selectedIndex)
+        return PhotosViewModel(assets: assets,
+                               currentIndex: selectedIndex,
+                               libraryObserver: libraryObserver.value!)
     }
     
     func indexPath(for selectedIndex: Int) -> IndexPath {
@@ -191,42 +222,5 @@ class GridViewModel: NSObject {
         }
         
         return IndexPath()
-    }
-}
-
-extension GridViewModel : PHPhotoLibraryChangeObserver {
-    func photoLibraryDidChange(_ changeInstance: PHChange) {
-        var cacheNeedsReset = false
-        
-        for section in (0 ..< sectionCount).reversed() {
-            if let fetchResult = fetchResult(for: section),
-                let changes = changeInstance.changeDetails(for: fetchResult) {
-                let newFetchResult = changes.fetchResultAfterChanges
-                
-                if newFetchResult.count == 0 {
-                    assetFetchResults.value.remove(at: section)
-                } else {
-                    assetFetchResults.value[section] = newFetchResult
-                }
-                
-                let sectionChanges: SectionChanges
-                if !changes.hasIncrementalChanges || changes.hasMoves {
-                    sectionChanges = SectionChanges(section: section, newItemCount: newFetchResult.count)
-                } else {
-                    sectionChanges = SectionChanges(section: section,
-                                                    removed: changes.removedIndexes?.indexPathsFromIndexes(in: section) ?? [],
-                                                    inserted: changes.insertedIndexes?.indexPathsFromIndexes(in: section) ?? [],
-                                                    changed: changes.changedIndexes?.indexPathsFromIndexes(in: section) ?? [],
-                                                    newItemCount: newFetchResult.count)
-                }
-                
-                sectionChangesPipe.input.send(value: sectionChanges)
-                cacheNeedsReset = true
-            }
-        }
-        
-        if (cacheNeedsReset) {
-            assetHelper.refreshDatesMapCache()
-        }
     }
 }

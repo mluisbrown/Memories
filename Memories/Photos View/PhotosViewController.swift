@@ -119,7 +119,7 @@ class PhotosViewController: UIViewController,
         
         bindToModel()
 
-        initialPage = model.currentIndex
+        initialPage = model.currentIndex.value
         
         let panRecognizer = UIPanGestureRecognizer(target: self, action: #selector(PhotosViewController.viewDidPan)).with {
             $0.delegate = self
@@ -148,7 +148,7 @@ class PhotosViewController: UIViewController,
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
-        initialPage = model.currentIndex
+        initialPage = model.currentIndex.value
         initialOffsetSet = false
         
         // disable delegate to avoid calls to scrollViewDidScroll
@@ -168,7 +168,7 @@ class PhotosViewController: UIViewController,
             self.shareProgressView.show(loading: true)
         }
         
-        model.loadAssetDataForSharing(for: model.currentIndex).startWithValues { [weak self] data in
+        model.loadAssetDataForSharing(for: model.currentIndex.value).startWithValues { [weak self] data in
             UIView.animate(withDuration: 0.25, animations: {
                 self?.shareProgressView.show(loading: false)
                 sender.alpha = 1
@@ -202,8 +202,8 @@ class PhotosViewController: UIViewController,
             return
         }
         
-        if let imageView = delegate.imageView(atIndex: model.currentIndex),
-            let pageView = pageViews[model.currentIndex] {
+        if let imageView = delegate.imageView(atIndex: model.currentIndex.value),
+            let pageView = pageViews[model.currentIndex.value] {
             dismissTransition = PhotosViewDismissTransition(destImageView: imageView, sourceImageView: pageView.mediaView)
         }
         else {
@@ -225,11 +225,11 @@ class PhotosViewController: UIViewController,
         case .began:
             let startPoint = gr.location(in: gr.view)
             
-            let pageView = pageViews[model.currentIndex]
-            let imageView = pageViews[model.currentIndex]!.mediaView
+            let pageView = pageViews[model.currentIndex.value]
+            let imageView = pageViews[model.currentIndex.value]!.mediaView
             initialPanState = PanState(pageView: pageView,
                                        imageView: imageView,
-                                       destImageView: delegate?.imageView(atIndex: model.currentIndex),
+                                       destImageView: delegate?.imageView(atIndex: model.currentIndex.value),
                                        transform: imageView.transform,
                                        center: imageView.center,
                                        panHeight: gr.view!.bounds.height - startPoint.y)
@@ -284,7 +284,7 @@ class PhotosViewController: UIViewController,
             for _ in 0 ..< pageCount {
                 pageViews.append(nil)
             }
-            initialPage = model.currentIndex
+            initialPage = model.currentIndex.value
             initialOffsetSet = false
         }
 
@@ -321,12 +321,12 @@ class PhotosViewController: UIViewController,
         let fractionalPage = scrollView.contentOffset.x / pageWidth;
         let page = lround(Double(fractionalPage))
         
-        guard initialLoad || page != model.currentIndex else {
+        guard initialLoad || page != model.currentIndex.value else {
             return
         }
         
-        model.currentIndex = page
-        delegate?.setCurrent(index: model.currentIndex)
+        model.currentIndex.value = page
+        delegate?.setCurrent(index: model.currentIndex.value)
         
         // Work out which pages you want to load
         let firstPage = page - 1
@@ -355,7 +355,7 @@ class PhotosViewController: UIViewController,
         frame.origin.y = 0.0
 
         let asset = model.asset(at: page)
-        if page == self.model.currentIndex {
+        if page == self.model.currentIndex.value {
             heartButton.setImage(buttonImage(forFavorite: asset.isFavorite), for: UIControlState())
             yearLabel.text = String("  \(asset.creationDate!.year)  ")
         }
@@ -369,7 +369,7 @@ class PhotosViewController: UIViewController,
             if !requestFullImage || !photoViewModel.imageIsPreview.value {
                 pageView.frame = frame
                 if requestFullImage {
-                    model.indexLoadedAndVisible.value = page
+                    model.indexBecameVisible(page)
                 } else {
                     pageView.willBecomeHidden()
                 }

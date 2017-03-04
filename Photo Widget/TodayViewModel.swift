@@ -9,64 +9,137 @@
 import Foundation
 import Photos
 import PHAssetHelper
+import ReactiveSwift
+import Result
 
-class TodayViewModel {
-    let assetHelper = PHAssetHelper()
+struct TodayViewModel {
+    private let cacheSize = CGSize(width: 256, height: 256)
+    private let requestOptions: PHImageRequestOptions = {
+        let options = PHImageRequestOptions()
+        options.isNetworkAccessAllowed = false
+        options.deliveryMode = .opportunistic
+        options.isSynchronous = false
+        return options
+    }()
+    static private let noMemoriesText = NSLocalizedString("No Memories Today :(", comment: "")
+
+    private let dateFormatter: DateFormatter = {
+        let df = DateFormatter()
+        df.dateFormat = "YYYY"
+        return df
+    }()
+
+    private let imageManager = PHCachingImageManager()
+    private let assets = MutableProperty<[PHAsset]>([])
+    private var count: Int {
+        return assets.value.count
+    }
     
-    let date : Date
-    var assets = [PHAsset]()
-    var index = -1
+    private let index = MutableProperty(-1)    
+    private let currentAsset = MutableProperty<PHAsset?>(nil)
     
-    init(date: Date, onDataReady: @escaping () -> ()) {
-        self.date = date
+    private let _currentImage = MutableProperty<UIImage?>(nil)
+    let currentImage: Property<UIImage?>
+    
+    private let _yearText = MutableProperty(noMemoriesText)
+    let yearText: Property<String>
+    
+    init(date: Date) {
+        currentImage = Property(_currentImage)
+        yearText = Property(_yearText)
+        createBindings()
         
-        DispatchQueue.global(qos: .userInitiated).async { [unowned self] in
-            self.assets = self.assetHelper.allAssetsForAllYears(with: date)
-            DispatchQueue.main.async {
-                onDataReady()
+        assets <~ loadAssets(for: date)
+    }
+
+    private func createBindings() {
+        assets.signal
+            .observeValues {
+                if $0.count > 0 {
+                    self.imageManager.startCachingImages(for: $0,
+                                                         targetSize: self.cacheSize,
+                                                         contentMode: .aspectFill,
+                                                         options: self.requestOptions)
+                    self.index.value = Int(arc4random_uniform(UInt32($0.count)))
+                }
+                else {
+                    self.index.value = -1
+                }
+        }
+        
+        index.signal
+            .observeValues {
+                if $0 >= 0 && $0 < self.count {
+                    self.currentAsset.value = self.assets.value[$0]
+                }
+                else {
+                    self.currentAsset.value = nil
+                }
+        }
+
+        currentAsset.signal
+            .observeValues {
+                if let asset = $0, let date = asset.creationDate {
+                    self._yearText.value = self.dateFormatter.string(from: date)
+                }
+                else {
+                    self._yearText.value = TodayViewModel.noMemoriesText
+                }
+        }
+        
+        currentAsset.signal
+            .observeValues {
+                if let asset = $0 {
+                    self._currentImage <~ self.loadImageFor(asset: asset)
+                }
+                else {
+                    self._currentImage.value = nil
+                }
+        }
+    }
+    
+    private func loadAssets(for date: Date) -> SignalProducer<[PHAsset], NoError> {
+        return SignalProducer<[PHAsset], NoError> { observer, _ in
+            observer.send(value: PHAssetHelper().allAssetsForAllYears(with: date))
+            observer.sendCompleted()
+            }
+            .start(on: QueueScheduler(qos: .userInitiated))
+    }
+    
+    private func loadImageFor(asset: PHAsset) -> SignalProducer<UIImage, NoError> {
+        return SignalProducer<UIImage, NoError> { observer, _ in
+            self.imageManager.requestImage(for: asset,
+                                           targetSize: self.cacheSize,
+                                           contentMode: .aspectFill,
+                                           options: self.requestOptions) { result, userInfo in
+                
+                if let image = result {
+                    observer.send(value: image)
+
+                    let isDegraded = ((userInfo?[PHImageResultIsDegradedKey] as? NSNumber) as? Bool) ?? false
+                    if !isDegraded {
+                        observer.sendCompleted()
+                    }
+                }
             }
         }
     }
     
-    
-    private func randomAsset() -> PHAsset? {
-        guard assets.count > 0 else {
-            return nil
+    // MARK: - API
+    func nextImage() {
+        guard count > 0 else {
+            return
         }
         
-        index = Int(arc4random_uniform(UInt32(assets.count)))
-        return assets[index]
+        index.value = (index.value + 1) % count
     }
     
-    func currentAsset() -> PHAsset? {
-        guard assets.count > 0 else {
-            return nil
-        }
-
-        if index < 1 {
-            return randomAsset()
+    func previousImage() {
+        guard count > 0 else {
+            return
         }
         
-        return assets[index]
-    }
-    
-    func nextAsset() -> PHAsset? {
-        guard assets.count > 0 else {
-            return nil
-        }
-        
-        index = (index + 1) % assets.count
-        return assets[index]
-    }
-    
-    func previousAsset() -> PHAsset? {
-        guard assets.count > 0 else {
-            return nil
-        }
-        
-        index = index - 1
-        index = index < 0 ? index + assets.count : index
-
-        return assets[index]
+        let newIndex = index.value - 1
+        index.value = newIndex < 0 ? newIndex + count : newIndex
     }
 }

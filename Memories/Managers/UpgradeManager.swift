@@ -23,20 +23,16 @@ class UpgradeManager {
     
     static private let userDefaults = UserDefaults.standard
     
-    static private var priceFormatter : NumberFormatter = {
-        var formatter = NumberFormatter()
-        formatter.formatterBehavior = .behavior10_4
-        formatter.numberStyle = .currency
-        return formatter
-    }()
+    static private let priceFormatter = NumberFormatter().with {
+        $0.formatterBehavior = .behavior10_4
+        $0.numberStyle = .currency
+    }
     
-    static private var transactionPersistor: RMStoreKeychainPersistence = RMStoreKeychainPersistence()
+    static private let transactionPersistor: RMStoreKeychainPersistence = RMStoreKeychainPersistence()
     
-    static private var store : RMStore = {
-        var rmstore = RMStore.default()
-        rmstore?.transactionPersistor = transactionPersistor
-        return rmstore!
-    }()
+    static private let store = RMStore.default().with {
+        $0.transactionPersistor = transactionPersistor
+    }
     
     /// flag to indicate if the user been shown the upgrade prompt since starting the app
     static private var upgradePromptShown : Bool {

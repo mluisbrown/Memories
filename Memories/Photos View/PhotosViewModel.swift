@@ -11,35 +11,48 @@ import Photos
 import ReactiveSwift
 import Result
 
-class PhotosViewModel: NSObject {
+struct PhotosViewModel {
     let imageManager = PHCachingImageManager()
     // If the size is too large then PhotoKit doesn't return an optimal image size
     // see rdar://25181601 (https://openradar.appspot.com/radar?id=6158824289337344)
     let cacheSize = CGSize(width: 256, height: 256)
 
-    var currentIndex : Int
-    let photoViewModels = MutableProperty([PhotoViewModel]())
-    let indexLoadedAndVisible = MutableProperty(0)
-    let currentAssetChanged = MutableProperty(PHAsset())
-    let allAssetsChanged = MutableProperty(false)
+    let currentIndex = MutableProperty(0)
+    fileprivate let _photoViewModels = MutableProperty([PhotoViewModel]())
+    let photoViewModels: Property<[PhotoViewModel]>
+    
+    fileprivate let indexLoadedAndVisibleObserver: Observer<Int, NoError>
+    let indexLoadedAndVisible: Signal<Int, NoError>
+    
+    fileprivate let currentAssetChangedObserver: Observer<PHAsset, NoError>
+    let currentAssetChanged: Signal<PHAsset, NoError>
+    
+    private let libraryObserver: PhotoLibraryObserver
 
-    init (assets: [PHAsset], currentIndex: Int) {
-        self.photoViewModels.value = assets.map {
+    init (assets: [PHAsset], currentIndex: Int, libraryObserver: PhotoLibraryObserver) {
+        self._photoViewModels.value = assets.map {
             PhotoViewModel(asset: $0)
         }
-        self.currentIndex = currentIndex
-        super.init()
+        self.currentIndex.value = currentIndex
+        self.libraryObserver = libraryObserver
+        self.photoViewModels = Property(_photoViewModels)
+        
+        (indexLoadedAndVisible, indexLoadedAndVisibleObserver) = Signal<Int, NoError>.pipe()
+        (currentAssetChanged, currentAssetChangedObserver) = Signal<PHAsset, NoError>.pipe()
+        
+        createBindings()
         
         imageManager.startCachingImages(for: assets, targetSize: cacheSize, contentMode: .aspectFill, options: nil)
-        PHPhotoLibrary.shared().register(self);
     }
 
-    deinit {
-        PHPhotoLibrary.shared().unregisterChangeObserver(self)
+    private func createBindings() {
+        libraryObserver.signal.observeValues {
+            self.handleChange($0)
+        }
     }
-
+    
     var currentAsset: PHAsset {
-        return photoViewModels.value[currentIndex].asset.value
+        return photoViewModels.value[currentIndex.value].asset.value
     }
     
     var count: Int {
@@ -53,6 +66,10 @@ class PhotosViewModel: NSObject {
     func asset(at index: Int) -> PHAsset {
         return photoViewModel(at: index).asset.value
     }
+    
+    func indexBecameVisible(_ index: Int) {
+        self.indexLoadedAndVisibleObserver.send(value: index)
+    }
 }
 
 extension PhotosViewModel {
@@ -64,8 +81,8 @@ extension PhotosViewModel {
             if let image = result {
                 photoViewModel.previewImage.value = image
                 
-                if index == self.currentIndex {
-                    self.indexLoadedAndVisible.value = index
+                if index == self.currentIndex.value {
+                    self.indexBecameVisible(index)
                 }
             }
         })
@@ -102,8 +119,8 @@ extension PhotosViewModel {
                 UpgradeManager.highQualityViewCount += 1
                 
                 photoViewModel.assetResource.value = assetResource
-                if index == self.currentIndex {
-                    self.indexLoadedAndVisible.value = index
+                if index == self.currentIndex.value {
+                    self.indexBecameVisible(index)
                 }
             case .failure:
                 photoViewModel.fullImageUnavailable.value = true
@@ -233,6 +250,10 @@ extension PhotosViewModel {
     }
     
     func resetPhotoViewModelFor(index: Int) {
+        guard index > 0 && index < photoViewModels.value.count else {
+            return
+        }
+        
         let photoViewModel = photoViewModels.value[index]
         
         if let requestId = photoViewModel.assetRequestId.value {
@@ -267,8 +288,8 @@ extension PhotosViewModel {
     }
 }
 
-extension PhotosViewModel: PHPhotoLibraryChangeObserver {
-    func photoLibraryDidChange(_ changeInstance: PHChange) {
+extension PhotosViewModel {
+    func handleChange(_ changeInstance: PHChange) {
         let newAssets:[PHAsset] = photoViewModels.value.flatMap {
             if let changeDetails = changeInstance.changeDetails(for: $0.asset.value) {
                 return changeDetails.objectWasDeleted ? nil : changeDetails.objectAfterChanges as? PHAsset
@@ -279,8 +300,8 @@ extension PhotosViewModel: PHPhotoLibraryChangeObserver {
         }
         
         if newAssets.count != count {
-            currentIndex = min(currentIndex, newAssets.count - 1)
-            self.photoViewModels.value = newAssets.map {
+            currentIndex.value = min(currentIndex.value, newAssets.count - 1)
+            self._photoViewModels.value = newAssets.map {
                 PhotoViewModel(asset: $0)
             }
         }
@@ -288,7 +309,7 @@ extension PhotosViewModel: PHPhotoLibraryChangeObserver {
             newAssets.enumerated().forEach {
                 self.photoViewModels.value[$0.offset].asset.value = $0.element
             }
-            currentAssetChanged.value = currentAsset
+            currentAssetChangedObserver.send(value: currentAsset)
         }
     }
 }

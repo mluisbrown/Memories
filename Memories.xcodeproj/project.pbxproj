@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		4C00A4F51C1B7ED30078A43F /* PhotosViewDismissTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C00A4F41C1B7ED30078A43F /* PhotosViewDismissTransition.swift */; };
 		4C0410E61BC8787200BBB76C /* UIDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C0410E51BC8787200BBB76C /* UIDevice.swift */; };
+		4C0890181E6742B3005D39E3 /* KeychainSwiftConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C0890171E6742B3005D39E3 /* KeychainSwiftConstants.swift */; };
+		4C08901A1E674618005D39E3 /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C0890191E674618005D39E3 /* Keychain.swift */; };
 		4C09B82F1C53F65700C7D40F /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C09B82D1C53F65700C7D40F /* Crashlytics.framework */; };
 		4C09B8301C53F65700C7D40F /* Fabric.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C09B82E1C53F65700C7D40F /* Fabric.framework */; };
 		4C211F4A1C3DB8270082F4DF /* NotificationCenter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C211F491C3DB8270082F4DF /* NotificationCenter.framework */; };
@@ -48,6 +50,8 @@
 		4CA5E1831DEA42950019CA26 /* DateComponentsFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA5E1821DEA42950019CA26 /* DateComponentsFormatter.swift */; };
 		4CAAF0751B827EAD00AE47C3 /* PullView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CAAF0741B827EAD00AE47C3 /* PullView.swift */; };
 		4CABEE221CAAF08500A9F23A /* UITraitEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CABEE211CAAF08500A9F23A /* UITraitEnvironment.swift */; };
+		4CAE01E01E69D8C800046317 /* ReactiveSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C3EA9D51E1F058D000D78EA /* ReactiveSwift.framework */; };
+		4CAE01E11E69D8C800046317 /* Result.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C3EA9D61E1F058D000D78EA /* Result.framework */; };
 		4CB674B51BA1EBC7001F401A /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB674B41BA1EBC7001F401A /* SettingsViewController.swift */; };
 		4CBA89631BBC66BB00913336 /* RMStore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CBA89621BBC66BB00913336 /* RMStore.framework */; };
 		4CBA89651BBC66E000913336 /* RMStore.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4CBA89641BBC66E000913336 /* RMStore.framework.dSYM */; };
@@ -69,6 +73,7 @@
 		4CF4105E1C4BC045002FD49A /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF4105B1C4BB732002FD49A /* Date.swift */; };
 		4CF574801C06749B00D12ADB /* DatePickerRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF5747F1C06749B00D12ADB /* DatePickerRowView.swift */; };
 		4CF5FEEF1B58212700F8517D /* GridViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF5FEEE1B58212700F8517D /* GridViewModel.swift */; };
+		4CFD0DE71E68676500C12C87 /* PhotoLibraryObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CFD0DE61E68676500C12C87 /* PhotoLibraryObserver.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -128,6 +133,8 @@
 /* Begin PBXFileReference section */
 		4C00A4F41C1B7ED30078A43F /* PhotosViewDismissTransition.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotosViewDismissTransition.swift; sourceTree = "<group>"; };
 		4C0410E51BC8787200BBB76C /* UIDevice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIDevice.swift; sourceTree = "<group>"; };
+		4C0890171E6742B3005D39E3 /* KeychainSwiftConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainSwiftConstants.swift; sourceTree = "<group>"; };
+		4C0890191E674618005D39E3 /* Keychain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
 		4C09B82D1C53F65700C7D40F /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = "<group>"; };
 		4C09B82E1C53F65700C7D40F /* Fabric.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Fabric.framework; sourceTree = "<group>"; };
 		4C211F481C3DB8270082F4DF /* Photo Widget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Photo Widget.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -189,6 +196,7 @@
 		4CF4105B1C4BB732002FD49A /* Date.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
 		4CF5747F1C06749B00D12ADB /* DatePickerRowView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatePickerRowView.swift; sourceTree = "<group>"; };
 		4CF5FEEE1B58212700F8517D /* GridViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridViewModel.swift; sourceTree = "<group>"; };
+		4CFD0DE61E68676500C12C87 /* PhotoLibraryObserver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoLibraryObserver.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -196,6 +204,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4CAE01E01E69D8C800046317 /* ReactiveSwift.framework in Frameworks */,
+				4CAE01E11E69D8C800046317 /* Result.framework in Frameworks */,
 				4CF4105A1C4BB466002FD49A /* PHAssetHelper.framework in Frameworks */,
 				4C211F4A1C3DB8270082F4DF /* NotificationCenter.framework in Frameworks */,
 			);
@@ -228,6 +238,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4C0890161E674227005D39E3 /* Keychain */ = {
+			isa = PBXGroup;
+			children = (
+				4C0890171E6742B3005D39E3 /* KeychainSwiftConstants.swift */,
+				4C0890191E674618005D39E3 /* Keychain.swift */,
+			);
+			path = Keychain;
+			sourceTree = "<group>";
+		};
 		4C211F4B1C3DB8270082F4DF /* Photo Widget */ = {
 			isa = PBXGroup;
 			children = (
@@ -255,6 +274,7 @@
 				4C758BB81DD67E7B00AE9D9F /* UIButton.swift */,
 				4CA5E1821DEA42950019CA26 /* DateComponentsFormatter.swift */,
 				4C65B5AF1E36137900DF2465 /* IndexSet.swift */,
+				4CFD0DE61E68676500C12C87 /* PhotoLibraryObserver.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -366,6 +386,7 @@
 		4CEAA8EA1B3340C600774FE8 /* Memories */ = {
 			isa = PBXGroup;
 			children = (
+				4C0890161E674227005D39E3 /* Keychain */,
 				4C641B8E1C3DB2D6004B15D7 /* Date Picker */,
 				4C641B8C1C3DB2A5004B15D7 /* Grid View */,
 				4C641B8B1C3DB274004B15D7 /* Managers */,
@@ -616,10 +637,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4C0890181E6742B3005D39E3 /* KeychainSwiftConstants.swift in Sources */,
 				4C748EB11DE09D94005F44DD /* ScrubberView.swift in Sources */,
 				4C921FD21C1A038800F0411D /* PhotosViewPresentTransition.swift in Sources */,
+				4CFD0DE71E68676500C12C87 /* PhotoLibraryObserver.swift in Sources */,
 				4C65B5B01E36137900DF2465 /* IndexSet.swift in Sources */,
 				4CEAA8EE1B3340C600774FE8 /* AppDelegate.swift in Sources */,
+				4C08901A1E674618005D39E3 /* Keychain.swift in Sources */,
 				4C3334551B659DAA00D907C8 /* ZoomingPhotoView.swift in Sources */,
 				4C5B90281B5D9C590014A87C /* GridHeaderView.swift in Sources */,
 				4C758BB91DD67E7B00AE9D9F /* UIButton.swift in Sources */,
@@ -707,6 +731,10 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 4KZP2U7889;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				HEADERMAP_USES_VFS = YES;
 				INFOPLIST_FILE = "Photo Widget/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
@@ -727,6 +755,10 @@
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				DEVELOPMENT_TEAM = 4KZP2U7889;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				HEADERMAP_USES_VFS = YES;
 				INFOPLIST_FILE = "Photo Widget/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
