@@ -36,7 +36,6 @@ struct TodayViewModel {
     }
     
     private let index = MutableProperty(-1)    
-    private let currentAsset = MutableProperty<PHAsset?>(nil)
     
     private let _currentImage = MutableProperty<UIImage?>(nil)
     let currentImage: Property<UIImage?>
@@ -54,47 +53,28 @@ struct TodayViewModel {
 
     private func createBindings() {
         assets.signal
+            .filter { $0.count > 0 }
             .observeValues {
-                if $0.count > 0 {
-                    self.imageManager.startCachingImages(for: $0,
-                                                         targetSize: self.cacheSize,
-                                                         contentMode: .aspectFill,
-                                                         options: self.requestOptions)
-                    self.index.value = Int(arc4random_uniform(UInt32($0.count)))
-                }
-                else {
-                    self.index.value = -1
-                }
+                self.imageManager.startCachingImages(for: $0,
+                                                     targetSize: self.cacheSize,
+                                                     contentMode: .aspectFill,
+                                                     options: self.requestOptions)
+                self.index.value = Int(arc4random_uniform(UInt32($0.count)))
         }
         
-        index.signal
-            .observeValues {
-                if $0 >= 0 && $0 < self.count {
-                    self.currentAsset.value = self.assets.value[$0]
-                }
-                else {
-                    self.currentAsset.value = nil
-                }
-        }
-
+        let currentAsset = index.signal
+            .filter { $0 >= 0 && $0 < self.count }
+            .map { self.assets.value[$0] }
+        
         currentAsset.signal
+            .filterMap { $0.creationDate }
             .observeValues {
-                if let asset = $0, let date = asset.creationDate {
-                    self._yearText.value = self.dateFormatter.string(from: date)
-                }
-                else {
-                    self._yearText.value = TodayViewModel.noMemoriesText
-                }
+                self._yearText.value = self.dateFormatter.string(from: $0)
         }
         
         currentAsset.signal
             .observeValues {
-                if let asset = $0 {
-                    self._currentImage <~ self.loadImageFor(asset: asset)
-                }
-                else {
-                    self._currentImage.value = nil
-                }
+                self._currentImage <~ self.loadImageFor(asset: $0)
         }
     }
     
@@ -116,7 +96,7 @@ struct TodayViewModel {
                 if let image = result {
                     observer.send(value: image)
 
-                    let isDegraded = ((userInfo?[PHImageResultIsDegradedKey] as? NSNumber) as? Bool) ?? false
+                    let isDegraded = ((userInfo?[PHImageResultIsDegradedKey] as? NSNumber) as? Bool) ?? true
                     if !isDegraded {
                         observer.sendCompleted()
                     }

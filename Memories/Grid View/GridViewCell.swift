@@ -11,15 +11,6 @@ import UIKit
 class GridViewCell: UICollectionViewCell {
     @IBOutlet var imageView: UIImageView?
     @IBOutlet var durationLabel: UILabel?
-    var thumbnailImage: UIImage? {
-        set {
-            imageView?.image = newValue
-        }
-
-        get {
-            return imageView?.image
-        }
-    }
     
     override func prepareForReuse() {
         super.prepareForReuse()

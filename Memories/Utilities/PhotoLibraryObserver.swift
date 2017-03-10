@@ -14,13 +14,13 @@ import Result
 
 class PhotoLibraryObserver: NSObject, PHPhotoLibraryChangeObserver {
     
-    private let changesPipe = Signal<PHChange, NoError>.pipe()
+    private let observer: Observer<PHChange, NoError>
     private let library: PHPhotoLibrary
     
     let signal: Signal<PHChange, NoError>
     
     init(library: PHPhotoLibrary) {
-        self.signal = changesPipe.output
+        (signal, observer) = Signal<PHChange, NoError>.pipe()
         self.library = library
         super.init()
 
@@ -28,13 +28,13 @@ class PhotoLibraryObserver: NSObject, PHPhotoLibraryChangeObserver {
     }
     
     deinit {
-        changesPipe.input.sendCompleted()
+        observer.sendCompleted()
         library.unregisterChangeObserver(self)
     }
     
     // MARK: - PHPhotoLibraryChangeObserver
     func photoLibraryDidChange(_ changeInstance: PHChange) {
-        changesPipe.input.send(value: changeInstance)
+        observer.send(value: changeInstance)
     }
 }
 

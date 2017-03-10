@@ -12,7 +12,7 @@ import DACircularProgress
 import Cartography
 import ReactiveSwift
 
-protocol PhotosViewControllerDelegate {
+protocol PhotosViewControllerDelegate: class {
     func setCurrent(index: Int)
     func imageView(atIndex: Int) -> UIImageView?
 }
@@ -43,7 +43,7 @@ class PhotosViewController: UIViewController,
     var initialPage : Int!
     var model : PhotosViewModel!
     var pageViews = [ZoomingPhotoView?]()
-    var delegate: PhotosViewControllerDelegate?
+    weak var delegate: PhotosViewControllerDelegate?
 
     struct PanState {
         let pageView: ZoomingPhotoView?

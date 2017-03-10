@@ -29,9 +29,9 @@ class TodayViewController: UIViewController {
     private func createAndBindToModel(for date: Date) {
         model = TodayViewModel(date: date)
         
-        yearLabel.reactive.text <~ model!.yearText.producer.observe(on: QueueScheduler.main)
+        yearLabel.reactive.text <~ model!.yearText.producer
         
-        model!.currentImage.producer
+        model?.currentImage.producer
             .observe(on: QueueScheduler.main)
             .startWithValues {
                 self.display(image: $0)
@@ -75,9 +75,7 @@ class TodayViewController: UIViewController {
     }
     
     fileprivate func display(image: UIImage?, completion: ((Bool) -> Void)? = nil) {
-        let isImage = image != nil
-
-        showPhotoView(isImage) {
+        showPhotoView(image != nil) {
             self.photoView.image = image
             completion?(true)
         }

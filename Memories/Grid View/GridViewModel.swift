@@ -33,6 +33,10 @@ struct SectionChanges {
 
 struct GridViewModel {
     private let token = Lifetime.Token()
+    // If the size is too large then PhotoKit doesn't return an optimal image size
+    // see rdar://25181601 (https://openradar.appspot.com/radar?id=6158824289337344)
+    fileprivate let gridThumbnailSize = CGSize(width: 256, height: 256)
+    fileprivate let timeFormatter = DateComponentsFormatter()
     
     fileprivate let assetHelper = PHAssetHelper()
     private let dateFormatter = DateFormatter().with {
@@ -43,8 +47,9 @@ struct GridViewModel {
     fileprivate let sectionChangesObserver: Observer<SectionChanges, NoError>
     let sectionChanged: Signal<SectionChanges, NoError>
 
-    let libraryObserver = MutableProperty<PhotoLibraryObserver?>(nil)
-    let photosAllowed = MutableProperty(false)
+    let libraryObserver: PhotoLibraryObserver?
+    let imageManager: PHCachingImageManager?
+    let photosAllowed: Bool
     let date = MutableProperty(Date())
     let resultsDate = MutableProperty(Date())
     let title = MutableProperty("Memories")
@@ -55,7 +60,11 @@ struct GridViewModel {
         }
     }
     
-    init() {        
+    init(photosAllowed: Bool = false, libraryObserver: PhotoLibraryObserver? = nil, imageManager: PHCachingImageManager? = nil) {
+        self.photosAllowed = photosAllowed
+        self.libraryObserver = libraryObserver
+        self.imageManager = imageManager
+        
         (sectionChanged, sectionChangesObserver) = Signal<SectionChanges, NoError>.pipe()
         createBindings()
     }
@@ -72,7 +81,6 @@ struct GridViewModel {
         NotificationCenter.default.reactive
             .notifications(forName: NSNotification.Name.UIApplicationDidBecomeActive)
             .take(during: Lifetime(token))
-            .combineLatest(with: photosAllowed.signal)
             .observeValues { _ in
                 if let date = NotificationManager.launchDate() {
                     self.date.value = date
@@ -81,13 +89,14 @@ struct GridViewModel {
     }
     
     private func createBindings() {
-        photosAllowed.signal.observeValues { _ in
-            self.registerObservers()
+        if photosAllowed {
+            registerObservers()
         }
 
-        libraryObserver.signal.skipNil().observeValues { observer in
-            observer.signal.observeValues {
-                self.handleChange($0)
+        if let libraryObserver = libraryObserver {
+            libraryObserver.signal
+                .observeValues {
+                    self.handleChange($0)
             }
         }
         
@@ -208,7 +217,7 @@ struct GridViewModel {
         
         return PhotosViewModel(assets: assets,
                                currentIndex: selectedIndex,
-                               libraryObserver: libraryObserver.value!)
+                               libraryObserver: libraryObserver!)
     }
     
     func indexPath(for selectedIndex: Int) -> IndexPath {
@@ -222,5 +231,45 @@ struct GridViewModel {
         }
         
         return IndexPath()
+    }
+    
+}
+
+// MARK: - Image Mangaer
+
+extension GridViewModel {
+    func startCachingImages(for assets: [PHAsset]) {
+        imageManager?.startCachingImages(for: assets, targetSize: gridThumbnailSize, contentMode: .aspectFill, options: nil)
+    }
+    
+    func stopCachingImages(for assets: [PHAsset]) {
+        imageManager?.stopCachingImages(for: assets, targetSize: gridThumbnailSize, contentMode: .aspectFill, options: nil)
+    }
+
+    func stopCachingAllImages() {
+        imageManager?.stopCachingImagesForAllAssets()
+    }
+    
+    func loadCellData(for indexPath: IndexPath) -> SignalProducer<(UIImage?, String), NoError> {
+        return SignalProducer<(UIImage?, String), NoError> { observer, _ in
+            
+            if let asset = self.asset(at: indexPath) {
+                let durationText = asset.mediaType == .video ? " \(self.timeFormatter.videoDuration(from: asset.duration) ?? "") " : ""
+                self.imageManager?.requestImage(for: asset, targetSize: self.gridThumbnailSize, contentMode: .aspectFill, options: nil) {
+                    result, info in
+
+                    observer.send(value: (result, durationText))
+                    
+                    let isDegraded = ((info?[PHImageResultIsDegradedKey] as? NSNumber) as? Bool) ?? true
+                    if !isDegraded {
+                        observer.sendCompleted()
+                    }
+                }
+            }
+            else {
+                observer.send(value: (nil, ""))
+                observer.sendCompleted()
+            }
+        }
     }
 }

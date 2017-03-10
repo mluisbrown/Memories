@@ -39,7 +39,6 @@ class GridViewController: UICollectionViewController
 
     var statusBarVisible = true
     
-    var imageManager : PHCachingImageManager?
     var previousPreheatRect : CGRect = .zero
     var cellSize : CGSize = .zero
     
@@ -65,8 +64,6 @@ class GridViewController: UICollectionViewController
 
     let RELEASE_THRESHOLD : CGFloat = 100.0
     
-    let timeFormatter = DateComponentsFormatter()
-    
     private func bindToModel() {
         model.resultsDate.signal.observe(on: QueueScheduler.main)
             .skipRepeats(==)
@@ -86,15 +83,16 @@ class GridViewController: UICollectionViewController
         }
     }
     
-    private func startImageManager() {
-        checkPhotosPermission().observe(on: QueueScheduler.main)
+    private func loadPhotos() {
+        PhotoLibraryAuthorization.checkPhotosPermission().observe(on: QueueScheduler.main)
             .startWithValues { [weak self] status in
                 switch status {
                 case .authorized:
-                    self?.model.photosAllowed.value = true
-                    self?.model.libraryObserver.value = PhotoLibraryObserver(library: PHPhotoLibrary.shared())
-                    self?.imageManager = PHCachingImageManager()
-                    
+                    self?.model = GridViewModel(photosAllowed: true,
+                                                libraryObserver: PhotoLibraryObserver(library: PHPhotoLibrary.shared()),
+                                                imageManager: PHCachingImageManager())
+                    self?.bindToModel()
+
                     let startDate = Date()
                     if let date = NotificationManager.launchDate() {
                         self?.model.date.value = date
@@ -120,12 +118,11 @@ class GridViewController: UICollectionViewController
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         configureTitleView()
         
         model = GridViewModel()
-        bindToModel()
-        startImageManager()
+        loadPhotos()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -301,13 +298,11 @@ extension GridViewController {
         
         cell.imageView?.contentMode = thumbnailContentMode
         
-        if let asset = model.asset(at: indexPath) {
-            imageManager?.requestImage(for: asset, targetSize: gridThumbnailSize, contentMode: .aspectFill, options: nil) { (result : UIImage?, info : [AnyHashable : Any]?) -> Void in
-                if let image = result, cell.tag == currentTag {
-                    // Only update the thumbnail if the cell tag hasn't changed. Otherwise, the cell has been re-used.
-                    cell.thumbnailImage = image
-                    cell.durationLabel?.text = asset.mediaType == .video ? " \(self.timeFormatter.videoDuration(from: asset.duration) ?? "") " : ""
-                }
+        model.loadCellData(for: indexPath).startWithValues {
+            if cell.tag == currentTag {
+                // Only update the thumbnail if the cell tag hasn't changed. Otherwise, the cell has been re-used.
+                cell.imageView?.image = $0.0
+                cell.durationLabel?.text = $0.1
             }
         }
         
@@ -444,14 +439,14 @@ extension GridViewController {
 // MARK: - Asset Caching
 extension GridViewController {
     fileprivate func resetCachedAssets() {
-        imageManager?.stopCachingImagesForAllAssets()
+        model.stopCachingAllImages()
         previousPreheatRect = CGRect.zero
     }
     
     fileprivate func updateCachedAssets() {
-        guard let imageManager = imageManager,
-            let _ = view.window,
+        guard let _ = view.window,
             let collectionView = collectionView,
+            model.photosAllowed,
             isViewLoaded else {
                 return
         }
@@ -477,8 +472,8 @@ extension GridViewController {
             let assetsToStartCaching = assets(at: addedIndexPaths)
             let assetsToStopCaching = assets(at: removedIndexPaths)
             
-            imageManager.startCachingImages(for: assetsToStartCaching, targetSize: gridThumbnailSize, contentMode: .aspectFill, options: nil)
-            imageManager.stopCachingImages(for: assetsToStopCaching, targetSize: gridThumbnailSize, contentMode: .aspectFill, options: nil)
+            model.startCachingImages(for: assetsToStartCaching)
+            model.stopCachingImages(for: assetsToStopCaching)
             
             previousPreheatRect = preheatRect
         }
@@ -568,52 +563,4 @@ extension GridViewController {
         }
     }
 }
-
-// MARK: - Photos Authorization
-extension GridViewController {
-    fileprivate func checkPhotosPermission() -> SignalProducer<PHAuthorizationStatus, NoError> {
-        let authStatus = PHPhotoLibrary.authorizationStatus();
-        
-        return SignalProducer<PHAuthorizationStatus, NoError> { observer, _ in
-            observer.send(value: authStatus)
-            
-            var alert: UIAlertController?
-            
-            switch authStatus {
-            case .authorized:
-                observer.sendCompleted()
-            case .notDetermined:
-                alert = UIAlertController(title: NSLocalizedString("Let Memories access Photos?", comment: ""), message: NSLocalizedString("Memories can only work if it has access to your photos. If you tap 'Allow' iOS will ask your permission.", comment: ""), preferredStyle: .alert)
-                let allow = UIAlertAction(title: NSLocalizedString("Allow", comment: ""), style: .default) { _ in
-                    PHPhotoLibrary.requestAuthorization { status in
-                        observer.send(value: status)
-                        observer.sendCompleted()
-                    }
-                }
-                let deny = UIAlertAction(title: NSLocalizedString("Not Now", comment: ""), style: .cancel) { _ in  observer.sendCompleted() }
-                alert?.addAction(deny)
-                alert?.addAction(allow)
-            case .denied:
-                alert = UIAlertController(title: NSLocalizedString("No Access to Photos", comment: ""), message: NSLocalizedString("You have Denied access to Photos for Memories. In order for Memories to work you must enable this access in Settings. Would you like to do this now?", comment: ""), preferredStyle: .alert)
-                let settings = UIAlertAction(title: NSLocalizedString("Settings", comment: ""), style: .default) { _ in
-                    let url = URL(string: UIApplicationOpenSettingsURLString)
-                    UIApplication.shared.openURL(url!);
-                    observer.sendCompleted()
-                }
-                let nothanks = UIAlertAction(title: NSLocalizedString("No thanks", comment: ""), style: .cancel)  { _ in  observer.sendCompleted() }
-                alert?.addAction(nothanks)
-                alert?.addAction(settings)
-            case .restricted:
-                alert = UIAlertController(title: NSLocalizedString("No Access to Photos", comment: ""), message: NSLocalizedString("Access to Photos has been restricted on this device. Unfortunately this means Memories will not work until this is changed.", comment: ""), preferredStyle: .alert)
-                let ok = UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default)  { _ in  observer.sendCompleted() }
-                alert?.addAction(ok)
-            }
-            
-            if let alert = alert {
-                UIApplication.shared.keyWindow?.rootViewController?.present(alert, animated: true)
-            }
-        }
-    }
-}
-
 
