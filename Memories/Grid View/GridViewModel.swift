@@ -32,6 +32,13 @@ struct SectionChanges {
 }
 
 struct GridViewModel {
+    enum Status: String {
+        case none = ""
+        case noAccess = "No access to Photo Library :("
+        case loading = "Loading..."
+        case noPhotos = "Sorry, no photos for this date :("
+    }
+    
     private let token = Lifetime.Token()
     // If the size is too large then PhotoKit doesn't return an optimal image size
     // see rdar://25181601 (https://openradar.appspot.com/radar?id=6158824289337344)
@@ -53,6 +60,10 @@ struct GridViewModel {
     let date = MutableProperty(Date())
     let resultsDate = MutableProperty(Date())
     let title = MutableProperty("Memories")
+    fileprivate let status = MutableProperty<Status>(.noAccess)
+    var statusText: Property<String> {
+        return Property(status.map { return $0.rawValue } )
+    }
     
     var sectionCount : Int {
         get {
@@ -64,7 +75,7 @@ struct GridViewModel {
         self.photosAllowed = photosAllowed
         self.libraryObserver = libraryObserver
         self.imageManager = imageManager
-        
+
         (sectionChanged, sectionChangesObserver) = Signal<SectionChanges, NoError>.pipe()
         createBindings()
     }
@@ -102,13 +113,12 @@ struct GridViewModel {
         
         date.signal.observeValues { date in
             self.assetFetchResults <~ self.updateFetchResults(for: date)
-        }
-        
-        date.signal.observeValues { date in
+            self.status.value = .loading
             self.title.value = self.dateFormatter.string(from: date).uppercased() + " ▾" // ▼
         }
-        
-        assetFetchResults.signal.observeValues { _ in
+
+        assetFetchResults.signal.observeValues { fetchResults in
+            self.status.value = fetchResults.count > 0 ? .none : .noPhotos
             self.resultsDate.value = self.date.value
         }
     }

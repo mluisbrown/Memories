@@ -35,7 +35,11 @@ class GridViewController: UICollectionViewController
     // see rdar://25181601 (https://openradar.appspot.com/radar?id=6158824289337344)
     let gridThumbnailSize = CGSize(width: 256, height: 256)
     
-    var model : GridViewModel!
+    var model : GridViewModel! {
+        didSet {
+            bindToModel()
+        }
+    }
 
     var statusBarVisible = true
     
@@ -50,7 +54,7 @@ class GridViewController: UICollectionViewController
         $0.textAlignment = .center
     }
     
-    let noPhotosLabel = UILabel().with {
+    let statusLabel = UILabel().with {
         $0.backgroundColor = UIColor.clear
         $0.font = UIFont.systemFont(ofSize: 16)
         $0.textColor = UIColor.white
@@ -81,6 +85,11 @@ class GridViewController: UICollectionViewController
             .observeValues { [weak self]  changes in
                 self?.updateSection(with: changes)
         }
+        
+        model.statusText.producer.observe(on: QueueScheduler.main)
+            .startWithValues { [weak self] status in
+                self?.showHideStatusLabel(status)
+        }
     }
     
     private func loadPhotos() {
@@ -91,17 +100,15 @@ class GridViewController: UICollectionViewController
                     self?.model = GridViewModel(photosAllowed: true,
                                                 libraryObserver: PhotoLibraryObserver(library: PHPhotoLibrary.shared()),
                                                 imageManager: PHCachingImageManager())
-                    self?.bindToModel()
-
+            
                     let startDate = Date()
                     if let date = NotificationManager.launchDate() {
                         self?.model.date.value = date
                     } else {
                         self?.model.date.value = startDate
                     }
-                case .denied, .restricted:
-                    self?.showHideNoPhotosLabel(NSLocalizedString("No access to Photo Library :(", comment: ""))
-                case .notDetermined:
+
+                case .denied, .restricted, .notDetermined:
                     break
                 }
         }
@@ -118,7 +125,6 @@ class GridViewController: UICollectionViewController
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
         configureTitleView()
         
         model = GridViewModel()
@@ -133,9 +139,6 @@ class GridViewController: UICollectionViewController
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         updateCachedAssets()
-        
-        guard noPhotosLabel.text == nil else { return }
-        showHideNoPhotosLabel(NSLocalizedString("Loading...", comment: ""))
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -182,17 +185,18 @@ class GridViewController: UICollectionViewController
             collectionView?.reloadSections(IndexSet(integer: changes.section))
         }
         else {
-            collectionView?.performBatchUpdates({ 
+            collectionView?.performBatchUpdates({
+                guard changes.newItemCount > 0 else {
+                    self.collectionView?.deleteSections(IndexSet(integer: changes.section))
+                    return
+                }
+
                 self.collectionView?.deleteItems(at: changes.removed)
                 self.collectionView?.insertItems(at: changes.inserted)
                 self.collectionView?.reloadItems(at: changes.changed)
-                if changes.newItemCount == 0 {
-                    self.collectionView?.deleteSections(IndexSet(integer: changes.section))
-                }
             }, completion: nil)
         }
         
-        showHideNoPhotosLabel()
         resetCachedAssets()
     }
     
@@ -200,7 +204,6 @@ class GridViewController: UICollectionViewController
         resetCachedAssets()
         collectionView?.reloadData()
         collectionView?.setContentOffset(CGPoint(x: 0, y: -collectionView!.contentInset.top), animated: false)
-        showHideNoPhotosLabel()
         
         createOrUpdatePullViews(with: date as Date)
         showHideBlur(false)
@@ -372,6 +375,7 @@ extension GridViewController {
     
     override func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         if shouldReload {
+            shouldReload = false
             if reloadNext {
                 model.goToNextDay()
             } else {
@@ -541,25 +545,26 @@ extension GridViewController {
         self.cellSize = cellSize
     }
     
-    fileprivate func showHideNoPhotosLabel(_ text: String? = nil) {
+    fileprivate func showHideStatusLabel(_ text: String) {
         // make sure views have been layed out properly
         guard topLayoutGuide.length != 0 else {
             return
         }
         
-        noPhotosLabel.text = text ?? NSLocalizedString("Sorry, no photos for this date :(", comment: "")
+        statusLabel.text = text
         
-        if model.sectionCount == 0 && noPhotosLabel.superview == nil {
-            collectionView?.addSubview(noPhotosLabel)
+        guard !text.isEmpty else {
+            statusLabel.removeFromSuperview()
+            return
+        }
+        
+        if statusLabel.superview == nil {
+            collectionView?.addSubview(statusLabel)
             
-            constrain(noPhotosLabel, collectionView!) { noPhotosLabel, collectionView in
+            constrain(statusLabel, collectionView!) { noPhotosLabel, collectionView in
                 noPhotosLabel.centerX == collectionView.centerX
                 noPhotosLabel.centerY == collectionView.centerY - topLayoutGuide.length
             }
-        }
-        
-        if model.sectionCount > 0 && noPhotosLabel.superview != nil {
-            noPhotosLabel.removeFromSuperview()
         }
     }
 }
