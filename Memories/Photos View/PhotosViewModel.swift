@@ -144,7 +144,7 @@ extension PhotosViewModel {
                                                                                  options: options) { result, userInfo in
                 let isDegraded = (userInfo?[PHImageResultIsDegradedKey] as? NSNumber) ?? false
                                                                                     
-                if let image = result, !(isDegraded as (Bool)) {
+                if let image = result, !(isDegraded as! Bool) {
                     observer.send(value: AssetResource.photo(image: image))
                     observer.sendCompleted()
                 }
@@ -172,7 +172,7 @@ extension PhotosViewModel {
                                                                                      contentMode: .aspectFit,
                                                                                      options: options) { result, userInfo in
                 let isDegraded = (userInfo?[PHImageResultIsDegradedKey] as? NSNumber) ?? false
-                if let livePhoto = result, !(isDegraded as (Bool)) {
+                if let livePhoto = result, !(isDegraded as! Bool) {
                     observer.send(value: AssetResource.livePhoto(livePhoto: livePhoto))
                     observer.sendCompleted()
                 }

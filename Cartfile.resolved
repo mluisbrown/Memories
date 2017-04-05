@@ -1,6 +1,6 @@
 github "ReactiveCocoa/ReactiveCocoa" "5.0.1"
 github "ReactiveCocoa/ReactiveSwift" "1.1.0"
-github "antitypical/Result" "3.2.0"
+github "antitypical/Result" "3.2.1"
 github "mluisbrown/DACircularProgress" "b00da38778a4e0f7962df88e1c5ad7dd41eef862"
 github "mluisbrown/RMStore" "2da2208c64c734258ecb0fa263e3d25e9bce68b2"
 github "robb/Cartography" "1.0.1"

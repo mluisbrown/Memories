@@ -301,7 +301,9 @@ extension GridViewController {
         
         cell.imageView?.contentMode = thumbnailContentMode
         
-        model.loadCellData(for: indexPath).startWithValues {
+        model.loadCellData(for: indexPath)
+            .observe(on: UIScheduler())
+            .startWithValues {
             if cell.tag == currentTag {
                 // Only update the thumbnail if the cell tag hasn't changed. Otherwise, the cell has been re-used.
                 cell.imageView?.image = $0.0

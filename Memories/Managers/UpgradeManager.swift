@@ -118,7 +118,7 @@ class UpgradeManager {
                 completion?(upgradePrice)
             }
         }) { (error) -> Void in
-            NSLog("Unabled to obtain upgrade price. Error: \(error?.localizedDescription)")
+            NSLog("Unabled to obtain upgrade price. Error: \(error?.localizedDescription ?? "Error description not available.")")
             completion?(nil)
         }
     }

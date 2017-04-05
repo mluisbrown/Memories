@@ -268,7 +268,11 @@ extension GridViewModel {
                 self.imageManager?.requestImage(for: asset, targetSize: self.gridThumbnailSize, contentMode: .aspectFill, options: nil) {
                     result, info in
 
-                    observer.send(value: (result, durationText))
+                    guard let image = result else {
+                        return
+                    }
+                    
+                    observer.send(value: (image, durationText))
                     
                     let isDegraded = ((info?[PHImageResultIsDegradedKey] as? NSNumber) as? Bool) ?? true
                     if !isDegraded {
