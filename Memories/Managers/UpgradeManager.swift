@@ -28,11 +28,7 @@ class UpgradeManager {
         $0.numberStyle = .currency
     }
     
-    static private let transactionPersistor: RMStoreKeychainPersistence = RMStoreKeychainPersistence()
-    
-    static private let store = RMStore.default().with {
-        $0.transactionPersistor = transactionPersistor
-    }
+    static private let store: RMStore = RMStore.default()
     
     /// flag to indicate if the user been shown the upgrade prompt since starting the app
     static private var upgradePromptShown : Bool {
@@ -51,7 +47,7 @@ class UpgradeManager {
     
     /// flag to indicate if the user upgraded the app
     static var upgraded : Bool = {
-        return transactionPersistor.isPurchasedProduct(ofIdentifier: upgradeProductId)
+        return StoreKitPersistence().isPurchased(identifier: upgradeProductId)
         }() {
         
         didSet {
@@ -59,6 +55,8 @@ class UpgradeManager {
                 userDefaults.removeObject(forKey: Key.viewCountDate)
                 userDefaults.removeObject(forKey: Key.highQualityViewCount)
                 userDefaults.synchronize()
+                
+                StoreKitPersistence().persistPurchase(of: upgradeProductId)
             }
         }
     }

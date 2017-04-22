@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3ED7E11E8CD7F319DA8E2BEF /* StoreKitPersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ED7EF9BC4C9374988B471D7 /* StoreKitPersistence.swift */; };
 		4C00A4F51C1B7ED30078A43F /* PhotosViewDismissTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C00A4F41C1B7ED30078A43F /* PhotosViewDismissTransition.swift */; };
 		4C0410E61BC8787200BBB76C /* UIDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C0410E51BC8787200BBB76C /* UIDevice.swift */; };
 		4C0890181E6742B3005D39E3 /* KeychainSwiftConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C0890171E6742B3005D39E3 /* KeychainSwiftConstants.swift */; };
@@ -132,6 +133,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		3ED7EF9BC4C9374988B471D7 /* StoreKitPersistence.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoreKitPersistence.swift; sourceTree = "<group>"; };
 		4C00A4F41C1B7ED30078A43F /* PhotosViewDismissTransition.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotosViewDismissTransition.swift; sourceTree = "<group>"; };
 		4C0410E51BC8787200BBB76C /* UIDevice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIDevice.swift; sourceTree = "<group>"; };
 		4C0890171E6742B3005D39E3 /* KeychainSwiftConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainSwiftConstants.swift; sourceTree = "<group>"; };
@@ -245,6 +247,7 @@
 			children = (
 				4C0890171E6742B3005D39E3 /* KeychainSwiftConstants.swift */,
 				4C0890191E674618005D39E3 /* Keychain.swift */,
+				3ED7EF9BC4C9374988B471D7 /* StoreKitPersistence.swift */,
 			);
 			path = Keychain;
 			sourceTree = "<group>";
@@ -678,6 +681,7 @@
 				4CB674B51BA1EBC7001F401A /* SettingsViewController.swift in Sources */,
 				4C758BBB1DD685E700AE9D9F /* PlayerController.swift in Sources */,
 				4C989BE11BA780BB00D4C13F /* SettingsViewModel.swift in Sources */,
+				3ED7E11E8CD7F319DA8E2BEF /* StoreKitPersistence.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
