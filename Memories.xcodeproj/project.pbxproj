@@ -10,7 +10,7 @@
 		3ED7E11E8CD7F319DA8E2BEF /* StoreKitPersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ED7EF9BC4C9374988B471D7 /* StoreKitPersistence.swift */; };
 		4C00A4F51C1B7ED30078A43F /* PhotosViewDismissTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C00A4F41C1B7ED30078A43F /* PhotosViewDismissTransition.swift */; };
 		4C0410E61BC8787200BBB76C /* UIDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C0410E51BC8787200BBB76C /* UIDevice.swift */; };
-		4C0890181E6742B3005D39E3 /* KeychainSwiftConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C0890171E6742B3005D39E3 /* KeychainSwiftConstants.swift */; };
+		4C0890181E6742B3005D39E3 /* KeychainConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C0890171E6742B3005D39E3 /* KeychainConstants.swift */; };
 		4C08901A1E674618005D39E3 /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C0890191E674618005D39E3 /* Keychain.swift */; };
 		4C09B82F1C53F65700C7D40F /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C09B82D1C53F65700C7D40F /* Crashlytics.framework */; };
 		4C09B8301C53F65700C7D40F /* Fabric.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C09B82E1C53F65700C7D40F /* Fabric.framework */; };
@@ -55,11 +55,14 @@
 		4CAE01E01E69D8C800046317 /* ReactiveSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C3EA9D51E1F058D000D78EA /* ReactiveSwift.framework */; };
 		4CAE01E11E69D8C800046317 /* Result.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C3EA9D61E1F058D000D78EA /* Result.framework */; };
 		4CB674B51BA1EBC7001F401A /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB674B41BA1EBC7001F401A /* SettingsViewController.swift */; };
-		4CBA89631BBC66BB00913336 /* RMStore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CBA89621BBC66BB00913336 /* RMStore.framework */; };
-		4CBA89651BBC66E000913336 /* RMStore.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4CBA89641BBC66E000913336 /* RMStore.framework.dSYM */; };
 		4CBA89671BBC926100913336 /* UpgradeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBA89661BBC926100913336 /* UpgradeManager.swift */; };
 		4CBA89691BBC9BF300913336 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CBA89681BBC9BF300913336 /* Security.framework */; };
 		4CD790181DD60DE000EEE452 /* With.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD790171DD60DE000EEE452 /* With.swift */; };
+		4CE6FB271EAFF6DF00CC5D01 /* SwiftyStoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CE6FB261EAFF6DF00CC5D01 /* SwiftyStoreKit.framework */; };
+		4CE6FB341EAFF85000CC5D01 /* ReactiveCocoa.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4CE6FB301EAFF85000CC5D01 /* ReactiveCocoa.framework.dSYM */; };
+		4CE6FB351EAFF85000CC5D01 /* ReactiveSwift.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4CE6FB311EAFF85000CC5D01 /* ReactiveSwift.framework.dSYM */; };
+		4CE6FB361EAFF85000CC5D01 /* Result.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4CE6FB321EAFF85000CC5D01 /* Result.framework.dSYM */; };
+		4CE6FB371EAFF85000CC5D01 /* SwiftyStoreKit.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4CE6FB331EAFF85000CC5D01 /* SwiftyStoreKit.framework.dSYM */; };
 		4CE8BD971C03BBE500207BE1 /* DatePickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE8BD961C03BBE500207BE1 /* DatePickerViewController.swift */; };
 		4CEAA8EE1B3340C600774FE8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CEAA8ED1B3340C600774FE8 /* AppDelegate.swift */; };
 		4CEAA8F31B3340C600774FE8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4CEAA8F11B3340C600774FE8 /* Main.storyboard */; };
@@ -113,9 +116,12 @@
 			dstPath = "";
 			dstSubfolderSpec = 16;
 			files = (
+				4CE6FB341EAFF85000CC5D01 /* ReactiveCocoa.framework.dSYM in CopyFiles */,
+				4CE6FB351EAFF85000CC5D01 /* ReactiveSwift.framework.dSYM in CopyFiles */,
+				4CE6FB361EAFF85000CC5D01 /* Result.framework.dSYM in CopyFiles */,
+				4CE6FB371EAFF85000CC5D01 /* SwiftyStoreKit.framework.dSYM in CopyFiles */,
 				4C8594D11BB33E27005CCFAC /* Cartography.framework.dSYM in CopyFiles */,
 				4C8594D31BB33E2F005CCFAC /* DACircularProgress.framework.dSYM in CopyFiles */,
-				4CBA89651BBC66E000913336 /* RMStore.framework.dSYM in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -136,7 +142,7 @@
 		3ED7EF9BC4C9374988B471D7 /* StoreKitPersistence.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoreKitPersistence.swift; sourceTree = "<group>"; };
 		4C00A4F41C1B7ED30078A43F /* PhotosViewDismissTransition.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotosViewDismissTransition.swift; sourceTree = "<group>"; };
 		4C0410E51BC8787200BBB76C /* UIDevice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIDevice.swift; sourceTree = "<group>"; };
-		4C0890171E6742B3005D39E3 /* KeychainSwiftConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainSwiftConstants.swift; sourceTree = "<group>"; };
+		4C0890171E6742B3005D39E3 /* KeychainConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainConstants.swift; sourceTree = "<group>"; };
 		4C0890191E674618005D39E3 /* Keychain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
 		4C09B82D1C53F65700C7D40F /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = "<group>"; };
 		4C09B82E1C53F65700C7D40F /* Fabric.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Fabric.framework; sourceTree = "<group>"; };
@@ -185,6 +191,11 @@
 		4CBA89661BBC926100913336 /* UpgradeManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UpgradeManager.swift; sourceTree = "<group>"; };
 		4CBA89681BBC9BF300913336 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		4CD790171DD60DE000EEE452 /* With.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = With.swift; sourceTree = "<group>"; };
+		4CE6FB261EAFF6DF00CC5D01 /* SwiftyStoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftyStoreKit.framework; path = Carthage/Build/iOS/SwiftyStoreKit.framework; sourceTree = "<group>"; };
+		4CE6FB301EAFF85000CC5D01 /* ReactiveCocoa.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = ReactiveCocoa.framework.dSYM; path = Carthage/Build/iOS/ReactiveCocoa.framework.dSYM; sourceTree = "<group>"; };
+		4CE6FB311EAFF85000CC5D01 /* ReactiveSwift.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = ReactiveSwift.framework.dSYM; path = Carthage/Build/iOS/ReactiveSwift.framework.dSYM; sourceTree = "<group>"; };
+		4CE6FB321EAFF85000CC5D01 /* Result.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = Result.framework.dSYM; path = Carthage/Build/iOS/Result.framework.dSYM; sourceTree = "<group>"; };
+		4CE6FB331EAFF85000CC5D01 /* SwiftyStoreKit.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = SwiftyStoreKit.framework.dSYM; path = Carthage/Build/iOS/SwiftyStoreKit.framework.dSYM; sourceTree = "<group>"; };
 		4CE8BD961C03BBE500207BE1 /* DatePickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatePickerViewController.swift; sourceTree = "<group>"; };
 		4CEAA8E81B3340C600774FE8 /* Memories.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Memories.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4CEAA8EC1B3340C600774FE8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -219,6 +230,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4CE6FB271EAFF6DF00CC5D01 /* SwiftyStoreKit.framework in Frameworks */,
 				4C3EA9D71E1F058D000D78EA /* ReactiveCocoa.framework in Frameworks */,
 				4C3EA9D81E1F058D000D78EA /* ReactiveSwift.framework in Frameworks */,
 				4C3EA9D91E1F058D000D78EA /* Result.framework in Frameworks */,
@@ -228,7 +240,6 @@
 				4CF410521C4BB099002FD49A /* PHAssetHelper.framework in Frameworks */,
 				4C8594CC1BB33D49005CCFAC /* Cartography.framework in Frameworks */,
 				4C8594CD1BB33D4C005CCFAC /* DACircularProgress.framework in Frameworks */,
-				4CBA89631BBC66BB00913336 /* RMStore.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -245,7 +256,7 @@
 		4C0890161E674227005D39E3 /* Keychain */ = {
 			isa = PBXGroup;
 			children = (
-				4C0890171E6742B3005D39E3 /* KeychainSwiftConstants.swift */,
+				4C0890171E6742B3005D39E3 /* KeychainConstants.swift */,
 				4C0890191E674618005D39E3 /* Keychain.swift */,
 				3ED7EF9BC4C9374988B471D7 /* StoreKitPersistence.swift */,
 			);
@@ -351,15 +362,20 @@
 		4C8594D41BB33E9C005CCFAC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4CE6FB301EAFF85000CC5D01 /* ReactiveCocoa.framework.dSYM */,
+				4CE6FB311EAFF85000CC5D01 /* ReactiveSwift.framework.dSYM */,
+				4CE6FB321EAFF85000CC5D01 /* Result.framework.dSYM */,
+				4CE6FB331EAFF85000CC5D01 /* SwiftyStoreKit.framework.dSYM */,
+				4C8594D21BB33E2F005CCFAC /* DACircularProgress.framework.dSYM */,
+				4C8594D01BB33E27005CCFAC /* Cartography.framework.dSYM */,
+				4CBA89641BBC66E000913336 /* RMStore.framework.dSYM */,
+				4CE6FB261EAFF6DF00CC5D01 /* SwiftyStoreKit.framework */,
 				4C3EA9D41E1F058D000D78EA /* ReactiveCocoa.framework */,
 				4C3EA9D51E1F058D000D78EA /* ReactiveSwift.framework */,
 				4C3EA9D61E1F058D000D78EA /* Result.framework */,
 				4C09B82D1C53F65700C7D40F /* Crashlytics.framework */,
 				4C09B82E1C53F65700C7D40F /* Fabric.framework */,
 				4CBA89681BBC9BF300913336 /* Security.framework */,
-				4C8594D21BB33E2F005CCFAC /* DACircularProgress.framework.dSYM */,
-				4C8594D01BB33E27005CCFAC /* Cartography.framework.dSYM */,
-				4CBA89641BBC66E000913336 /* RMStore.framework.dSYM */,
 				4CBA89621BBC66BB00913336 /* RMStore.framework */,
 				4C8594C91BB33D02005CCFAC /* DACircularProgress.framework */,
 				4C8594C51BB33CF5005CCFAC /* Cartography.framework */,
@@ -615,7 +631,7 @@
 			inputPaths = (
 				"$(SRCROOT)/Carthage/Build/iOS/Cartography.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/DACircularProgress.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/RMStore.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/SwiftyStoreKit.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/ReactiveCocoa.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/ReactiveSwift.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/Result.framework",
@@ -643,7 +659,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4C0890181E6742B3005D39E3 /* KeychainSwiftConstants.swift in Sources */,
+				4C0890181E6742B3005D39E3 /* KeychainConstants.swift in Sources */,
 				4C748EB11DE09D94005F44DD /* ScrubberView.swift in Sources */,
 				4C921FD21C1A038800F0411D /* PhotosViewPresentTransition.swift in Sources */,
 				4CFD0DE71E68676500C12C87 /* PhotoLibraryObserver.swift in Sources */,

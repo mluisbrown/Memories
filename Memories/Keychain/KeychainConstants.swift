@@ -1,5 +1,5 @@
 //
-//  KeychainSwiftConstants.swift
+//  KeychainConstants.swift
 //  Memories
 //
 //  Created by Michael Brown on 01/03/2017.
@@ -10,7 +10,7 @@ import Foundation
 import Security
 
 /// Swift versions of Keychain constants
-public struct KeychainSwiftConstants {
+public struct KeychainConstants {
     /// Specifies a Keychain access group. Used for sharing Keychain items between apps.
     public static var accessGroup: String { return toString(kSecAttrAccessGroup) }
     

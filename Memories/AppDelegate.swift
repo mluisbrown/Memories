@@ -19,6 +19,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey : Any]?) -> Bool {
         Fabric.with([Crashlytics.self])
 
+        UpgradeManager.completeTransactions()
+        
         UserDefaults.standard.register(defaults: [NotificationManager.Key.notificationTime : 1000,
             NotificationManager.Key.hasPromptedForUserNotifications : false,
             NotificationManager.Key.notificationsEnabled: false])

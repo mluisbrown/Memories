@@ -6,9 +6,9 @@
 //  Copyright © 2015 Michael Brown. All rights reserved.
 //
 
-import Foundation
+import UIKit
 import Security
-import RMStore
+import SwiftyStoreKit
 
 class UpgradeManager {
     static let upgradeProductId = "com.luacheia.memories.Upgrade"
@@ -28,8 +28,6 @@ class UpgradeManager {
         $0.numberStyle = .currency
     }
     
-    static private let store: RMStore = RMStore.default()
-    
     /// flag to indicate if the user been shown the upgrade prompt since starting the app
     static private var upgradePromptShown : Bool {
         get {
@@ -47,7 +45,7 @@ class UpgradeManager {
     
     /// flag to indicate if the user upgraded the app
     static var upgraded : Bool = {
-        return StoreKitPersistence().isPurchased(identifier: upgradeProductId)
+        return StoreKitPersistence.isPurchased(identifier: upgradeProductId)
         }() {
         
         didSet {
@@ -56,7 +54,7 @@ class UpgradeManager {
                 userDefaults.removeObject(forKey: Key.highQualityViewCount)
                 userDefaults.synchronize()
                 
-                StoreKitPersistence().persistPurchase(of: upgradeProductId)
+                StoreKitPersistence.persistPurchase(of: upgradeProductId)
             }
         }
     }
@@ -108,16 +106,16 @@ class UpgradeManager {
             return
         }
         
-        store.requestProducts(Set([upgradeProductId]), success: { (products, invalidIds) -> Void in
-            if let products = products, products.count > 0 {
-                let product = products.first as! SKProduct
+        SwiftyStoreKit.retrieveProductsInfo([upgradeProductId]) { result in
+            if let product = result.retrievedProducts.first {
                 priceFormatter.locale = product.priceLocale
                 upgradePrice = priceFormatter.string(from: product.price)!
                 completion?(upgradePrice)
             }
-        }) { (error) -> Void in
-            NSLog("Unabled to obtain upgrade price. Error: \(error?.localizedDescription ?? "Error description not available.")")
-            completion?(nil)
+            else  {
+                NSLog("Unabled to obtain upgrade price. Error: \(result.error?.localizedDescription ?? "Error description not available.")")
+                completion?(nil)
+            }
         }
     }
     
@@ -159,28 +157,42 @@ class UpgradeManager {
     }
     
     static func upgrade(thenCall completion: ((Bool) -> ())?) {
-        store.addPayment(upgradeProductId, success: { (transaction) -> Void in
-            upgraded = true
-            completion?(true)
-        }) { (transaction, error) -> Void in
-            completion?(false)
+        SwiftyStoreKit.purchaseProduct(upgradeProductId, atomically: true) { result in
+            switch result {
+            case .success:
+                upgraded = true
+                completion?(true)
+            case .error(let error):
+                NSLog("Purchase of product \(upgradeProductId) failed. Error: \(error.localizedDescription)")
+            }
         }
     }
     
     static func restore(thenCall completion: ((Bool) -> ())?) {
-        store.restoreTransactions( onSuccess: { (transactions) -> Void in
-            guard let transactions = transactions,
-                transactions.count > 0,
-                let transaction = transactions[0] as? SKPaymentTransaction,
-                transaction.payment.productIdentifier == upgradeProductId else {
-                    completion?(false)
-                    return
+        SwiftyStoreKit.restorePurchases(atomically: true) { result in
+            if let product = result.restoredProducts.first,
+                product.productId == upgradeProductId {
+                upgraded = true
+                completion?(true)
             }
-
-            upgraded = true
-            completion?(true)
-        }) { (error) -> Void in
-            completion?(false)
+            else {
+                NSLog("Product Restore failed.")
+                completion?(false)
+            }
+        }
+    }
+    
+    static func completeTransactions() {
+        SwiftyStoreKit.completeTransactions(atomically: true) { products in
+            for product in products {
+                if product.transaction.transactionState == .purchased ||
+                    product.transaction.transactionState == .restored {
+                    upgraded = true
+                    if product.needsFinishTransaction {
+                        SwiftyStoreKit.finishTransaction(product.transaction)
+                    }
+                }
+            }
         }
     }
 }

@@ -6,18 +6,17 @@
 import Foundation
 
 struct StoreKitPersistence {
-    let transactionsKey = "RMStoreTransactions"
-    let keychain = KeychainSwift()
+    static let transactionsKey = "RMStoreTransactions"
 
-    func isPurchased(identifier: String) -> Bool {
-        let transactions = keychain.getDictionary(for: transactionsKey)
+    static func isPurchased(identifier: String) -> Bool {
+        let transactions = Keychain.getDictionary(for: transactionsKey)
         return transactions.keys.contains(identifier)
     }
 
-    func persistPurchase(of identifier: String) {
-        var transactions = keychain.getDictionary(for: transactionsKey)
+    static func persistPurchase(of identifier: String) {
+        var transactions = Keychain.getDictionary(for: transactionsKey)
         transactions[identifier] = true
 
-        keychain.set(dictionary: transactions, for: transactionsKey)
+        Keychain.set(dictionary: transactions, for: transactionsKey)
     }
 }

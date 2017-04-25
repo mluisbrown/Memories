@@ -9,7 +9,7 @@
 import Foundation
 import Security
 
-struct KeychainSwift {
+struct Keychain {
     /**
     Retrieves the data from the keychain that corresponds to the given key.
     
@@ -17,14 +17,14 @@ struct KeychainSwift {
     - returns: The text value from the keychain. Returns nil if unable to read the item.
     
     */
-    func getData(for key: String) -> Data? {
+    static func getData(for key: String) -> Data? {
         let query: [String: Any] = [
-            KeychainSwiftConstants.klass       : kSecClassGenericPassword,
-            KeychainSwiftConstants.attrAccount : key,
-            KeychainSwiftConstants.attrGeneric : key,
-            KeychainSwiftConstants.attrService : Bundle.main.bundleIdentifier ?? "",
-            KeychainSwiftConstants.returnData  : kCFBooleanTrue,
-            KeychainSwiftConstants.matchLimit  : kSecMatchLimitOne
+            KeychainConstants.klass       : kSecClassGenericPassword,
+            KeychainConstants.attrAccount : key,
+            KeychainConstants.attrGeneric : key,
+            KeychainConstants.attrService : Bundle.main.bundleIdentifier ?? "",
+            KeychainConstants.returnData  : kCFBooleanTrue,
+            KeychainConstants.matchLimit  : kSecMatchLimitOne
         ]
         
         var result: AnyObject?
@@ -50,17 +50,17 @@ struct KeychainSwift {
      
      */
     @discardableResult
-    func set(data value: Data, for key: String) -> Bool {
+    static func set(data value: Data, for key: String) -> Bool {
         
         delete(key: key) // Delete any existing key before saving it
         
         let query: [String : Any] = [
-            KeychainSwiftConstants.klass       : kSecClassGenericPassword,
-            KeychainSwiftConstants.attrAccount : key,
-            KeychainSwiftConstants.attrGeneric : key,
-            KeychainSwiftConstants.valueData   : value,
-            KeychainSwiftConstants.attrService : Bundle.main.bundleIdentifier ?? "",
-            KeychainSwiftConstants.accessible  : kSecAttrAccessibleWhenUnlocked
+            KeychainConstants.klass       : kSecClassGenericPassword,
+            KeychainConstants.attrAccount : key,
+            KeychainConstants.attrGeneric : key,
+            KeychainConstants.valueData   : value,
+            KeychainConstants.attrService : Bundle.main.bundleIdentifier ?? "",
+            KeychainConstants.accessible  : kSecAttrAccessibleWhenUnlocked
         ]
         
         let resultCode = SecItemAdd(query as CFDictionary, nil)
@@ -77,12 +77,12 @@ struct KeychainSwift {
      
      */
     @discardableResult
-    func delete(key: String) -> Bool {
+    static func delete(key: String) -> Bool {
         let query: [String: Any] = [
-            KeychainSwiftConstants.klass       : kSecClassGenericPassword,
-            KeychainSwiftConstants.attrAccount : key,
-            KeychainSwiftConstants.attrGeneric : key,
-            KeychainSwiftConstants.attrService : Bundle.main.bundleIdentifier ?? ""
+            KeychainConstants.klass       : kSecClassGenericPassword,
+            KeychainConstants.attrAccount : key,
+            KeychainConstants.attrGeneric : key,
+            KeychainConstants.attrService : Bundle.main.bundleIdentifier ?? ""
         ]
         
         let resultCode = SecItemDelete(query as CFDictionary)
@@ -90,7 +90,7 @@ struct KeychainSwift {
         return resultCode == noErr
     }
     
-    func getDictionary(for key: String) -> [String : Any] {
+    static func getDictionary(for key: String) -> [String : Any] {
         guard let data = getData(for: key) else {
             return [:]
         }
@@ -106,7 +106,7 @@ struct KeychainSwift {
         }
     }
     
-    func set(dictionary: [String : Any], for key: String) {
+    static func set(dictionary: [String : Any], for key: String) {
         do {
             let data = try JSONSerialization.data(withJSONObject: dictionary)
             set(data: data, for: key)
