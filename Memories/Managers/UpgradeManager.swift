@@ -170,7 +170,7 @@ class UpgradeManager {
     
     static func restore(thenCall completion: ((Bool) -> ())?) {
         SwiftyStoreKit.restorePurchases(atomically: true) { result in
-            if let product = result.restoredProducts.first,
+            if let product = result.restoredPurchases.first,
                 product.productId == upgradeProductId {
                 upgraded = true
                 completion?(true)
