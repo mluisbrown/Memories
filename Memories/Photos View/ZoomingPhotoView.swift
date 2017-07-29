@@ -178,7 +178,6 @@ class ZoomingPhotoView: UIView, UIScrollViewDelegate {
             })
             .observe(on: QueueScheduler.main)
             .observeValues { [weak self] in
-                self?.progressView.isHidden = false
                 self?.mediaView.photo = $0
                 self?.adjustZoomScale()
         }
