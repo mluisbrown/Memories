@@ -186,8 +186,6 @@
 		4CAAF0741B827EAD00AE47C3 /* PullView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PullView.swift; sourceTree = "<group>"; };
 		4CABEE211CAAF08500A9F23A /* UITraitEnvironment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UITraitEnvironment.swift; sourceTree = "<group>"; };
 		4CB674B41BA1EBC7001F401A /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
-		4CBA89621BBC66BB00913336 /* RMStore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RMStore.framework; path = Carthage/Build/iOS/RMStore.framework; sourceTree = "<group>"; };
-		4CBA89641BBC66E000913336 /* RMStore.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = RMStore.framework.dSYM; path = Carthage/Build/iOS/RMStore.framework.dSYM; sourceTree = "<group>"; };
 		4CBA89661BBC926100913336 /* UpgradeManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UpgradeManager.swift; sourceTree = "<group>"; };
 		4CBA89681BBC9BF300913336 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		4CD790171DD60DE000EEE452 /* With.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = With.swift; sourceTree = "<group>"; };
@@ -368,7 +366,6 @@
 				4CE6FB331EAFF85000CC5D01 /* SwiftyStoreKit.framework.dSYM */,
 				4C8594D21BB33E2F005CCFAC /* DACircularProgress.framework.dSYM */,
 				4C8594D01BB33E27005CCFAC /* Cartography.framework.dSYM */,
-				4CBA89641BBC66E000913336 /* RMStore.framework.dSYM */,
 				4CE6FB261EAFF6DF00CC5D01 /* SwiftyStoreKit.framework */,
 				4C3EA9D41E1F058D000D78EA /* ReactiveCocoa.framework */,
 				4C3EA9D51E1F058D000D78EA /* ReactiveSwift.framework */,
@@ -376,7 +373,6 @@
 				4C09B82D1C53F65700C7D40F /* Crashlytics.framework */,
 				4C09B82E1C53F65700C7D40F /* Fabric.framework */,
 				4CBA89681BBC9BF300913336 /* Security.framework */,
-				4CBA89621BBC66BB00913336 /* RMStore.framework */,
 				4C8594C91BB33D02005CCFAC /* DACircularProgress.framework */,
 				4C8594C51BB33CF5005CCFAC /* Cartography.framework */,
 				4C211F491C3DB8270082F4DF /* NotificationCenter.framework */,
