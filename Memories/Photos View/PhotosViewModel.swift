@@ -21,10 +21,10 @@ struct PhotosViewModel {
     fileprivate let _photoViewModels = MutableProperty([PhotoViewModel]())
     let photoViewModels: Property<[PhotoViewModel]>
     
-    fileprivate let indexLoadedAndVisibleObserver: Observer<Int, NoError>
+    fileprivate let indexLoadedAndVisibleObserver: Signal<Int, NoError>.Observer
     let indexLoadedAndVisible: Signal<Int, NoError>
     
-    fileprivate let currentAssetChangedObserver: Observer<PHAsset, NoError>
+    fileprivate let currentAssetChangedObserver: Signal<PHAsset, NoError>.Observer
     let currentAssetChanged: Signal<PHAsset, NoError>
     
     private let libraryObserver: PhotoLibraryObserver
@@ -76,8 +76,11 @@ extension PhotosViewModel {
     func loadPreviewImageFor(index: Int) {
         let photoViewModel = photoViewModels.value[index]
         
-        self.imageManager.requestImage(for: photoViewModel.asset.value, targetSize: self.cacheSize,
-                                       contentMode: .aspectFill, options: nil, resultHandler: { result, userInfo in
+        self.imageManager.requestImage(for: photoViewModel.asset.value, 
+                                                                               targetSize: self.cacheSize,
+                                                                               contentMode: .aspectFill, 
+                                                                               options: nil, 
+                                                                               resultHandler: { result, userInfo in
             if let image = result {
                 photoViewModel.previewImage.value = image
                 

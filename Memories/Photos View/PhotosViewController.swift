@@ -68,7 +68,7 @@ class PhotosViewController: UIViewController,
             .filter { [weak self] in
                 self?.pageViews[$0] != nil
             }
-            .observe(on: QueueScheduler.main)
+            .observe(on: UIScheduler())
             .observeValues {
                 let pageView = self.pageViews[$0]!
                 let photoViewModel = self.model.photoViewModel(at: $0)
@@ -77,7 +77,7 @@ class PhotosViewController: UIViewController,
         }
         
         model.photoViewModels.signal
-            .observe(on: QueueScheduler.main)
+            .observe(on: UIScheduler())
             .observeValues { [weak self] in
                 if $0.count == 0 {
                     self?.presentingViewController?.dismiss(animated: true, completion: nil)
@@ -90,7 +90,7 @@ class PhotosViewController: UIViewController,
         }
         
         model.currentAssetChanged.signal
-            .observe(on: QueueScheduler.main)
+            .observe(on: UIScheduler())
             .observeValues { [weak self] in
                 self?.heartButton.setImage(self?.buttonImage(forFavorite: $0.isFavorite), for: .normal)
         }        

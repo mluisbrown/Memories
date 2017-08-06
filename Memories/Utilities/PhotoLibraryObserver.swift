@@ -14,7 +14,7 @@ import Result
 
 class PhotoLibraryObserver: NSObject, PHPhotoLibraryChangeObserver {
     
-    private let observer: Observer<PHChange, NoError>
+    private let observer: Signal<PHChange, NoError>.Observer
     private let library: PHPhotoLibrary
     
     let signal: Signal<PHChange, NoError>

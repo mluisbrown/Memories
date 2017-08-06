@@ -51,7 +51,7 @@ struct GridViewModel {
     }
     
     fileprivate let assetFetchResults = MutableProperty([PHFetchResult<PHAsset>]())
-    fileprivate let sectionChangesObserver: Observer<SectionChanges, NoError>
+    fileprivate let sectionChangesObserver: Signal<SectionChanges, NoError>.Observer
     let sectionChanged: Signal<SectionChanges, NoError>
 
     let libraryObserver: PhotoLibraryObserver?

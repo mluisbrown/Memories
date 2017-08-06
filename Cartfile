@@ -1,4 +1,4 @@
 github "bizz84/SwiftyStoreKit"
 github "mluisbrown/DACircularProgress" "master"
 github "robb/Cartography"
-github "ReactiveCocoa/ReactiveCocoa" ~> 5.0
+github "ReactiveCocoa/ReactiveCocoa"

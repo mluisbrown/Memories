@@ -19,8 +19,8 @@ enum AssetResource {
 
 final class PhotoViewModel {
     let asset: MutableProperty<PHAsset>
-    let assetResource = MutableProperty<AssetResource?>(nil)
     let previewImage = MutableProperty<UIImage?>(nil)
+    let assetResource = MutableProperty<AssetResource?>(nil)
     let assetRequestId = MutableProperty<PHImageRequestID?>(nil)
     
     let fullImageUnavailable = MutableProperty(false)

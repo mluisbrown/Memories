@@ -71,7 +71,7 @@ class DatePickerViewController: UIViewController, UIPickerViewDataSource, UIPick
             }
         }
         
-        datesWithCount <~ buildDatesWithCount().observe(on: QueueScheduler.main)
+        datesWithCount <~ buildDatesWithCount().observe(on: UIScheduler())
     }
     
 // MARK: - UIPickerViewDataSource

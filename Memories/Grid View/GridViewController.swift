@@ -69,31 +69,31 @@ class GridViewController: UICollectionViewController
     let RELEASE_THRESHOLD : CGFloat = 100.0
     
     private func bindToModel() {
-        model.resultsDate.signal.observe(on: QueueScheduler.main)
+        model.resultsDate.signal.observe(on: UIScheduler())
             .skipRepeats(==)
             .observeValues { [weak self] date in
                 self?.refreshData(for: date)
         }
         
-        model.title.producer.observe(on: QueueScheduler.main)
+        model.title.producer.observe(on: UIScheduler())
             .startWithValues { [weak self] title in
                 self?.titleView.text = title
                 self?.titleView.sizeToFit()
         }
         
-        model.sectionChanged.observe(on: QueueScheduler.main)
+        model.sectionChanged.observe(on: UIScheduler())
             .observeValues { [weak self]  changes in
                 self?.updateSection(with: changes)
         }
         
-        model.statusText.producer.observe(on: QueueScheduler.main)
+        model.statusText.producer.observe(on: UIScheduler())
             .startWithValues { [weak self] status in
                 self?.showHideStatusLabel(status)
         }
     }
     
     private func loadPhotos() {
-        PhotoLibraryAuthorization.checkPhotosPermission().observe(on: QueueScheduler.main)
+        PhotoLibraryAuthorization.checkPhotosPermission().observe(on: UIScheduler())
             .startWithValues { [weak self] status in
                 switch status {
                 case .authorized:
@@ -181,7 +181,9 @@ class GridViewController: UICollectionViewController
 
     // MARK: - Observer handlers
     private func updateSection(with changes: SectionChanges) {
-        if changes.nonIncremental {
+        let changeRemoveConflicts = changes.changed.filter() { changes.removed.contains($0) }.count != 0
+        
+        if changes.nonIncremental || changeRemoveConflicts {
             collectionView?.reloadSections(IndexSet(integer: changes.section))
         }
         else {

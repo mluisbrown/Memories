@@ -151,10 +151,10 @@ class ZoomingPhotoView: UIView, UIScrollViewDelegate {
         model.assetResource.signal
             .take(during: self.reactive.lifetime)
             .skipNil()
-            .on(value: { [weak self] _ in
+            .on() { [weak self] _ in
                 self?.model.imageIsPreview.value = false
-            })
-            .observe(on: QueueScheduler.main)
+            }
+            .observe(on: UIScheduler())
             .observeValues { [weak self] in
                 self?.progressView.isHidden = true
 
@@ -173,10 +173,10 @@ class ZoomingPhotoView: UIView, UIScrollViewDelegate {
         model.previewImage.signal
             .take(during: self.reactive.lifetime)
             .skipNil()
-            .on(value: { [weak self] _ in
-                self?.model.imageIsPreview.value = true
-            })
-            .observe(on: QueueScheduler.main)
+            .filter() { [weak self] _ in 
+                self?.model.imageIsPreview.value == true 
+            } 
+            .observe(on: UIScheduler())
             .observeValues { [weak self] in
                 self?.mediaView.photo = $0
                 self?.adjustZoomScale()
@@ -184,21 +184,21 @@ class ZoomingPhotoView: UIView, UIScrollViewDelegate {
         
         model.progress.signal
             .take(during: self.reactive.lifetime)
-            .observe(on: QueueScheduler.main)
+            .observe(on: UIScheduler())
             .observeValues { [weak self] in
             self?.updateProgress($0)
         }
         
         model.indeterminateProgress.signal
             .take(during: self.reactive.lifetime)
-            .observe(on: QueueScheduler.main)
+            .observe(on: UIScheduler())
             .observeValues { [weak self] in
             self?.updateProgress(indeterminate: $0)
         }
         
         model.fullImageUnavailable.signal
             .take(during: self.reactive.lifetime)
-            .observe(on: QueueScheduler.main)
+            .observe(on: UIScheduler())
             .filter { $0 }
             .observeValues { [weak self] _ in
                 self?.errorIndicator.isHidden = false
