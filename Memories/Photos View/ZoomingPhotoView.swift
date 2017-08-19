@@ -45,7 +45,7 @@ class ZoomingPhotoView: UIView, UIScrollViewDelegate {
     }
     
     private let progressView = DACircularProgressView().with {
-        $0.roundedCorners = Int(false)
+        $0.roundedCorners = Int(truncating: false)
         $0.thicknessRatio = 1
         $0.trackTintColor = UIColor.clear
         $0.layer.borderColor = UIColor.white.cgColor
@@ -381,13 +381,15 @@ class ZoomingPhotoView: UIView, UIScrollViewDelegate {
         }
         
         constrain(scrollView, progressView, replace: progressConstraintGroup) {scrollView, progressView in
-            progressView.top == scrollView.top + vPadding + (zoomScale * imageHeight) - 25
-            progressView.left == scrollView.left + hPadding + (zoomScale * imageWidth) - 25
+            let heightScale = zoomScale * imageHeight
+            let widthScale = zoomScale * imageWidth
+            progressView.top == (scrollView.top + vPadding + heightScale - 25)
+            progressView.left == (scrollView.left + hPadding + widthScale - 25)
         }
     }
     
     // MARK: UITapGestureRecognizer actions
-    func imageDoubleTapped(_ recognizer: UITapGestureRecognizer) {
+    @objc func imageDoubleTapped(_ recognizer: UITapGestureRecognizer) {
         let touchPoint = recognizer.location(ofTouch: 0, in: mediaView)
 
         if scrollView.zoomScale < aspectFitZoomScale {
@@ -402,7 +404,7 @@ class ZoomingPhotoView: UIView, UIScrollViewDelegate {
         }
     }
 
-    func imageSingleTapped(_ recognizer: UITapGestureRecognizer) {
+    @objc func imageSingleTapped(_ recognizer: UITapGestureRecognizer) {
         UIView.animate(withDuration: 0.25) {
             self.photoViewDelegate?.viewWasTapped()
             self.scrubberView.alpha = self.scrubberView.alpha == 1 ? 0 : 1

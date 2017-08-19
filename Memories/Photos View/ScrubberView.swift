@@ -65,14 +65,14 @@ class ScrubberView: UIView {
             label.centerY == view.centerY
             label.left == button.right
         }
-        currentTimeLabel.setContentHuggingPriority(UILayoutPriorityDefaultHigh, for: .horizontal)
+        currentTimeLabel.setContentHuggingPriority(UILayoutPriority.defaultHigh, for: .horizontal)
 
         addSubview(remainingTimeLabel)
         constrain(self, remainingTimeLabel) { view, label in
             label.centerY == view.centerY
             label.right == view.right - 5
         }
-        remainingTimeLabel.setContentHuggingPriority(UILayoutPriorityDefaultHigh, for: .horizontal)
+        remainingTimeLabel.setContentHuggingPriority(UILayoutPriority.defaultHigh, for: .horizontal)
 
         addSubview(scrubberSlider)
         constrain(self, currentTimeLabel, remainingTimeLabel, scrubberSlider) { view, leftLabel, rightLabel, slider in

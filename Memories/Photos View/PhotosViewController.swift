@@ -220,7 +220,7 @@ class PhotosViewController: UIViewController,
         doClose()
     }
     
-    func viewDidPan(_ gr: UIPanGestureRecognizer) {
+    @objc func viewDidPan(_ gr: UIPanGestureRecognizer) {
         switch gr.state {
         case .began:
             let startPoint = gr.location(in: gr.view)

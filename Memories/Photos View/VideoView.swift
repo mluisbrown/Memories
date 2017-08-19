@@ -48,7 +48,7 @@ class VideoView: UIView {
 
             if let videoLayer = self.layer as? AVPlayerLayer {
                 videoLayer.player = player
-                videoLayer.videoGravity = AVLayerVideoGravityResizeAspect
+                videoLayer.videoGravity = AVLayerVideoGravity.resizeAspect
             }
             // only set item once AVPlayerLayer has been setup
             // optimization recommended in Session 503 from WWDC 2016 (https://developer.apple.com/videos/play/wwdc2016/503/)

@@ -165,7 +165,9 @@ class NotificationManager {
             return notification
         }
 
-        UIApplication.shared.cancelAllLocalNotifications()
+        DispatchQueue.main.async {
+            UIApplication.shared.cancelAllLocalNotifications()
+        }
         guard notifications.count > 0 else {return}
 
 #if (arch(i386) || arch(x86_64)) && os(iOS)
@@ -174,10 +176,14 @@ class NotificationManager {
         let noteTime = now.addingTimeInterval(20)
         testNote?.fireDate = noteTime
 
+    DispatchQueue.main.async {
         UIApplication.shared.scheduledLocalNotifications = [testNote!]
+    }
 #else
         // schedule the new notifications
+    DispatchQueue.main.async {
         UIApplication.shared.scheduledLocalNotifications = notifications
+    }
 #endif
     }
     

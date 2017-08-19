@@ -295,7 +295,7 @@ extension PhotosViewModel {
     func handleChange(_ changeInstance: PHChange) {
         let newAssets:[PHAsset] = photoViewModels.value.flatMap {
             if let changeDetails = changeInstance.changeDetails(for: $0.asset.value) {
-                return changeDetails.objectWasDeleted ? nil : changeDetails.objectAfterChanges as? PHAsset
+                return changeDetails.objectWasDeleted ? nil : changeDetails.objectAfterChanges
             }
             else {
                 return $0.asset.value

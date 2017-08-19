@@ -130,8 +130,8 @@ class MediaView: UIView {
             case .livePhoto(let livewPhotoView):
                 return livewPhotoView?.livePhoto?.size
             case .video(let videoView):
-                let size = videoView?.playerItem?.asset.tracks(withMediaType: AVMediaTypeVideo).first?.naturalSize
-                if let transform = videoView?.playerItem?.asset.tracks(withMediaType: AVMediaTypeVideo).first?.preferredTransform,
+                let size = videoView?.playerItem?.asset.tracks(withMediaType: AVMediaType.video).first?.naturalSize
+                if let transform = videoView?.playerItem?.asset.tracks(withMediaType: AVMediaType.video).first?.preferredTransform,
                     let naturalSize = size,
                     transform != .identity {
                     return CGSize(width: naturalSize.height, height: naturalSize.width)

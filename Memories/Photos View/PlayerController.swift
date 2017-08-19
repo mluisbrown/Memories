@@ -40,8 +40,8 @@ private extension Collection where Iterator.Element == NSValue {
 
 class PlayerController: NSObject {
     
-    let player: AVPlayer
-    let playerItem: AVPlayerItem
+    @objc let player: AVPlayer
+    @objc let playerItem: AVPlayerItem
     var timeObserver: Any?
     
     private let observedKeyPaths = [
@@ -235,7 +235,7 @@ class PlayerController: NSObject {
     }
     
     private func addTimeObserver() {
-        let frameRate = playerItem.asset.tracks(withMediaType: AVMediaTypeVideo).first?.nominalFrameRate ?? 30
+        let frameRate = playerItem.asset.tracks(withMediaType: AVMediaType.video).first?.nominalFrameRate ?? 30
         let frameDuration = 1 / frameRate
         
         timeObserver = player.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(Float64(frameDuration), Int32(NSEC_PER_SEC)), queue: nil) { [weak self] _ in
@@ -280,7 +280,7 @@ class PlayerController: NSObject {
     
     // MARK: Actions
     
-    func playPause() {
+    @objc func playPause() {
         startPlayButtonVisible = false
         
         if player.rate == 0 {
@@ -298,7 +298,7 @@ class PlayerController: NSObject {
         }
     }
     
-    func sliderValueChanged(sender: UISlider, event: UIEvent) {
+    @objc func sliderValueChanged(sender: UISlider, event: UIEvent) {
         startPlayButtonVisible = false
         
         if let touch = event.allTouches?.first {

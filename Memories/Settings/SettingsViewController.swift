@@ -147,7 +147,7 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
         case timePickerIndexPath:
             height = 162
         case upgradeIndexPath:
-            let attributedString = NSAttributedString(string: upgradeLabel.text!, attributes: [NSFontAttributeName : UIFont.systemFont(ofSize: 14)])
+            let attributedString = NSAttributedString(string: upgradeLabel.text!, attributes: [NSAttributedStringKey.font : UIFont.systemFont(ofSize: 14)])
             let rect = attributedString.boundingRect(with: CGSize(width: tableView.bounds.width - 32, height: CGFloat.greatestFiniteMagnitude)
                 , options: [.usesLineFragmentOrigin, .usesFontLeading]
                 , context: nil)

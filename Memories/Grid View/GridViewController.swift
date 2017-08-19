@@ -212,7 +212,7 @@ class GridViewController: UICollectionViewController
     }
     
     // MARK: - Actions
-    func titleTapped(_ tgr: UITapGestureRecognizer) {
+    @objc func titleTapped(_ tgr: UITapGestureRecognizer) {
         let sourceView = tgr.view!
         
         if let datePickerVC = storyboard?.instantiateViewController(withIdentifier: "datePicker") as? DatePickerViewController {

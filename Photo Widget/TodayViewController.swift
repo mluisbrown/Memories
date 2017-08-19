@@ -62,7 +62,7 @@ class TodayViewController: UIViewController {
         photoView.isUserInteractionEnabled = true
     }
 
-    func launchApp() {
+    @objc func launchApp() {
         extensionContext?.open(URL(string: "memories://")!)
     }
     
@@ -81,7 +81,7 @@ class TodayViewController: UIViewController {
         }
     }
 
-    private func showPhotoView(_ show: Bool, completion: ((Void) -> Void)?) {
+    private func showPhotoView(_ show: Bool, completion: (() -> Void)?) {
         let constant: CGFloat
         if #available(iOSApplicationExtension 10.0, *) {
             constant = show ? photoViewHeightFor(activeDisplayMode: extensionContext!.widgetActiveDisplayMode) : 0
