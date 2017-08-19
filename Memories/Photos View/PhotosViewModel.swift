@@ -18,13 +18,13 @@ struct PhotosViewModel {
     let cacheSize = CGSize(width: 256, height: 256)
 
     let currentIndex = MutableProperty(0)
-    fileprivate let _photoViewModels = MutableProperty([PhotoViewModel]())
+    private let _photoViewModels = MutableProperty([PhotoViewModel]())
     let photoViewModels: Property<[PhotoViewModel]>
     
-    fileprivate let indexLoadedAndVisibleObserver: Signal<Int, NoError>.Observer
+    private let indexLoadedAndVisibleObserver: Signal<Int, NoError>.Observer
     let indexLoadedAndVisible: Signal<Int, NoError>
     
-    fileprivate let currentAssetChangedObserver: Signal<PHAsset, NoError>.Observer
+    private let currentAssetChangedObserver: Signal<PHAsset, NoError>.Observer
     let currentAssetChanged: Signal<PHAsset, NoError>
     
     private let libraryObserver: PhotoLibraryObserver

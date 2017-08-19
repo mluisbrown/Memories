@@ -446,12 +446,12 @@ extension GridViewController {
 
 // MARK: - Asset Caching
 extension GridViewController {
-    fileprivate func resetCachedAssets() {
+    private func resetCachedAssets() {
         model.stopCachingAllImages()
         previousPreheatRect = CGRect.zero
     }
     
-    fileprivate func updateCachedAssets() {
+    private func updateCachedAssets() {
         guard let _ = view.window,
             let collectionView = collectionView,
             model.photosAllowed,
@@ -525,7 +525,7 @@ extension GridViewController {
 
 // MARK: - Helpers
 extension GridViewController {
-    fileprivate func showHideBlur(_ show: Bool) {
+    private func showHideBlur(_ show: Bool) {
         if show {
             let window = UIApplication.shared.keyWindow!
             var frame = window.frame
@@ -538,7 +538,7 @@ extension GridViewController {
         }
     }
     
-    fileprivate func configureCellSize(for viewSize : CGSize) {
+    private func configureCellSize(for viewSize : CGSize) {
         let minWidth = CGFloat(90.0)
         let viewWidth = viewSize.width
         let maxCellsPerRow: CGFloat = viewSize.width < viewSize.height ? 5 : 7
@@ -549,7 +549,7 @@ extension GridViewController {
         self.cellSize = cellSize
     }
     
-    fileprivate func showHideStatusLabel(_ text: String) {
+    private func showHideStatusLabel(_ text: String) {
         // make sure views have been layed out properly
         guard topLayoutGuide.length != 0 else {
             return

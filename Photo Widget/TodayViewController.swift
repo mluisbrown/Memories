@@ -19,10 +19,10 @@ class TodayViewController: UIViewController {
     @IBOutlet weak var yearLabel: UILabel!
     @IBOutlet weak var photoHeightConstraint: NSLayoutConstraint!
     
-    fileprivate var model: TodayViewModel?
+    private var model: TodayViewModel?
     
-    fileprivate let expandedWidgetHeight = CGFloat(245)
-    fileprivate let photoViewExpandedHeight = CGFloat(200)
+    private let expandedWidgetHeight = CGFloat(245)
+    private let photoViewExpandedHeight = CGFloat(200)
 
     private var readyForDisplay: Signal<(), NoError>? = nil
     
@@ -74,7 +74,7 @@ class TodayViewController: UIViewController {
         model?.previousImage()
     }
     
-    fileprivate func display(image: UIImage?, completion: ((Bool) -> Void)? = nil) {
+    private func display(image: UIImage?, completion: ((Bool) -> Void)? = nil) {
         showPhotoView(image != nil) {
             self.photoView.image = image
             completion?(true)
@@ -92,7 +92,7 @@ class TodayViewController: UIViewController {
         setPhotoViewHeight(constant, completion: completion)
     }
     
-    fileprivate func setPhotoViewHeight(_ height: CGFloat, completion: (() -> Void)? = nil) {
+    private func setPhotoViewHeight(_ height: CGFloat, completion: (() -> Void)? = nil) {
         let showYearLabel = height == photoViewExpandedHeight || height == 0
         
         if photoHeightConstraint.constant != height {
@@ -111,7 +111,7 @@ class TodayViewController: UIViewController {
     }
     
     @available(iOSApplicationExtension 10.0, *)
-    fileprivate func photoViewHeightFor(activeDisplayMode: NCWidgetDisplayMode) -> CGFloat {
+    private func photoViewHeightFor(activeDisplayMode: NCWidgetDisplayMode) -> CGFloat {
         let photoViewHeight: CGFloat
         
         switch activeDisplayMode {

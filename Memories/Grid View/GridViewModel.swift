@@ -42,16 +42,16 @@ struct GridViewModel {
     private let token = Lifetime.Token()
     // If the size is too large then PhotoKit doesn't return an optimal image size
     // see rdar://25181601 (https://openradar.appspot.com/radar?id=6158824289337344)
-    fileprivate let gridThumbnailSize = CGSize(width: 256, height: 256)
-    fileprivate let timeFormatter = DateComponentsFormatter()
+    private let gridThumbnailSize = CGSize(width: 256, height: 256)
+    private let timeFormatter = DateComponentsFormatter()
     
-    fileprivate let assetHelper = PHAssetHelper()
+    private let assetHelper = PHAssetHelper()
     private let dateFormatter = DateFormatter().with {
         $0.dateFormat = "MMMM dd"
     }
     
-    fileprivate let assetFetchResults = MutableProperty([PHFetchResult<PHAsset>]())
-    fileprivate let sectionChangesObserver: Signal<SectionChanges, NoError>.Observer
+    private let assetFetchResults = MutableProperty([PHFetchResult<PHAsset>]())
+    private let sectionChangesObserver: Signal<SectionChanges, NoError>.Observer
     let sectionChanged: Signal<SectionChanges, NoError>
 
     let libraryObserver: PhotoLibraryObserver?
@@ -60,7 +60,7 @@ struct GridViewModel {
     let date = MutableProperty(Date())
     let resultsDate = MutableProperty(Date())
     let title = MutableProperty("Memories")
-    fileprivate let status = MutableProperty<Status>(.noAccess)
+    private let status = MutableProperty<Status>(.noAccess)
     var statusText: Property<String> {
         return Property(status.map { return $0.rawValue } )
     }
