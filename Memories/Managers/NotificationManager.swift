@@ -176,14 +176,14 @@ class NotificationManager {
         let noteTime = now.addingTimeInterval(20)
         testNote?.fireDate = noteTime
 
-    DispatchQueue.main.async {
-        UIApplication.shared.scheduledLocalNotifications = [testNote!]
-    }
+        DispatchQueue.main.async {
+            UIApplication.shared.scheduledLocalNotifications = [testNote!]
+        }
 #else
         // schedule the new notifications
-    DispatchQueue.main.async {
-        UIApplication.shared.scheduledLocalNotifications = notifications
-    }
+        DispatchQueue.main.async {
+            UIApplication.shared.scheduledLocalNotifications = notifications
+        }
 #endif
     }
     
