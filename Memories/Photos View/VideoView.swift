@@ -86,10 +86,6 @@ class VideoView: UIView {
         return AVPlayerLayer.self
     }
 
-    func reset() {
-        previewImageVisible = true
-    }
-    
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         if let status = player?.status,
             status == .readyToPlay {

@@ -52,7 +52,7 @@ class PlayerController: NSObject {
         #keyPath(PlayerController.player.rate)
     ]
     
-    private var observerContext = 0
+    private static var observerContext = 0
     private var playAfterScrub = false
     private var scrubEnded = false
     private let itemDuration: TimeInterval
@@ -186,7 +186,7 @@ class PlayerController: NSObject {
     // MARK: KVO
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        guard context == &observerContext else {
+        guard context == &PlayerController.observerContext else {
             super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
             return
         }
@@ -230,7 +230,7 @@ class PlayerController: NSObject {
     
     private func addObservers() {
         for keyPath in observedKeyPaths {
-            addObserver(self, forKeyPath: keyPath, options: [.new, .initial], context: &observerContext)
+            addObserver(self, forKeyPath: keyPath, options: [.new, .initial], context: &PlayerController.observerContext)
         }
     }
     
@@ -245,7 +245,7 @@ class PlayerController: NSObject {
     
     private func removeObservers() {
         for keyPath in observedKeyPaths {
-            removeObserver(self, forKeyPath: keyPath, context: &observerContext)
+            removeObserver(self, forKeyPath: keyPath, context: &PlayerController.observerContext)
         }
     }
     

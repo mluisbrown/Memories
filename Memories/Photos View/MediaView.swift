@@ -156,9 +156,7 @@ class MediaView: UIView {
         switch contentView {
         case .livePhoto(let livePhotoView):
             livePhotoView?.stopPlayback()
-        case .video(let videoView):
-            videoView?.reset()
-        case .photo:
+        case .photo, .video:
             break
         }
     }

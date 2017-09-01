@@ -257,9 +257,9 @@ class ZoomingPhotoView: UIView, UIScrollViewDelegate {
         mediaView.didBecomeVisible()
     }
     
-    func willBecomeHidden() {
+    func willBecomeHidden(closing: Bool = false) {
         mediaView.willBecomeHidden()
-        playerController?.pause(andReset: true)
+        playerController?.pause(andReset: !closing)
     }
     
     func hideProgressView(_ hide: Bool) {

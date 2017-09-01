@@ -204,6 +204,7 @@ class PhotosViewController: UIViewController,
         
         if let imageView = delegate.imageView(atIndex: model.currentIndex.value),
             let pageView = pageViews[model.currentIndex.value] {
+            pageView.willBecomeHidden(closing: true)
             dismissTransition = PhotosViewDismissTransition(destImageView: imageView, sourceImageView: pageView.mediaView)
         }
         else {
