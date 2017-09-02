@@ -12,7 +12,7 @@ import Cartography
 
 class VideoView: UIView {
 
-    private var observerContext = 0
+    private static var observerContext = 0
     
     let previewImageView = UIImageView().with {
         $0.translatesAutoresizingMaskIntoConstraints = false
@@ -61,10 +61,10 @@ class VideoView: UIView {
     
     var player: AVPlayer? {
         willSet {
-            player?.removeObserver(self, forKeyPath: "status")
+            player?.removeObserver(self, forKeyPath: "status", context: &VideoView.observerContext)
         }
         didSet {
-            player?.addObserver(self, forKeyPath: "status", options: [.new, .initial], context: nil)
+            player?.addObserver(self, forKeyPath: "status", options: [.new, .initial], context: &VideoView.observerContext)
         }
     }
     
@@ -87,6 +87,11 @@ class VideoView: UIView {
     }
 
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        guard context == &VideoView.observerContext else {
+            super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
+            return
+        }
+
         if let status = player?.status,
             status == .readyToPlay {
             previewImageVisible = false
