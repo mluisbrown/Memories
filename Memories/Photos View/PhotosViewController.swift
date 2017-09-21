@@ -310,8 +310,8 @@ class PhotosViewController: UIViewController,
     
     private func didLoad(pageView: ZoomingPhotoView, for asset: PHAsset, hiRes: Bool) {
         shareButton.isEnabled = hiRes
-        deleteButton.isEnabled = hiRes
-        heartButton.isEnabled = !asset.sourceType.contains(.typeiTunesSynced) && hiRes
+        deleteButton.isEnabled = asset.canPerform(.delete) && hiRes
+        heartButton.isEnabled = asset.canPerform(.properties) && hiRes
         
         pageView.didBecomeVisible()
     }
