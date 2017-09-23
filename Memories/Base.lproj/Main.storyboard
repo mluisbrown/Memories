@@ -183,6 +183,7 @@
                                                 <constraint firstAttribute="bottom" secondItem="xCI-GP-ox5" secondAttribute="bottom" constant="8" id="KbZ-6z-gV1"/>
                                                 <constraint firstItem="2t5-UW-Cfd" firstAttribute="centerX" secondItem="lW8-as-hQ0" secondAttribute="centerX" id="LXQ-Wd-HGr"/>
                                                 <constraint firstAttribute="bottomMargin" secondItem="RGO-0f-XYF" secondAttribute="bottom" constant="8" id="Pjt-fe-1Ob"/>
+                                                <constraint firstItem="9jx-Pu-5kh" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="2t5-UW-Cfd" secondAttribute="trailing" priority="750" constant="8" id="RAc-Pa-ONe"/>
                                                 <constraint firstItem="2t5-UW-Cfd" firstAttribute="centerY" secondItem="xCI-GP-ox5" secondAttribute="centerY" id="Yhb-dd-Nk6"/>
                                                 <constraint firstItem="xCI-GP-ox5" firstAttribute="top" relation="greaterThanOrEqual" secondItem="RGO-0f-XYF" secondAttribute="bottom" constant="5" id="iFh-b7-iB0"/>
                                                 <constraint firstItem="RGO-0f-XYF" firstAttribute="leading" secondItem="lW8-as-hQ0" secondAttribute="leadingMargin" constant="8" id="mAh-Q2-3tK"/>
@@ -285,7 +286,7 @@
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Photo Library" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="31u-cE-Sao">
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" text="Photo Library" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="31u-cE-Sao">
                                                     <rect key="frame" x="16" y="11" width="103" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
