@@ -85,7 +85,7 @@
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yLm-aY-ohP">
                                     <rect key="frame" x="0.0" y="4.5" width="37.5" height="21"/>
                                     <constraints>
-                                        <constraint firstAttribute="width" constant="36" id="RWd-GU-UIH"/>
+                                        <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="36" id="RWd-GU-UIH"/>
                                         <constraint firstAttribute="height" constant="21" id="vlV-Ua-9Kx"/>
                                     </constraints>
                                     <fontDescription key="fontDescription" style="UICTFontTextStyleSubhead"/>
@@ -165,7 +165,7 @@
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <state key="normal" title="Upgrade"/>
                                                 </button>
-                                                <button opaque="NO" contentMode="scaleToFill" verticalCompressionResistancePriority="1000" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9jx-Pu-5kh">
+                                                <button opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9jx-Pu-5kh">
                                                     <rect key="frame" x="525" y="120" width="59" height="33"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <state key="normal" title="Restore"/>
@@ -299,6 +299,7 @@
                                                 <constraint firstItem="t0l-my-Ev5" firstAttribute="centerY" secondItem="rJw-m4-hjl" secondAttribute="centerY" id="3WX-0t-tYR"/>
                                                 <constraint firstAttribute="trailingMargin" secondItem="t0l-my-Ev5" secondAttribute="trailing" constant="8" id="78o-BO-SaV"/>
                                                 <constraint firstItem="31u-cE-Sao" firstAttribute="centerY" secondItem="rJw-m4-hjl" secondAttribute="centerY" id="BQU-Ib-TWh"/>
+                                                <constraint firstItem="t0l-my-Ev5" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="31u-cE-Sao" secondAttribute="trailing" constant="8" id="axq-Kk-sgc"/>
                                                 <constraint firstItem="31u-cE-Sao" firstAttribute="leading" secondItem="rJw-m4-hjl" secondAttribute="leadingMargin" constant="8" id="eYS-sb-gqu"/>
                                             </constraints>
                                         </tableViewCellContentView>
@@ -644,7 +645,7 @@
                                 <rect key="frame" x="134" y="202" width="50" height="30"/>
                                 <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="50" id="O0l-cV-8X3"/>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="50" id="O0l-cV-8X3"/>
                                 </constraints>
                                 <state key="normal" title="Go">
                                     <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -657,7 +658,7 @@
                                 <rect key="frame" x="16" y="202" width="50" height="30"/>
                                 <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="50" id="4zr-qJ-Dfc"/>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="50" id="4zr-qJ-Dfc"/>
                                 </constraints>
                                 <state key="normal" title="Today">
                                     <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

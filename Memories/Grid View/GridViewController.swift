@@ -121,13 +121,21 @@ class GridViewController: UICollectionViewController
         titleView.addGestureRecognizer(tgr)
     }
     
+    private func configureFlowLayout() {
+        if let flowLayout = collectionViewLayout as? UICollectionViewFlowLayout {
+            flowLayout.sectionHeadersPinToVisibleBounds = true
+            if #available(iOS 11.0, *) {
+                flowLayout.sectionInsetReference = .fromSafeArea
+            }
+        } 
+    }
+    
     // MARK: - UIViewController
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        (collectionViewLayout as? UICollectionViewFlowLayout)?.sectionHeadersPinToVisibleBounds = true
-        
+        configureFlowLayout()
         configureTitleView()
         
         model = GridViewModel()
@@ -208,7 +216,11 @@ class GridViewController: UICollectionViewController
     private func refreshData(for date: Date) {
         resetCachedAssets()
         collectionView?.reloadData()
-        collectionView?.scrollToItem(at: model.indexPath(for: 0), at: .top, animated: false)
+
+        let topIndexPath = model.indexPath(for: 0)
+        if !topIndexPath.isEmpty {
+            collectionView?.scrollToItem(at: model.indexPath(for: 0), at: .top, animated: false)
+        }
         
         createOrUpdatePullViews(with: date as Date)
         showHideBlur(false)
