@@ -125,6 +125,9 @@ class GridViewController: UICollectionViewController
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        (collectionViewLayout as? UICollectionViewFlowLayout)?.sectionHeadersPinToVisibleBounds = true
+        
         configureTitleView()
         
         model = GridViewModel()
@@ -133,7 +136,7 @@ class GridViewController: UICollectionViewController
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        configureCellSize(for: view.bounds.size)
+        configureCellSize(for: view.bounds.size)        
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -205,7 +208,7 @@ class GridViewController: UICollectionViewController
     private func refreshData(for date: Date) {
         resetCachedAssets()
         collectionView?.reloadData()
-        collectionView?.setContentOffset(CGPoint(x: 0, y: -collectionView!.contentInset.top), animated: false)
+        collectionView?.scrollToItem(at: model.indexPath(for: 0), at: .top, animated: false)
         
         createOrUpdatePullViews(with: date as Date)
         showHideBlur(false)
