@@ -94,10 +94,10 @@ struct TodayViewModel {
                                            options: self.requestOptions) { result, userInfo in
                 
                 if let image = result {
-                    observer.send(value: image)
-
                     let isDegraded = ((userInfo?[PHImageResultIsDegradedKey] as? NSNumber) as? Bool) ?? true
+                    
                     if !isDegraded {
+                        observer.send(value: image)
                         observer.sendCompleted()
                     }
                 }

@@ -32,7 +32,7 @@ class TodayViewController: UIViewController {
         yearLabel.reactive.text <~ model!.yearText.producer
         
         model?.currentImage.producer
-            .observe(on: UIScheduler())
+            .observe(on: QueueScheduler.main)
             .startWithValues {
                 self.display(image: $0)
         }
