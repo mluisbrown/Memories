@@ -51,7 +51,9 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
     }
     
     private func bindToModel() {
-        viewModel.notificationsEnabled.producer.startWithValues { [unowned self] in
+        viewModel.notificationsEnabled.producer
+            .observe(on: UIScheduler())
+            .startWithValues { [unowned self] in
             if $0 {
                 NotificationManager.enableNotifications()
                 self.timePicker.isUserInteractionEnabled = true
@@ -63,7 +65,9 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
             }
         }
         
-        viewModel.userHasUpgraded.producer.startWithValues {
+        viewModel.userHasUpgraded.producer
+            .observe(on: UIScheduler())
+            .startWithValues {
             [unowned self] upgraded in
             UIView.animate(withDuration: 0.25) {
                 self.upgradeButton.alpha = upgraded ? 0 : 1
@@ -75,7 +79,9 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
             }
         }
 
-        viewModel.upgradeButtonText.startWithSignal { signal, _ in
+        viewModel.upgradeButtonText
+            .observe(on: UIScheduler())
+            .startWithSignal { signal, _ in
             signal.observeValues {
                 [unowned self] in
                 self.upgradeButton.setTitle($0, for: .normal)

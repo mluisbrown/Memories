@@ -168,7 +168,9 @@ class PhotosViewController: UIViewController,
             self.shareProgressView.show(loading: true)
         }
         
-        model.loadAssetDataForSharing(for: model.currentIndex.value).startWithValues { [weak self] data in
+        model.loadAssetDataForSharing(for: model.currentIndex.value)
+            .observe(on: UIScheduler())
+            .startWithValues { [weak self] data in
             UIView.animate(withDuration: 0.25, animations: {
                 self?.shareProgressView.show(loading: false)
                 sender.alpha = 1

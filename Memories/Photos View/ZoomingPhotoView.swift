@@ -367,8 +367,10 @@ class ZoomingPhotoView: UIView, UIScrollViewDelegate {
     
     private func adjustImageConstraints(for zoomScale: CGFloat) {
         guard let padding = getImagePadding(for: zoomScale),
-                  let imageSize = mediaView.imageSize else {
-            return
+            let imageSize = mediaView.imageSize,
+            let mediaConstraintGroup = mediaConstraintGroup,
+            let progressConstraintGroup = progressConstraintGroup else {
+                return
         }
 
         let hPadding = padding.hPadding
