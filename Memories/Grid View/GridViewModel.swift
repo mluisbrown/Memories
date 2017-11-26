@@ -96,6 +96,7 @@ struct GridViewModel {
                 if let date = NotificationManager.launchDate() {
                     self.date.value = date
                 }
+                self.promptForReview()
         }
     }
     
@@ -241,8 +242,15 @@ struct GridViewModel {
         }
         
         return IndexPath()
+    }    
+}
+
+extension GridViewModel {
+    private func promptForReview() {
+        guard photosAllowed else { return }
+        
+        UpgradeManager.maybePromptForReview()
     }
-    
 }
 
 // MARK: - Image Mangaer

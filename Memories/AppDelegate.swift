@@ -23,7 +23,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         UserDefaults.standard.register(defaults: [NotificationManager.Key.notificationTime : 1000,
             NotificationManager.Key.hasPromptedForUserNotifications : false,
-            NotificationManager.Key.notificationsEnabled: false])
+            NotificationManager.Key.notificationsEnabled: false,
+            UpgradeManager.Key.appLaunchCountMod3: 0])
 
         // store the date of the notification that launched the app (if any)
         // so that we start the view controller with that date
@@ -43,6 +44,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
 
+    func applicationDidBecomeActive(_ application: UIApplication) {
+        UpgradeManager.registerAppLaunch()        
+    }
+    
     func application(_ application: UIApplication, didReceive notification: UILocalNotification) {
         if application.applicationState != .active {
             NotificationManager.setLaunchDate(notification.fireDate)

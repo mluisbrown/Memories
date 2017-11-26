@@ -107,7 +107,7 @@ class GridViewController: UICollectionViewController
                     } else {
                         self?.model.date.value = startDate
                     }
-
+                    
                 case .denied, .restricted, .notDetermined:
                     break
                 }

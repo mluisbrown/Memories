@@ -9,6 +9,7 @@
 import UIKit
 import Security
 import SwiftyStoreKit
+import StoreKit
 
 class UpgradeManager {
     static let upgradeProductId = "com.luacheia.memories.Upgrade"
@@ -17,6 +18,7 @@ class UpgradeManager {
         static let highQualityViewCount = "HighQualityViewCount"
         static let viewCountDate = "ViewCountDate"
         static let upgradePromptShown = "UpgradePromptShown"
+        static let appLaunchCountMod3 = "AppLaunchCountMod3"
     }
     
     static let MaxHighQualityViewCount = 5
@@ -192,6 +194,25 @@ class UpgradeManager {
                         SwiftyStoreKit.finishTransaction(product.transaction)
                     }
                 }
+            }
+        }
+    }
+}
+
+extension UpgradeManager {
+    static func registerAppLaunch() {
+        let count = userDefaults.integer(forKey: Key.appLaunchCountMod3)
+        let newCount = (count + 1) % 3
+        
+        userDefaults.set(newCount, forKey: Key.appLaunchCountMod3)
+        userDefaults.synchronize()
+    }
+    
+    static func maybePromptForReview() {
+        let count = userDefaults.integer(forKey: Key.appLaunchCountMod3)
+        if count == 0 {
+            if #available(iOS 10.3, *) {
+                SKStoreReviewController.requestReview()
             }
         }
     }

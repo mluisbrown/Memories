@@ -192,7 +192,15 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
     
     private func rateApp() {
         let appId = 1037130497
-        let appStoreURL = URL(string: "itms-apps://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?type=Purple+Software&id=\(appId)&pageNumber=0&sortOrdering=2&mt=8")!
+        let appStoreOldURL = URL(string: "itms-apps://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?type=Purple+Software&id=\(appId)&pageNumber=0&sortOrdering=2&mt=8")!
+        let appStoreNewURL = URL(string: "itms-apps://itunes.apple.com/app/id\(appId)?action=write-review")!
+        
+        let appStoreURL: URL
+        if #available(iOS 10.3, *) {
+            appStoreURL = appStoreNewURL
+        } else {
+            appStoreURL = appStoreOldURL
+        }
         
         if UIApplication.shared.canOpenURL(appStoreURL) {
             UIApplication.shared.openURL(appStoreURL)
@@ -203,6 +211,5 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
 
     func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
         self.dismiss(animated: true, completion: nil)
-    }
-    
+    }    
 }
