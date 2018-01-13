@@ -87,7 +87,8 @@ class ZoomingPhotoView: UIView, UIScrollViewDelegate {
     private var playerController: PlayerController?
     
     private var mediaConstraintGroup: ConstraintGroup?
-    private var progressConstraintGroup : ConstraintGroup?
+    private var progressConstraintGroup: ConstraintGroup?
+    private var scrubberConstraintGroup: ConstraintGroup? 
     
     private let buttonOffset = CGFloat(50)
     private var aspectFitZoomScale = CGFloat(0)
@@ -98,7 +99,7 @@ class ZoomingPhotoView: UIView, UIScrollViewDelegate {
         $0.translatesAutoresizingMaskIntoConstraints = false
     }
     
-    init( model: PhotoViewModel) {
+    init(model: PhotoViewModel) {
         self.model = model
         
         super.init(frame: .zero)
@@ -223,20 +224,35 @@ class ZoomingPhotoView: UIView, UIScrollViewDelegate {
         }
         
         addSubview(scrubberView)
-        constrain(self, scrubberView) { view, scrubberView in
-            scrubberView.height == 40
-            scrubberView.bottom == view.bottom - 10
-            scrubberView.left == view.left + buttonOffset + 5
-            scrubberView.right == view.right - buttonOffset - 5
-        }
+        if #available(iOS 11.0, *) {
+            constrain(self, scrubberView) { view, scrubberView in
+                scrubberView.height == 40
+                scrubberView.bottom == view.safeAreaLayoutGuide.bottom - 10
+            }
+
+            let insets = self.superview?.safeAreaInsets ?? UIEdgeInsetsMake(0, 0, 0, 0)            
+            scrubberConstraintGroup = constrain(self, scrubberView) { view, scrubberView in
+                scrubberView.leading == view.leading + insets.left + buttonOffset + 10
+                scrubberView.trailing == view.trailing - insets.right - buttonOffset - 10                
+            }            
+        } else {
+            constrain(self, scrubberView) { view, scrubberView in
+                scrubberView.height == 40
+                scrubberView.bottom == view.bottom - 10
+                scrubberView.leading == view.leading + buttonOffset + 10
+                scrubberView.trailing == view.trailing - buttonOffset - 10                
+            }                           
+        }        
         
-        playerController = PlayerController(player: mediaView.player!).with {
-            $0.startPlayButton = videoPlayButton
-            $0.playPauseButton = scrubberView.playPauseButton
-            $0.slider = scrubberView.scrubberSlider
-            $0.currentTimeLabel = scrubberView.currentTimeLabel
-            $0.remainingTimeLabel = scrubberView.remainingTimeLabel
-            $0.loadingSpinner = videoLoadingSpinner as LoadingSpinner
+        if let player = mediaView.player {
+            playerController = PlayerController(player: player).with {
+                $0.startPlayButton = videoPlayButton
+                $0.playPauseButton = scrubberView.playPauseButton
+                $0.slider = scrubberView.scrubberSlider
+                $0.currentTimeLabel = scrubberView.currentTimeLabel
+                $0.remainingTimeLabel = scrubberView.remainingTimeLabel
+                $0.loadingSpinner = videoLoadingSpinner as LoadingSpinner
+            }
         }
     }
     
@@ -337,9 +353,13 @@ class ZoomingPhotoView: UIView, UIScrollViewDelegate {
     // MARK: UIView
     
     override func updateConstraints() {
-        adjustImageConstraints(for: scrollView.zoomScale)
-    
+        adjustImageConstraints(for: scrollView.zoomScale)        
         super.updateConstraints()
+    }
+    
+    override func layoutSubviews() {
+        adjustScrubberConstraints()
+        super.layoutSubviews()
     }
     
     private func getImagePadding(for scale: CGFloat) -> (hPadding: CGFloat, vPadding: CGFloat)? {
@@ -388,6 +408,17 @@ class ZoomingPhotoView: UIView, UIScrollViewDelegate {
             progressView.top == (scrollView.top + vPadding + heightScale - 25)
             progressView.left == (scrollView.left + hPadding + widthScale - 25)
         }
+    }
+    
+    private func adjustScrubberConstraints() {
+        guard let scrubberConstraintGroup = scrubberConstraintGroup,
+            #available(iOS 11.0, *) else { return }
+        
+        let insets = self.superview?.safeAreaInsets ?? UIEdgeInsetsMake(0, 0, 0, 0)        
+        constrain(self, scrubberView, replace: scrubberConstraintGroup) { view, scrubberView in
+            scrubberView.leading == view.leading + insets.left + buttonOffset + 10
+            scrubberView.trailing == view.trailing - insets.right - buttonOffset - 10                
+        }                    
     }
     
     // MARK: UITapGestureRecognizer actions

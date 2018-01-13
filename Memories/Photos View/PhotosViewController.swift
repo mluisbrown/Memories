@@ -137,8 +137,13 @@ class PhotosViewController: UIViewController,
         constrain(view, shareProgressView) { view, shareProgressView in
             shareProgressView.width == 40
             shareProgressView.height == 40
-            shareProgressView.left == view.left + 10
-            shareProgressView.bottom == view.bottom - 10
+            if #available(iOS 11.0, *) {
+                shareProgressView.leading == view.safeAreaLayoutGuide.leading + 10
+                shareProgressView.bottom == view.safeAreaLayoutGuide.bottom - 10                
+            } else {
+                shareProgressView.leading == view.leading + 10
+                shareProgressView.bottom == view.bottom - 10                
+            }
         }
     }
 
