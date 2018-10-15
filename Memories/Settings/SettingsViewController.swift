@@ -153,7 +153,7 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
         case timePickerIndexPath:
             height = 162
         case upgradeIndexPath:
-            let attributedString = NSAttributedString(string: upgradeLabel.text!, attributes: [NSAttributedStringKey.font : UIFont.systemFont(ofSize: 14)])
+            let attributedString = NSAttributedString(string: upgradeLabel.text!, attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 14)])
             let rect = attributedString.boundingRect(with: CGSize(width: tableView.bounds.width - 32, height: CGFloat.greatestFiniteMagnitude)
                 , options: [.usesLineFragmentOrigin, .usesFontLeading]
                 , context: nil)
@@ -192,18 +192,10 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
     
     private func rateApp() {
         let appId = 1037130497
-        let appStoreOldURL = URL(string: "itms-apps://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?type=Purple+Software&id=\(appId)&pageNumber=0&sortOrdering=2&mt=8")!
-        let appStoreNewURL = URL(string: "itms-apps://itunes.apple.com/app/id\(appId)?action=write-review")!
-        
-        let appStoreURL: URL
-        if #available(iOS 10.3, *) {
-            appStoreURL = appStoreNewURL
-        } else {
-            appStoreURL = appStoreOldURL
-        }
-        
+        let appStoreURL = URL(string: "itms-apps://itunes.apple.com/app/id\(appId)?action=write-review")!
+
         if UIApplication.shared.canOpenURL(appStoreURL) {
-            UIApplication.shared.openURL(appStoreURL)
+            UIApplication.shared.open(appStoreURL, options: [:], completionHandler: nil)
         }
     }
     

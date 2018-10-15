@@ -48,7 +48,7 @@ class PhotosViewDismissTransition: NSObject, UIViewControllerAnimatedTransitioni
         self.destImageView.isHidden = true
         self.sourceImageView.isHidden = true
         
-        UIView.animateKeyframes(withDuration: duration, delay: 0, options: UIViewKeyframeAnimationOptions(), animations: {
+        UIView.animateKeyframes(withDuration: duration, delay: 0, options: UIView.KeyframeAnimationOptions(), animations: {
             toViewController.statusBarContoller()?.hideStatusBar(false)
             let newImageFrame = transitionView.convert(self.destImageView.bounds, from: self.destImageView).integral
 

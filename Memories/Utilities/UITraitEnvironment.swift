@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 
 public extension UITraitEnvironment {
-    var thumbnailContentMode: UIViewContentMode {
+    var thumbnailContentMode: UIView.ContentMode {
         let largeScreen = traitCollection.verticalSizeClass == .regular &&
                         traitCollection.horizontalSizeClass == .regular
         return largeScreen ? .scaleAspectFit : .scaleAspectFill

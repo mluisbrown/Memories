@@ -38,8 +38,8 @@ struct PhotoLibraryAuthorization {
             case .denied:
                 alert = UIAlertController(title: NSLocalizedString("No Access to Photos", comment: ""), message: NSLocalizedString("You have Denied access to Photos for Memories. In order for Memories to work you must enable this access in Settings. Would you like to do this now?", comment: ""), preferredStyle: .alert)
                 let settings = UIAlertAction(title: NSLocalizedString("Settings", comment: ""), style: .default) { _ in
-                    let url = URL(string: UIApplicationOpenSettingsURLString)
-                    UIApplication.shared.openURL(url!);
+                    let url = URL(string: UIApplication.openSettingsURLString)!
+                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
                     observer.sendCompleted()
                 }
                 let nothanks = UIAlertAction(title: NSLocalizedString("No thanks", comment: ""), style: .cancel)  { _ in  observer.sendCompleted() }

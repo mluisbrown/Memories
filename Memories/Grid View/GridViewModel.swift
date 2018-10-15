@@ -90,7 +90,7 @@ struct GridViewModel {
         }
         
         NotificationCenter.default.reactive
-            .notifications(forName: NSNotification.Name.UIApplicationDidBecomeActive)
+            .notifications(forName: UIApplication.didBecomeActiveNotification)
             .take(during: Lifetime(token))
             .observeValues { _ in
                 if let date = NotificationManager.launchDate() {

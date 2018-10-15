@@ -137,13 +137,8 @@ class PhotosViewController: UIViewController,
         constrain(view, shareProgressView) { view, shareProgressView in
             shareProgressView.width == 40
             shareProgressView.height == 40
-            if #available(iOS 11.0, *) {
-                shareProgressView.leading == view.safeAreaLayoutGuide.leading + 10
-                shareProgressView.bottom == view.safeAreaLayoutGuide.bottom - 10                
-            } else {
-                shareProgressView.leading == view.leading + 10
-                shareProgressView.bottom == view.bottom - 10                
-            }
+            shareProgressView.leading == view.safeAreaLayoutGuide.leading + 10
+            shareProgressView.bottom == view.safeAreaLayoutGuide.bottom - 10
         }
     }
 
@@ -364,7 +359,7 @@ class PhotosViewController: UIViewController,
 
         let asset = model.asset(at: page)
         if page == self.model.currentIndex.value {
-            heartButton.setImage(buttonImage(forFavorite: asset.isFavorite), for: UIControlState())
+            heartButton.setImage(buttonImage(forFavorite: asset.isFavorite), for: UIControl.State())
             yearLabel.text = String("  \(asset.creationDate!.year)  ")
         }
         

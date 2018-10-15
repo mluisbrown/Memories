@@ -14,8 +14,8 @@ import Photos
 
 struct SettingsViewModel {
     let assetHelper = PHAssetHelper()
-    
-    let notificationsEnabled = MutableProperty<Bool>(NotificationManager.notificationsEnabled() && NotificationManager.notificationsAllowed())
+
+    let notificationsEnabled = MutableProperty<Bool>(false)
     let notificationTime = MutableProperty(NotificationManager.notificationTime())
     let sourceIncludeCurrentYear: MutableProperty<Bool>
     let sourcePhotoLibrary: MutableProperty<Bool>
@@ -37,11 +37,17 @@ struct SettingsViewModel {
     
     init() {
         let sources = assetHelper.assetSourceTypes
-        
+
         self.sourceIncludeCurrentYear = MutableProperty(assetHelper.includeCurrentYear)
         self.sourcePhotoLibrary = MutableProperty(sources.contains(.typeUserLibrary))
         self.sourceICloudShare = MutableProperty(sources.contains(.typeCloudShared))
         self.sourceITunes = MutableProperty(sources.contains(.typeiTunesSynced))
+
+        NotificationManager.notificationsAllowed()
+            .map { $0 && NotificationManager.notificationsEnabled() }
+            .startWithValues { [notificationsEnabled] enabled in
+                notificationsEnabled.swap(enabled)
+            }
     }
 
     func upgrade() -> SignalProducer<Bool, NoError> {

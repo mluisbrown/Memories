@@ -171,7 +171,7 @@ class MediaView: UIView {
         subview.isUserInteractionEnabled = true
         subview.translatesAutoresizingMaskIntoConstraints = false
         addSubview(subview)
-        bringSubview(toFront: subview)
+        bringSubviewToFront(subview)
         
         constrain(self, subview) {view, subview in
             view.edges == subview.edges

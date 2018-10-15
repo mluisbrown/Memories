@@ -59,8 +59,8 @@ class PlayerController: NSObject {
     private let timeFormatter = DateComponentsFormatter()
 
     private var isSeekInProgress = false
-    private var chaseTime = kCMTimeZero
-    private var playerCurrentItemStatus = AVPlayerItemStatus.unknown
+    private var chaseTime = CMTime.zero
+    private var playerCurrentItemStatus = AVPlayerItem.Status.unknown
     
     weak var startPlayButton: UIButton? {
         didSet {
@@ -133,7 +133,7 @@ class PlayerController: NSObject {
         }
         
         let secondsDuration = CMTimeGetSeconds(playerItem.duration)
-        let time = CMTimeMakeWithSeconds(secondsDuration * Float64(slider.value), Int32(NSEC_PER_SEC))
+        let time = CMTimeMakeWithSeconds(secondsDuration * Float64(slider.value), preferredTimescale: Int32(NSEC_PER_SEC))
         
         self.scrubEnded = thenPlay
         seekSmoothlyTo(time: time)
@@ -162,7 +162,7 @@ class PlayerController: NSObject {
         isSeekInProgress = true
         let seekTimeInProgress = chaseTime
         
-        player.seek(to: seekTimeInProgress, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero) { [weak self] _ in
+        player.seek(to: seekTimeInProgress, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero) { [weak self] _ in
             guard let sself = self else {
                 return
             }
@@ -238,7 +238,7 @@ class PlayerController: NSObject {
         let frameRate = playerItem.asset.tracks(withMediaType: AVMediaType.video).first?.nominalFrameRate ?? 30
         let frameDuration = 1 / frameRate
         
-        timeObserver = player.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(Float64(frameDuration), Int32(NSEC_PER_SEC)), queue: nil) { [weak self] _ in
+        timeObserver = player.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(Float64(frameDuration), preferredTimescale: Int32(NSEC_PER_SEC)), queue: nil) { [weak self] _ in
             self?.playerTimeChanged()
         }
     }
@@ -272,7 +272,7 @@ class PlayerController: NSObject {
         player.pause()
         
         if reset {
-            player.seek(to: kCMTimeZero)
+            player.seek(to: CMTime.zero)
             startPlayButtonVisible = true
         }
     }
@@ -285,7 +285,7 @@ class PlayerController: NSObject {
         
         if player.rate == 0 {
             if CMTimeCompare(player.currentTime(), playerItem.duration) == 0 {
-                player.seek(to: kCMTimeZero) {_ in 
+                player.seek(to: CMTime.zero) {_ in 
                     self.player.play()
                 }
             }

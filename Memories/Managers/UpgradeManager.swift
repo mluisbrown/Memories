@@ -211,9 +211,7 @@ extension UpgradeManager {
     static func maybePromptForReview() {
         let count = userDefaults.integer(forKey: Key.appLaunchCountMod3)
         if count == 0 {
-            if #available(iOS 10.3, *) {
-                SKStoreReviewController.requestReview()
-            }
+            SKStoreReviewController.requestReview()
         }
     }
 }

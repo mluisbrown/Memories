@@ -124,10 +124,8 @@ class GridViewController: UICollectionViewController
     private func configureFlowLayout() {
         if let flowLayout = collectionViewLayout as? UICollectionViewFlowLayout {
             flowLayout.sectionHeadersPinToVisibleBounds = true
-            if #available(iOS 11.0, *) {
-                flowLayout.sectionInsetReference = .fromSafeArea
-            }
-        } 
+            flowLayout.sectionInsetReference = .fromSafeArea
+        }
     }
     
     // MARK: - UIViewController
@@ -170,7 +168,7 @@ class GridViewController: UICollectionViewController
         
         let largeScreen = newCollection.verticalSizeClass == .regular &&
                         newCollection.horizontalSizeClass == .regular
-        let contentMode: UIViewContentMode = largeScreen ? .scaleAspectFit : .scaleAspectFill
+        let contentMode: UIView.ContentMode = largeScreen ? .scaleAspectFit : .scaleAspectFill
         
         coordinator.animate(alongsideTransition: { _ in
             self.collectionView?.visibleCells.forEach {
@@ -424,12 +422,12 @@ extension GridViewController {
             return
         }
         
-        let topOffset = topLayoutGuide.length
+        let topOffset = view.safeAreaInsets.top
         
         let resizeView = { (view: PullView, yPosition: CGFloat, viewHeight: CGFloat) -> Void in
             view.frame = CGRect(x: 0, y: yPosition, width: collectionView.frame.width, height: viewHeight)
-            view.alpha = pow(fabs(viewHeight), 2) / pow(self.RELEASE_THRESHOLD, 2)
-            view.willRelease = fabs(viewHeight) >= self.RELEASE_THRESHOLD
+            view.alpha = pow(abs(viewHeight), 2) / pow(self.RELEASE_THRESHOLD, 2)
+            view.willRelease = abs(viewHeight) >= self.RELEASE_THRESHOLD
         }
         
         // handle top pull view
@@ -532,7 +530,7 @@ extension GridViewController {
     }
     
     private func assets(at indexPaths : [IndexPath]) -> [PHAsset] {
-        return indexPaths.flatMap() {
+        return indexPaths.compactMap() {
             self.model.asset(at: $0)
         }        
     }
@@ -544,7 +542,7 @@ extension GridViewController {
         if show {
             let window = UIApplication.shared.keyWindow!
             var frame = window.frame
-            frame.origin.y += topLayoutGuide.length
+            frame.origin.y += view.safeAreaInsets.top
             
             blurView.frame = frame
             window.addSubview(blurView)
@@ -566,7 +564,7 @@ extension GridViewController {
     
     private func showHideStatusLabel(_ text: String) {
         // make sure views have been layed out properly
-        guard topLayoutGuide.length != 0 else {
+        guard view.safeAreaInsets.top != 0 else {
             return
         }
         
@@ -582,7 +580,7 @@ extension GridViewController {
             
             constrain(statusLabel, collectionView!) { noPhotosLabel, collectionView in
                 noPhotosLabel.centerX == collectionView.centerX
-                noPhotosLabel.centerY == collectionView.centerY - topLayoutGuide.length
+                noPhotosLabel.centerY == collectionView.centerY - view.safeAreaInsets.top
             }
         }
     }

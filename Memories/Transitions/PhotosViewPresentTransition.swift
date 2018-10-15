@@ -50,7 +50,7 @@ class PhotosViewPresentTransition: NSObject, UIViewControllerAnimatedTransitioni
         let fullImageViewSize = AVMakeRect(aspectRatio: sourceImageView.image!.size, insideRect: CGRect(origin: CGPoint.zero, size: transitionView.frame.size)).size
         let newImageViewSize = adjustImageBoundsForButtons(fullImageViewSize, vcViewSize: transitionView.frame.size)
         
-        UIView.animateKeyframes(withDuration: duration, delay: 0, options: UIViewKeyframeAnimationOptions(), animations: {
+        UIView.animateKeyframes(withDuration: duration, delay: 0, options: UIView.KeyframeAnimationOptions(), animations: {
             fromViewController.statusBarContoller()?.hideStatusBar(true)
             
             UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.75) {

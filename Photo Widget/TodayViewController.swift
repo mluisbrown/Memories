@@ -41,13 +41,10 @@ class TodayViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if #available(iOSApplicationExtension 10.0, *) {
-            extensionContext?.widgetLargestAvailableDisplayMode = .expanded
-        }
-        
+        extensionContext?.widgetLargestAvailableDisplayMode = .expanded
         yearLabel.text = "No Memories Today :("
         
-#if (arch(i386) || arch(x86_64)) && os(iOS)
+#if targetEnvironment(simulator)
         let date = Calendar(identifier: Calendar.Identifier.gregorian).date(from: DateComponents(era: 1, year: 2016, month: 8, day: 8, hour: 0, minute: 0, second: 0, nanosecond: 0))!
 #else
         let date = Date()
@@ -82,13 +79,7 @@ class TodayViewController: UIViewController {
     }
 
     private func showPhotoView(_ show: Bool, completion: (() -> Void)?) {
-        let constant: CGFloat
-        if #available(iOSApplicationExtension 10.0, *) {
-            constant = show ? photoViewHeightFor(activeDisplayMode: extensionContext!.widgetActiveDisplayMode) : 0
-        } else {
-            constant = show ? photoViewExpandedHeight : 0
-        }
-        
+        let constant = show ? photoViewHeightFor(activeDisplayMode: extensionContext!.widgetActiveDisplayMode) : 0
         setPhotoViewHeight(constant, completion: completion)
     }
     
@@ -110,7 +101,6 @@ class TodayViewController: UIViewController {
         }
     }
     
-    @available(iOSApplicationExtension 10.0, *)
     private func photoViewHeightFor(activeDisplayMode: NCWidgetDisplayMode) -> CGFloat {
         let photoViewHeight: CGFloat
         
@@ -147,7 +137,6 @@ extension TodayViewController: NCWidgetProviding {
         }
     }
     
-    @available(iOSApplicationExtension 10.0, *)
     func widgetActiveDisplayModeDidChange(_ activeDisplayMode: NCWidgetDisplayMode, withMaximumSize maxSize: CGSize) {
         
         switch activeDisplayMode {

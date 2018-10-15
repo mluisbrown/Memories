@@ -10,33 +10,31 @@ import UIKit
 import AVFoundation
 import Fabric
 import Crashlytics
+import UserNotifications
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
+    var notificationDelegate = NotificationCenterDelegate()
     
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey : Any]?) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]?) -> Bool {
         Fabric.with([Crashlytics.self])
 
         UpgradeManager.completeTransactions()
-        
+
         UserDefaults.standard.register(defaults: [NotificationManager.Key.notificationTime : 1000,
             NotificationManager.Key.hasPromptedForUserNotifications : false,
             NotificationManager.Key.notificationsEnabled: false,
             UpgradeManager.Key.appLaunchCountMod3: 0])
 
-        // store the date of the notification that launched the app (if any)
-        // so that we start the view controller with that date
-        if let notification = launchOptions?[UIApplicationLaunchOptionsKey.localNotification] as? UILocalNotification {
-            NotificationManager.setLaunchDate(notification.fireDate)
-        }
-        
+        UNUserNotificationCenter.current().delegate = notificationDelegate
+
         // this will schedule notifications if they are allowed and enabled
         NotificationManager.scheduleNotifications()
         
         do {
-            try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback)
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .moviePlayback)
         } catch {
             NSLog("AVAudioSession setCategory failed!")
         }
@@ -47,18 +45,4 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationDidBecomeActive(_ application: UIApplication) {
         UpgradeManager.registerAppLaunch()        
     }
-    
-    func application(_ application: UIApplication, didReceive notification: UILocalNotification) {
-        if application.applicationState != .active {
-            NotificationManager.setLaunchDate(notification.fireDate)
-        }
-    }
-    
-    // MARK: Notification Settings
-    
-    func application(_ application: UIApplication, didRegister notificationSettings: UIUserNotificationSettings) {
-        UserDefaults.standard.set(true, forKey: NotificationManager.Key.hasPromptedForUserNotifications)
-    }
-
 }
-

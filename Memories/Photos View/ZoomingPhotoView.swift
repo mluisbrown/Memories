@@ -224,26 +224,17 @@ class ZoomingPhotoView: UIView, UIScrollViewDelegate {
         }
         
         addSubview(scrubberView)
-        if #available(iOS 11.0, *) {
-            constrain(self, scrubberView) { view, scrubberView in
-                scrubberView.height == 40
-                scrubberView.bottom == view.safeAreaLayoutGuide.bottom - 10
-            }
+        constrain(self, scrubberView) { view, scrubberView in
+            scrubberView.height == 40
+            scrubberView.bottom == view.safeAreaLayoutGuide.bottom - 10
+        }
 
-            let insets = self.superview?.safeAreaInsets ?? UIEdgeInsetsMake(0, 0, 0, 0)            
-            scrubberConstraintGroup = constrain(self, scrubberView) { view, scrubberView in
-                scrubberView.leading == view.leading + insets.left + buttonOffset + 10
-                scrubberView.trailing == view.trailing - insets.right - buttonOffset - 10                
-            }            
-        } else {
-            constrain(self, scrubberView) { view, scrubberView in
-                scrubberView.height == 40
-                scrubberView.bottom == view.bottom - 10
-                scrubberView.leading == view.leading + buttonOffset + 10
-                scrubberView.trailing == view.trailing - buttonOffset - 10                
-            }                           
-        }        
-        
+        let insets = self.superview?.safeAreaInsets ?? UIEdgeInsets.init(top: 0, left: 0, bottom: 0, right: 0)
+        scrubberConstraintGroup = constrain(self, scrubberView) { view, scrubberView in
+            scrubberView.leading == view.leading + insets.left + buttonOffset + 10
+            scrubberView.trailing == view.trailing - insets.right - buttonOffset - 10
+        }
+
         if let player = mediaView.player {
             playerController = PlayerController(player: player).with {
                 $0.startPlayButton = videoPlayButton
@@ -411,10 +402,9 @@ class ZoomingPhotoView: UIView, UIScrollViewDelegate {
     }
     
     private func adjustScrubberConstraints() {
-        guard let scrubberConstraintGroup = scrubberConstraintGroup,
-            #available(iOS 11.0, *) else { return }
+        guard let scrubberConstraintGroup = scrubberConstraintGroup else { return }
         
-        let insets = self.superview?.safeAreaInsets ?? UIEdgeInsetsMake(0, 0, 0, 0)        
+        let insets = self.superview?.safeAreaInsets ?? UIEdgeInsets.init(top: 0, left: 0, bottom: 0, right: 0)        
         constrain(self, scrubberView, replace: scrubberConstraintGroup) { view, scrubberView in
             scrubberView.leading == view.leading + insets.left + buttonOffset + 10
             scrubberView.trailing == view.trailing - insets.right - buttonOffset - 10                
