@@ -95,7 +95,7 @@ public class PHAssetHelper {
         let currentYear = Date().year
         let gregorian = Date.gregorianCalendar
         
-        fetchResult.enumerateObjects( { (asset, index, stop) -> Void in
+        fetchResult.enumerateObjects() { asset, index, stop in
             let comps = gregorian.dateComponents([.month, .day, .year], from: asset.creationDate!)
             guard self.includeCurrentYear || comps.year! < currentYear else {
                 return
@@ -108,7 +108,7 @@ public class PHAssetHelper {
             } else {
                 datesMap[date] = 1
             }
-        })
+        }
         
         PHAssetHelper.datesMapCache = datesMap
         return datesMap
@@ -176,5 +176,4 @@ public class PHAssetHelper {
             return (gregorian.date(from: startComps)!, gregorian.date(from: endComps)!)
         }
     }
-    
 }

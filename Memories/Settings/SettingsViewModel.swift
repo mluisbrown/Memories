@@ -16,7 +16,7 @@ struct SettingsViewModel {
     let assetHelper = PHAssetHelper()
 
     let notificationsEnabled = MutableProperty<Bool>(false)
-    let notificationTime = MutableProperty(NotificationManager.notificationTime())
+    let notificationTime = MutableProperty(Current.notificationsController.notificationTime())
     let sourceIncludeCurrentYear: MutableProperty<Bool>
     let sourcePhotoLibrary: MutableProperty<Bool>
     let sourceICloudShare: MutableProperty<Bool>
@@ -43,8 +43,8 @@ struct SettingsViewModel {
         self.sourceICloudShare = MutableProperty(sources.contains(.typeCloudShared))
         self.sourceITunes = MutableProperty(sources.contains(.typeiTunesSynced))
 
-        NotificationManager.notificationsAllowed()
-            .map { $0 && NotificationManager.notificationsEnabled() }
+        Current.notificationsController.notificationsAllowed()
+            .map { $0 && Current.notificationsController.notificationsEnabled() }
             .startWithValues { [notificationsEnabled] enabled in
                 notificationsEnabled.swap(enabled)
             }
@@ -71,10 +71,10 @@ struct SettingsViewModel {
     func commit() {
         // schedule or disable notifications
         if notificationsEnabled.value {
-            NotificationManager.setNotificationTime(notificationTime.value.hour, notificationTime.value.minute)
-            NotificationManager.scheduleNotifications()
+            Current.notificationsController.setNotificationTime(notificationTime.value.hour, notificationTime.value.minute)
+            Current.notificationsController.scheduleNotifications()
         } else {
-            NotificationManager.disableNotifications()
+            Current.notificationsController.disableNotifications()
         }
         
         // save the chosen source types

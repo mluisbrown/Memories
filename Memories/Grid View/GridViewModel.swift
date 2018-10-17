@@ -93,7 +93,7 @@ struct GridViewModel {
             .notifications(forName: UIApplication.didBecomeActiveNotification)
             .take(during: Lifetime(token))
             .observeValues { _ in
-                if let date = NotificationManager.launchDate() {
+                if let date = Current.notificationsController.launchDate() {
                     self.date.value = date
                 }
                 self.promptForReview()

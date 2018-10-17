@@ -55,11 +55,11 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
             .observe(on: UIScheduler())
             .startWithValues { [unowned self] in
             if $0 {
-                NotificationManager.enableNotifications()
+                Current.notificationsController.enableNotifications()
                 self.timePicker.isUserInteractionEnabled = true
                 self.timePicker.alpha = 1
             } else {
-                NotificationManager.disableNotifications()
+                Current.notificationsController.disableNotifications()
                 self.timePicker.isUserInteractionEnabled = false
                 self.timePicker.alpha = 0.5
             }

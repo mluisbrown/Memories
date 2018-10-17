@@ -102,7 +102,7 @@ class GridViewController: UICollectionViewController
                                                 imageManager: PHCachingImageManager())
             
                     let startDate = Date()
-                    if let date = NotificationManager.launchDate() {
+                    if let date = Current.notificationsController.launchDate() {
                         self?.model.date.value = date
                     } else {
                         self?.model.date.value = startDate

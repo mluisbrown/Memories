@@ -23,15 +23,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         UpgradeManager.completeTransactions()
 
-        UserDefaults.standard.register(defaults: [NotificationManager.Key.notificationTime : 1000,
-            NotificationManager.Key.hasPromptedForUserNotifications : false,
-            NotificationManager.Key.notificationsEnabled: false,
+        UserDefaults.standard.register(defaults: [NotificationsController.Key.notificationTime : 1000,
+            NotificationsController.Key.hasPromptedForUserNotifications : false,
+            NotificationsController.Key.notificationsEnabled: false,
             UpgradeManager.Key.appLaunchCountMod3: 0])
 
         UNUserNotificationCenter.current().delegate = notificationDelegate
 
         // this will schedule notifications if they are allowed and enabled
-        NotificationManager.scheduleNotifications()
+        Current.notificationsController.scheduleNotifications()
         
         do {
             try AVAudioSession.sharedInstance().setCategory(.playback, mode: .moviePlayback)
