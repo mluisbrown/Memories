@@ -1,7 +1,7 @@
 # Memories
 An iOS app that displays photos from your photo library taken on a particular day in history. Memories is a fully featured app including a Today View extension, a way for the user to Rate the app or contact the developer from the settings screen, and an In-App purchase to unlock certain features.
 
-http://memories.land/
+http://michael-brown.net/memories
 
 Memories uses icon images from the [Essence](http://iconsandcoffee.com/essence/) collection by [Icons & Coffee](http://iconsandcoffee.com), who hold the copyright to the images. They are provided in this repo with permission from Icons & Coffee.
 
