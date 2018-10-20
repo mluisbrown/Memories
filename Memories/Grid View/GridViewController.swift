@@ -65,6 +65,7 @@ class GridViewController: UICollectionViewController
     var bottomPullView : PullView? = nil
     var shouldReload = false
     var reloadNext = false
+    var feedbackGenerator: UISelectionFeedbackGenerator? = nil
 
     let RELEASE_THRESHOLD : CGFloat = 100.0
     
@@ -364,6 +365,13 @@ extension GridViewController: UICollectionViewDelegateFlowLayout {
 // MARK: - UIScrollViewDelegate
 extension GridViewController {
 
+    override func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        if feedbackGenerator == nil {
+            feedbackGenerator = UISelectionFeedbackGenerator()
+            feedbackGenerator?.prepare()
+        }
+    }
+
     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
         updateCachedAssets()
         adjustPullViewPositions()
@@ -373,7 +381,11 @@ extension GridViewController {
         guard let tpv = topPullView, let bpv = bottomPullView, decelerate else {
             return
         }
-        
+
+        if feedbackGenerator != nil {
+            feedbackGenerator = nil
+        }
+
         shouldReload = false
         
         if tpv.willRelease {
@@ -425,9 +437,18 @@ extension GridViewController {
         let topOffset = view.safeAreaInsets.top
         
         let resizeView = { (view: PullView, yPosition: CGFloat, viewHeight: CGFloat) -> Void in
+            let currentWillRelease = view.willRelease
+
             view.frame = CGRect(x: 0, y: yPosition, width: collectionView.frame.width, height: viewHeight)
             view.alpha = pow(abs(viewHeight), 2) / pow(self.RELEASE_THRESHOLD, 2)
-            view.willRelease = abs(viewHeight) >= self.RELEASE_THRESHOLD
+
+            let newWillRelease = abs(viewHeight) >= self.RELEASE_THRESHOLD
+            view.willRelease = newWillRelease
+
+            if currentWillRelease != newWillRelease,
+                abs(viewHeight) > 0 {
+                self.feedbackGenerator?.selectionChanged()
+            }
         }
         
         // handle top pull view
