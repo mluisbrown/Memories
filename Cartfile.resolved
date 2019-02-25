@@ -1,6 +1,5 @@
-github "ReactiveCocoa/ReactiveCocoa" "8.0.1"
+github "ReactiveCocoa/ReactiveCocoa" "8.0.2"
 github "ReactiveCocoa/ReactiveSwift" "4.0.0"
-github "antitypical/Result" "4.0.0"
-github "bizz84/SwiftyStoreKit" "0.13.3"
+github "antitypical/Result" "4.1.0"
 github "mluisbrown/DACircularProgress" "b00da38778a4e0f7962df88e1c5ad7dd41eef862"
 github "robb/Cartography" "3.1.0"

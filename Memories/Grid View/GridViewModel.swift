@@ -249,7 +249,7 @@ extension GridViewModel {
     private func promptForReview() {
         guard photosAllowed else { return }
         
-        UpgradeManager.maybePromptForReview()
+        ReviewHelper.maybePromptForReview()
     }
 }
 

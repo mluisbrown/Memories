@@ -397,19 +397,7 @@ class PhotosViewController: UIViewController,
         
         // then get the full size image if required
         if requestFullImage {
-            if !UpgradeManager.highQualityViewAllowed() {
-                UpgradeManager.promptForUpgrade(in: self) {
-                    if !$0 {
-                        pageView.hideProgressView(true)
-                    } else {
-                        self.model.loadHighQualityAssetFor(index: page)
-                    }
-                }
-                
-                return
-            }
-            
-            self.model.loadHighQualityAssetFor(index: page)
+            model.loadHighQualityAssetFor(index: page)
         }
     }
 

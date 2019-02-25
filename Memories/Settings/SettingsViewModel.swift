@@ -21,19 +21,6 @@ struct SettingsViewModel {
     let sourcePhotoLibrary: MutableProperty<Bool>
     let sourceICloudShare: MutableProperty<Bool>
     let sourceITunes: MutableProperty<Bool>
-    let userHasUpgraded  = MutableProperty(UpgradeManager.upgraded)
-    let upgradeButtonText = SignalProducer<String, NoError> { observer, _ in
-        let buy = NSLocalizedString("Buy", comment: "")
-        
-        observer.send(value: buy)
-        UpgradeManager.getUpgradePrice { price in
-            if let price = price {
-                observer.send(value: buy + " " + price)
-            }
-            observer.sendCompleted()
-        }
-    }
-    
     
     init() {
         let sources = assetHelper.assetSourceTypes
@@ -50,24 +37,6 @@ struct SettingsViewModel {
             }
     }
 
-    func upgrade() -> SignalProducer<Bool, NoError> {
-        return SignalProducer<Bool, NoError> { observer, _ in
-            UpgradeManager.upgrade {
-                observer.send(value: $0)
-                observer.sendCompleted()
-            }
-        }
-    }
-
-    func restore() -> SignalProducer<Bool, NoError> {
-        return SignalProducer<Bool, NoError> { observer, _ in
-            UpgradeManager.restore {
-                observer.send(value: $0)
-                observer.sendCompleted()
-            }
-        }
-    }
-    
     func commit() {
         // schedule or disable notifications
         if notificationsEnabled.value {

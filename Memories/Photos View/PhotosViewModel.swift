@@ -118,9 +118,7 @@ extension PhotosViewModel {
         
         assetProducer?.startWithResult { result in
             switch result {
-            case .success(let assetResource):
-                UpgradeManager.highQualityViewCount += 1
-                
+            case .success(let assetResource):                
                 photoViewModel.assetResource.value = assetResource
                 if index == self.currentIndex.value {
                     self.indexBecameVisible(index)
