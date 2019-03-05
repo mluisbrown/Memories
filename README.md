@@ -16,6 +16,6 @@ One you have installed Carthage run `carthage update` in the project root (where
 Open `Memories.xcodeproj` in Xcode. Build and run! The iOS simulator only has a handful of photos pre-installed. If you want to test with more photos from different dates you can add photos the the simulator's photo library by just dragging and dropping them into the simulator window.
 
 # Contributing
-This project is a fully featured app developed by myself (Michael Brown) and available in the Apple iOS App Store, ~~and includes a freemium business model by the way of restricted features that are unlocked through an In-App purchase~~. As such I don't expect to receive a significant number of community contributions.
+This project is a fully featured app developed by myself (Michael Brown) and [available](https://itunes.apple.com/us/app/memories/id1037130497?mt=8) in the Apple iOS App Store, ~~and includes a freemium business model by the way of restricted features that are unlocked through an In-App purchase~~. As such I don't expect to receive a significant number of community contributions.
 
 However, don't hesitate to send me a pull request if there's something you think needs improving. 
