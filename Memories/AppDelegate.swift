@@ -21,12 +21,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]?) -> Bool {
         Fabric.with([Crashlytics.self])
 
-        UpgradeManager.completeTransactions()
-
         UserDefaults.standard.register(defaults: [NotificationsController.Key.notificationTime : 1000,
             NotificationsController.Key.hasPromptedForUserNotifications : false,
             NotificationsController.Key.notificationsEnabled: false,
-            UpgradeManager.Key.appLaunchCountMod3: 0])
+            ReviewHelper.appLaunchCountMod3Key: 0])
 
         UNUserNotificationCenter.current().delegate = notificationDelegate
 
@@ -43,6 +41,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {
-        UpgradeManager.registerAppLaunch()        
+        ReviewHelper.registerAppLaunch()        
     }
 }

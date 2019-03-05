@@ -7,11 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3ED7E11E8CD7F319DA8E2BEF /* StoreKitPersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ED7EF9BC4C9374988B471D7 /* StoreKitPersistence.swift */; };
 		4C00A4F51C1B7ED30078A43F /* PhotosViewDismissTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C00A4F41C1B7ED30078A43F /* PhotosViewDismissTransition.swift */; };
 		4C0410E61BC8787200BBB76C /* UIDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C0410E51BC8787200BBB76C /* UIDevice.swift */; };
-		4C0890181E6742B3005D39E3 /* KeychainConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C0890171E6742B3005D39E3 /* KeychainConstants.swift */; };
-		4C08901A1E674618005D39E3 /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C0890191E674618005D39E3 /* Keychain.swift */; };
 		4C09B82F1C53F65700C7D40F /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C09B82D1C53F65700C7D40F /* Crashlytics.framework */; };
 		4C09B8301C53F65700C7D40F /* Fabric.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C09B82E1C53F65700C7D40F /* Fabric.framework */; };
 		4C211F4A1C3DB8270082F4DF /* NotificationCenter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C211F491C3DB8270082F4DF /* NotificationCenter.framework */; };
@@ -55,14 +52,12 @@
 		4CAE01E01E69D8C800046317 /* ReactiveSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C3EA9D51E1F058D000D78EA /* ReactiveSwift.framework */; };
 		4CAE01E11E69D8C800046317 /* Result.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C3EA9D61E1F058D000D78EA /* Result.framework */; };
 		4CB674B51BA1EBC7001F401A /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB674B41BA1EBC7001F401A /* SettingsViewController.swift */; };
-		4CBA89671BBC926100913336 /* UpgradeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBA89661BBC926100913336 /* UpgradeManager.swift */; };
+		4CBA89671BBC926100913336 /* ReviewHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBA89661BBC926100913336 /* ReviewHelper.swift */; };
 		4CBA89691BBC9BF300913336 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CBA89681BBC9BF300913336 /* Security.framework */; };
 		4CD790181DD60DE000EEE452 /* With.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD790171DD60DE000EEE452 /* With.swift */; };
-		4CE6FB271EAFF6DF00CC5D01 /* SwiftyStoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CE6FB261EAFF6DF00CC5D01 /* SwiftyStoreKit.framework */; };
 		4CE6FB341EAFF85000CC5D01 /* ReactiveCocoa.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4CE6FB301EAFF85000CC5D01 /* ReactiveCocoa.framework.dSYM */; };
 		4CE6FB351EAFF85000CC5D01 /* ReactiveSwift.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4CE6FB311EAFF85000CC5D01 /* ReactiveSwift.framework.dSYM */; };
 		4CE6FB361EAFF85000CC5D01 /* Result.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4CE6FB321EAFF85000CC5D01 /* Result.framework.dSYM */; };
-		4CE6FB371EAFF85000CC5D01 /* SwiftyStoreKit.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4CE6FB331EAFF85000CC5D01 /* SwiftyStoreKit.framework.dSYM */; };
 		4CE8BD971C03BBE500207BE1 /* DatePickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE8BD961C03BBE500207BE1 /* DatePickerViewController.swift */; };
 		4CEAA8EE1B3340C600774FE8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CEAA8ED1B3340C600774FE8 /* AppDelegate.swift */; };
 		4CEAA8F31B3340C600774FE8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4CEAA8F11B3340C600774FE8 /* Main.storyboard */; };
@@ -120,7 +115,6 @@
 				4CE6FB341EAFF85000CC5D01 /* ReactiveCocoa.framework.dSYM in CopyFiles */,
 				4CE6FB351EAFF85000CC5D01 /* ReactiveSwift.framework.dSYM in CopyFiles */,
 				4CE6FB361EAFF85000CC5D01 /* Result.framework.dSYM in CopyFiles */,
-				4CE6FB371EAFF85000CC5D01 /* SwiftyStoreKit.framework.dSYM in CopyFiles */,
 				4C8594D11BB33E27005CCFAC /* Cartography.framework.dSYM in CopyFiles */,
 				4C8594D31BB33E2F005CCFAC /* DACircularProgress.framework.dSYM in CopyFiles */,
 			);
@@ -140,11 +134,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		3ED7EF9BC4C9374988B471D7 /* StoreKitPersistence.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoreKitPersistence.swift; sourceTree = "<group>"; };
 		4C00A4F41C1B7ED30078A43F /* PhotosViewDismissTransition.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotosViewDismissTransition.swift; sourceTree = "<group>"; };
 		4C0410E51BC8787200BBB76C /* UIDevice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIDevice.swift; sourceTree = "<group>"; };
-		4C0890171E6742B3005D39E3 /* KeychainConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainConstants.swift; sourceTree = "<group>"; };
-		4C0890191E674618005D39E3 /* Keychain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
 		4C09B82D1C53F65700C7D40F /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = "<group>"; };
 		4C09B82E1C53F65700C7D40F /* Fabric.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Fabric.framework; sourceTree = "<group>"; };
 		4C211F481C3DB8270082F4DF /* Photo Widget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Photo Widget.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -187,7 +178,7 @@
 		4CAAF0741B827EAD00AE47C3 /* PullView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PullView.swift; sourceTree = "<group>"; };
 		4CABEE211CAAF08500A9F23A /* UITraitEnvironment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UITraitEnvironment.swift; sourceTree = "<group>"; };
 		4CB674B41BA1EBC7001F401A /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
-		4CBA89661BBC926100913336 /* UpgradeManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UpgradeManager.swift; sourceTree = "<group>"; };
+		4CBA89661BBC926100913336 /* ReviewHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReviewHelper.swift; sourceTree = "<group>"; };
 		4CBA89681BBC9BF300913336 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		4CD790171DD60DE000EEE452 /* With.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = With.swift; sourceTree = "<group>"; };
 		4CE6FB261EAFF6DF00CC5D01 /* SwiftyStoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftyStoreKit.framework; path = Carthage/Build/iOS/SwiftyStoreKit.framework; sourceTree = "<group>"; };
@@ -230,7 +221,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4CE6FB271EAFF6DF00CC5D01 /* SwiftyStoreKit.framework in Frameworks */,
 				4C3EA9D71E1F058D000D78EA /* ReactiveCocoa.framework in Frameworks */,
 				4C3EA9D81E1F058D000D78EA /* ReactiveSwift.framework in Frameworks */,
 				4C3EA9D91E1F058D000D78EA /* Result.framework in Frameworks */,
@@ -253,16 +243,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		4C0890161E674227005D39E3 /* Keychain */ = {
-			isa = PBXGroup;
-			children = (
-				4C0890171E6742B3005D39E3 /* KeychainConstants.swift */,
-				4C0890191E674618005D39E3 /* Keychain.swift */,
-				3ED7EF9BC4C9374988B471D7 /* StoreKitPersistence.swift */,
-			);
-			path = Keychain;
-			sourceTree = "<group>";
-		};
 		4C211F4B1C3DB8270082F4DF /* Photo Widget */ = {
 			isa = PBXGroup;
 			children = (
@@ -296,13 +276,13 @@
 			path = Utilities;
 			sourceTree = "<group>";
 		};
-		4C641B8B1C3DB274004B15D7 /* Managers */ = {
+		4C641B8B1C3DB274004B15D7 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
 				4C2DFCA91B9E21BC00AD6E16 /* NotificationsController.swift */,
-				4CBA89661BBC926100913336 /* UpgradeManager.swift */,
+				4CBA89661BBC926100913336 /* ReviewHelper.swift */,
 			);
-			path = Managers;
+			path = Controllers;
 			sourceTree = "<group>";
 		};
 		4C641B8C1C3DB2A5004B15D7 /* Grid View */ = {
@@ -406,10 +386,9 @@
 		4CEAA8EA1B3340C600774FE8 /* Memories */ = {
 			isa = PBXGroup;
 			children = (
-				4C0890161E674227005D39E3 /* Keychain */,
 				4C641B8E1C3DB2D6004B15D7 /* Date Picker */,
 				4C641B8C1C3DB2A5004B15D7 /* Grid View */,
-				4C641B8B1C3DB274004B15D7 /* Managers */,
+				4C641B8B1C3DB274004B15D7 /* Controllers */,
 				4C641B8F1C3DB2F8004B15D7 /* Photos View */,
 				4C641B8D1C3DB2BE004B15D7 /* Settings */,
 				4CEAA8EB1B3340C600774FE8 /* Supporting Files */,
@@ -547,7 +526,7 @@
 								enabled = 1;
 							};
 							com.apple.InAppPurchase = {
-								enabled = 1;
+								enabled = 0;
 							};
 						};
 					};
@@ -615,12 +594,13 @@
 			files = (
 			);
 			inputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)",
 			);
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "./configure-fabric.sh";
+			shellScript = "./configure-fabric.sh\n";
 		};
 		4C8594CE1BB33D7F005CCFAC /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -630,7 +610,6 @@
 			inputPaths = (
 				"$(SRCROOT)/Carthage/Build/iOS/Cartography.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/DACircularProgress.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/SwiftyStoreKit.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/ReactiveCocoa.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/ReactiveSwift.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/Result.framework",
@@ -639,7 +618,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "/usr/local/bin/carthage copy-frameworks";
+			shellScript = "/usr/local/bin/carthage copy-frameworks\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -658,13 +637,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4C0890181E6742B3005D39E3 /* KeychainConstants.swift in Sources */,
 				4C748EB11DE09D94005F44DD /* ScrubberView.swift in Sources */,
 				4C921FD21C1A038800F0411D /* PhotosViewPresentTransition.swift in Sources */,
 				4CFD0DE71E68676500C12C87 /* PhotoLibraryObserver.swift in Sources */,
 				4C65B5B01E36137900DF2465 /* IndexSet.swift in Sources */,
 				4CEAA8EE1B3340C600774FE8 /* AppDelegate.swift in Sources */,
-				4C08901A1E674618005D39E3 /* Keychain.swift in Sources */,
 				4C3334551B659DAA00D907C8 /* ZoomingPhotoView.swift in Sources */,
 				4C5B90281B5D9C590014A87C /* GridHeaderView.swift in Sources */,
 				4C758BB91DD67E7B00AE9D9F /* UIButton.swift in Sources */,
@@ -681,7 +658,7 @@
 				4C758BB51DD676FC00AE9D9F /* UIBezierPath.swift in Sources */,
 				4CAAF0751B827EAD00AE47C3 /* PullView.swift in Sources */,
 				4CEAA9101B33462600774FE8 /* GridViewCell.swift in Sources */,
-				4CBA89671BBC926100913336 /* UpgradeManager.swift in Sources */,
+				4CBA89671BBC926100913336 /* ReviewHelper.swift in Sources */,
 				4C69E63A1DCA73F1004D6F5C /* MediaView.swift in Sources */,
 				4CA5E1831DEA42950019CA26 /* DateComponentsFormatter.swift in Sources */,
 				4CF4105C1C4BB732002FD49A /* Date.swift in Sources */,
@@ -697,7 +674,6 @@
 				4CB674B51BA1EBC7001F401A /* SettingsViewController.swift in Sources */,
 				4C758BBB1DD685E700AE9D9F /* PlayerController.swift in Sources */,
 				4C989BE11BA780BB00D4C13F /* SettingsViewModel.swift in Sources */,
-				3ED7E11E8CD7F319DA8E2BEF /* StoreKitPersistence.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

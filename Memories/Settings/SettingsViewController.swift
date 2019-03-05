@@ -17,11 +17,6 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
     @IBOutlet weak var timePicker: UIDatePicker!
     @IBOutlet weak var feedbackCell: UITableViewCell!
     @IBOutlet weak var rateCell: UITableViewCell!
-    @IBOutlet weak var upgradeCell: UITableViewCell!
-    @IBOutlet weak var upgradeLabel: UILabel!
-    @IBOutlet weak var upgradeButton: UIButton!
-    @IBOutlet weak var restoreButton: UIButton!
-    @IBOutlet weak var thankYouLabel: UILabel!
     @IBOutlet weak var sourceIncludeCurrentYearSwitch: UISwitch!
     @IBOutlet weak var sourcePhotoLibrarySwitch: UISwitch!
     @IBOutlet weak var sourceICloudSharedSwitch: UISwitch!
@@ -46,8 +41,6 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
         sourcePhotoLibrarySwitch.isOn = viewModel.sourcePhotoLibrary.value
         sourceICloudSharedSwitch.isOn = viewModel.sourceICloudShare.value
         sourceITunesSwitch.isOn = viewModel.sourceITunes.value
-        upgradeButton.isEnabled = false
-        restoreButton.isEnabled = false
     }
     
     private func bindToModel() {
@@ -64,34 +57,6 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
                 self.timePicker.alpha = 0.5
             }
         }
-        
-        viewModel.userHasUpgraded.producer
-            .observe(on: UIScheduler())
-            .startWithValues {
-            [unowned self] upgraded in
-            UIView.animate(withDuration: 0.25) {
-                self.upgradeButton.alpha = upgraded ? 0 : 1
-                self.restoreButton.alpha = upgraded ? 0 : 1
-                self.thankYouLabel.alpha = upgraded ? 1 : 0
-                if upgraded { self.upgradeLabel.text = "" }
-                self.tableView.beginUpdates()
-                self.tableView.endUpdates()
-            }
-        }
-
-        viewModel.upgradeButtonText
-            .observe(on: UIScheduler())
-            .startWithSignal { signal, _ in
-            signal.observeValues {
-                [unowned self] in
-                self.upgradeButton.setTitle($0, for: .normal)
-            }
-            signal.skip(first: 1).observeValues {
-                [unowned self] _ in
-                self.upgradeButton.isEnabled = true
-                self.restoreButton.isEnabled = true
-            }
-        }
     }
     
     private func bindControls() {
@@ -105,14 +70,6 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
         viewModel.sourcePhotoLibrary <~ sourcePhotoLibrarySwitch.reactive.isOnValues
         viewModel.sourceICloudShare <~ sourceICloudSharedSwitch.reactive.isOnValues
         viewModel.sourceITunes <~ sourceITunesSwitch.reactive.isOnValues
-        
-        upgradeButton.reactive.controlEvents(.touchUpInside).observeValues { _ in
-            self.viewModel.userHasUpgraded <~ self.viewModel.upgrade()
-        }
-        
-        restoreButton.reactive.controlEvents(.touchUpInside).observeValues { _ in
-            self.viewModel.userHasUpgraded <~ self.viewModel.restore()
-        }
     }
     
     override func viewDidLoad() {
@@ -145,20 +102,12 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        let timePickerIndexPath = IndexPath(row: 1, section: 1)
-        let upgradeIndexPath = IndexPath(row: 0, section: 0)
-        
+        let timePickerIndexPath = IndexPath(row: 1, section: 0)
+
         let height : CGFloat
         switch indexPath {
         case timePickerIndexPath:
             height = 162
-        case upgradeIndexPath:
-            let attributedString = NSAttributedString(string: upgradeLabel.text!, attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 14)])
-            let rect = attributedString.boundingRect(with: CGSize(width: tableView.bounds.width - 32, height: CGFloat.greatestFiniteMagnitude)
-                , options: [.usesLineFragmentOrigin, .usesFontLeading]
-                , context: nil)
-            
-            height = rect.height + 44 // space for the buttons etc
         default:
             height = 44
         }
