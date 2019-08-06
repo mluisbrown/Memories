@@ -10,8 +10,6 @@ import Foundation
 import Photos
 import PHAssetHelper
 import ReactiveSwift
-import Result
-
 
 struct SectionChanges {
     let section: Int
@@ -51,8 +49,8 @@ struct GridViewModel {
     }
     
     private let assetFetchResults = MutableProperty([PHFetchResult<PHAsset>]())
-    private let sectionChangesObserver: Signal<SectionChanges, NoError>.Observer
-    let sectionChanged: Signal<SectionChanges, NoError>
+    private let sectionChangesObserver: Signal<SectionChanges, Never>.Observer
+    let sectionChanged: Signal<SectionChanges, Never>
 
     let libraryObserver: PhotoLibraryObserver?
     let imageManager: PHCachingImageManager?
@@ -76,7 +74,7 @@ struct GridViewModel {
         self.libraryObserver = libraryObserver
         self.imageManager = imageManager
 
-        (sectionChanged, sectionChangesObserver) = Signal<SectionChanges, NoError>.pipe()
+        (sectionChanged, sectionChangesObserver) = Signal<SectionChanges, Never>.pipe()
         createBindings()
     }
     
@@ -124,8 +122,8 @@ struct GridViewModel {
         }
     }
     
-    private func updateFetchResults(for date: Date) -> SignalProducer<[PHFetchResult<PHAsset>], NoError> {
-        return SignalProducer<[PHFetchResult<PHAsset>], NoError> { observer, _ in
+    private func updateFetchResults(for date: Date) -> SignalProducer<[PHFetchResult<PHAsset>], Never> {
+        return SignalProducer<[PHFetchResult<PHAsset>], Never> { observer, _ in
             observer.send(value: self.assetHelper.fetchResultsForAllYears(with: date))
             observer.sendCompleted()
         }
@@ -268,8 +266,8 @@ extension GridViewModel {
         imageManager?.stopCachingImagesForAllAssets()
     }
     
-    func loadCellData(for indexPath: IndexPath) -> SignalProducer<(UIImage?, String), NoError> {
-        return SignalProducer<(UIImage?, String), NoError> { observer, _ in
+    func loadCellData(for indexPath: IndexPath) -> SignalProducer<(UIImage?, String), Never> {
+        return SignalProducer<(UIImage?, String), Never> { observer, _ in
             
             if let asset = self.asset(at: indexPath) {
                 let durationText = asset.mediaType == .video ? " \(self.timeFormatter.videoDuration(from: asset.duration) ?? "") " : ""

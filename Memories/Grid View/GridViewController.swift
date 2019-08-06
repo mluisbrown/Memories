@@ -12,7 +12,6 @@ import Cartography
 import PHAssetHelper
 import ReactiveSwift
 import ReactiveCocoa
-import Result
 
 extension UICollectionView {
     func indexPathsForElements(in rect : CGRect) -> [IndexPath] {
@@ -111,6 +110,8 @@ class GridViewController: UICollectionViewController
                     
                 case .denied, .restricted, .notDetermined:
                     break
+                @unknown default:
+                    break;
                 }
         }
     }

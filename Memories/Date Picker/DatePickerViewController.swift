@@ -12,7 +12,6 @@ import DACircularProgress
 import Cartography
 import PHAssetHelper
 import ReactiveSwift
-import Result
 
 class DatePickerViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
 
@@ -126,13 +125,13 @@ class DatePickerViewController: UIViewController, UIPickerViewDataSource, UIPick
         return zip(diffs, diffs.indices).min { $0.0 < $1.0 }.map { $0.1 }
     }
     
-    private func buildDatesWithCount() -> SignalProducer<[(date: Date, count: Int)], NoError> {
+    private func buildDatesWithCount() -> SignalProducer<[(date: Date, count: Int)], Never> {
         // don't want to trigger a "Allow Photos?"
         guard PHPhotoLibrary.authorizationStatus() == .authorized else {
-            return SignalProducer<[(date: Date, count: Int)], NoError>(value: [])
+            return SignalProducer<[(date: Date, count: Int)], Never>(value: [])
         }
         
-        return SignalProducer<[(date: Date, count: Int)], NoError> { observer, _ in
+        return SignalProducer<[(date: Date, count: Int)], Never> { observer, _ in
             observer.send(value: self.assetHelper.datesMap()
                 .map { (date: $0.0, count: $0.1) }
                 .sorted { $0.date.compare($1.date) == .orderedAscending })

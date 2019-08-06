@@ -9,8 +9,6 @@
 /* Begin PBXBuildFile section */
 		4C00A4F51C1B7ED30078A43F /* PhotosViewDismissTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C00A4F41C1B7ED30078A43F /* PhotosViewDismissTransition.swift */; };
 		4C0410E61BC8787200BBB76C /* UIDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C0410E51BC8787200BBB76C /* UIDevice.swift */; };
-		4C09B82F1C53F65700C7D40F /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C09B82D1C53F65700C7D40F /* Crashlytics.framework */; };
-		4C09B8301C53F65700C7D40F /* Fabric.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C09B82E1C53F65700C7D40F /* Fabric.framework */; };
 		4C211F4A1C3DB8270082F4DF /* NotificationCenter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C211F491C3DB8270082F4DF /* NotificationCenter.framework */; };
 		4C211F4D1C3DB8270082F4DF /* TodayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C211F4C1C3DB8270082F4DF /* TodayViewController.swift */; };
 		4C211F501C3DB8270082F4DF /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4C211F4E1C3DB8270082F4DF /* MainInterface.storyboard */; };
@@ -24,7 +22,6 @@
 		4C3747A71D46BFCA0070734D /* StatusBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3747A61D46BFCA0070734D /* StatusBarViewController.swift */; };
 		4C3EA9D71E1F058D000D78EA /* ReactiveCocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C3EA9D41E1F058D000D78EA /* ReactiveCocoa.framework */; };
 		4C3EA9D81E1F058D000D78EA /* ReactiveSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C3EA9D51E1F058D000D78EA /* ReactiveSwift.framework */; };
-		4C3EA9D91E1F058D000D78EA /* Result.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C3EA9D61E1F058D000D78EA /* Result.framework */; };
 		4C58C31A1E731D2800D8FA14 /* PhotoLibraryAuthorization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C58C3191E731D2800D8FA14 /* PhotoLibraryAuthorization.swift */; };
 		4C5B90281B5D9C590014A87C /* GridHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C5B90271B5D9C590014A87C /* GridHeaderView.swift */; };
 		4C6299AD1B4CB0AD00B8795E /* PhotosViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6299AC1B4CB0AD00B8795E /* PhotosViewController.swift */; };
@@ -50,14 +47,12 @@
 		4CAAF0751B827EAD00AE47C3 /* PullView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CAAF0741B827EAD00AE47C3 /* PullView.swift */; };
 		4CABEE221CAAF08500A9F23A /* UITraitEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CABEE211CAAF08500A9F23A /* UITraitEnvironment.swift */; };
 		4CAE01E01E69D8C800046317 /* ReactiveSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C3EA9D51E1F058D000D78EA /* ReactiveSwift.framework */; };
-		4CAE01E11E69D8C800046317 /* Result.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C3EA9D61E1F058D000D78EA /* Result.framework */; };
 		4CB674B51BA1EBC7001F401A /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB674B41BA1EBC7001F401A /* SettingsViewController.swift */; };
 		4CBA89671BBC926100913336 /* ReviewHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBA89661BBC926100913336 /* ReviewHelper.swift */; };
 		4CBA89691BBC9BF300913336 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CBA89681BBC9BF300913336 /* Security.framework */; };
 		4CD790181DD60DE000EEE452 /* With.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD790171DD60DE000EEE452 /* With.swift */; };
 		4CE6FB341EAFF85000CC5D01 /* ReactiveCocoa.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4CE6FB301EAFF85000CC5D01 /* ReactiveCocoa.framework.dSYM */; };
 		4CE6FB351EAFF85000CC5D01 /* ReactiveSwift.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4CE6FB311EAFF85000CC5D01 /* ReactiveSwift.framework.dSYM */; };
-		4CE6FB361EAFF85000CC5D01 /* Result.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4CE6FB321EAFF85000CC5D01 /* Result.framework.dSYM */; };
 		4CE8BD971C03BBE500207BE1 /* DatePickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE8BD961C03BBE500207BE1 /* DatePickerViewController.swift */; };
 		4CEAA8EE1B3340C600774FE8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CEAA8ED1B3340C600774FE8 /* AppDelegate.swift */; };
 		4CEAA8F31B3340C600774FE8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4CEAA8F11B3340C600774FE8 /* Main.storyboard */; };
@@ -114,7 +109,6 @@
 			files = (
 				4CE6FB341EAFF85000CC5D01 /* ReactiveCocoa.framework.dSYM in CopyFiles */,
 				4CE6FB351EAFF85000CC5D01 /* ReactiveSwift.framework.dSYM in CopyFiles */,
-				4CE6FB361EAFF85000CC5D01 /* Result.framework.dSYM in CopyFiles */,
 				4C8594D11BB33E27005CCFAC /* Cartography.framework.dSYM in CopyFiles */,
 				4C8594D31BB33E2F005CCFAC /* DACircularProgress.framework.dSYM in CopyFiles */,
 			);
@@ -211,7 +205,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				4CAE01E01E69D8C800046317 /* ReactiveSwift.framework in Frameworks */,
-				4CAE01E11E69D8C800046317 /* Result.framework in Frameworks */,
 				4CF4105A1C4BB466002FD49A /* PHAssetHelper.framework in Frameworks */,
 				4C211F4A1C3DB8270082F4DF /* NotificationCenter.framework in Frameworks */,
 			);
@@ -223,9 +216,6 @@
 			files = (
 				4C3EA9D71E1F058D000D78EA /* ReactiveCocoa.framework in Frameworks */,
 				4C3EA9D81E1F058D000D78EA /* ReactiveSwift.framework in Frameworks */,
-				4C3EA9D91E1F058D000D78EA /* Result.framework in Frameworks */,
-				4C09B8301C53F65700C7D40F /* Fabric.framework in Frameworks */,
-				4C09B82F1C53F65700C7D40F /* Crashlytics.framework in Frameworks */,
 				4CBA89691BBC9BF300913336 /* Security.framework in Frameworks */,
 				4CF410521C4BB099002FD49A /* PHAssetHelper.framework in Frameworks */,
 				4C8594CC1BB33D49005CCFAC /* Cartography.framework in Frameworks */,
@@ -502,13 +492,13 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0730;
-				LastUpgradeCheck = 1000;
+				LastUpgradeCheck = 1100;
 				ORGANIZATIONNAME = "Michael Brown";
 				TargetAttributes = {
 					4C211F471C3DB8270082F4DF = {
 						CreatedOnToolsVersion = 7.2;
 						DevelopmentTeam = 4KZP2U7889;
-						LastSwiftMigration = 1000;
+						LastSwiftMigration = 1100;
 						ProvisioningStyle = Manual;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {
@@ -519,7 +509,7 @@
 					4CEAA8E71B3340C600774FE8 = {
 						CreatedOnToolsVersion = 6.3.2;
 						DevelopmentTeam = 4KZP2U7889;
-						LastSwiftMigration = 1000;
+						LastSwiftMigration = 1100;
 						ProvisioningStyle = Manual;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {
@@ -533,14 +523,14 @@
 					4CF4104A1C4BB098002FD49A = {
 						CreatedOnToolsVersion = 7.3;
 						DevelopmentTeam = 4KZP2U7889;
-						LastSwiftMigration = 1000;
+						LastSwiftMigration = 1100;
 						ProvisioningStyle = Manual;
 					};
 				};
 			};
 			buildConfigurationList = 4CEAA8E31B3340C600774FE8 /* Build configuration list for PBXProject "Memories" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
@@ -612,7 +602,6 @@
 				"$(SRCROOT)/Carthage/Build/iOS/DACircularProgress.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/ReactiveCocoa.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/ReactiveSwift.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/Result.framework",
 			);
 			outputPaths = (
 			);
@@ -744,7 +733,7 @@
 				PROVISIONING_PROFILE = "76ced91b-bb55-4d76-a61a-8b27bb46edbb";
 				PROVISIONING_PROFILE_SPECIFIER = "Memories Widget Development";
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -769,7 +758,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "Memories Widget Distribution";
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -777,6 +766,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -834,6 +824,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -903,7 +894,7 @@
 				PROVISIONING_PROFILE = "e694bb6c-1360-4e14-8955-f2ae7e95aa3f";
 				PROVISIONING_PROFILE_SPECIFIER = "Memories Development";
 				SWIFT_OBJC_BRIDGING_HEADER = "";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -913,7 +904,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Memories/Memories.entitlements;
-				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				DEVELOPMENT_TEAM = 4KZP2U7889;
 				ENABLE_BITCODE = YES;
@@ -928,10 +919,10 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.luacheia.memories;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "71f761bf-0992-4233-9ff1-90317c073a8b";
-				PROVISIONING_PROFILE_SPECIFIER = "Memories Distribution";
+				PROVISIONING_PROFILE_SPECIFIER = "Memories Development";
 				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -957,7 +948,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -984,7 +975,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};

@@ -11,7 +11,6 @@ import NotificationCenter
 import Photos
 import ReactiveSwift
 import ReactiveCocoa
-import Result
 
 class TodayViewController: UIViewController {
         
@@ -24,7 +23,7 @@ class TodayViewController: UIViewController {
     private let expandedWidgetHeight = CGFloat(245)
     private let photoViewExpandedHeight = CGFloat(200)
 
-    private var readyForDisplay: Signal<(), NoError>? = nil
+    private var readyForDisplay: Signal<(), Never>? = nil
     
     private func createAndBindToModel(for date: Date) {
         model = TodayViewModel(date: date)
@@ -109,6 +108,8 @@ class TodayViewController: UIViewController {
             photoViewHeight = extensionContext!.widgetMaximumSize(for: activeDisplayMode).height
         case .expanded:
             photoViewHeight = photoViewExpandedHeight
+        @unknown default:
+            photoViewHeight = photoViewExpandedHeight
         }
         
         return photoViewHeight
@@ -144,6 +145,8 @@ extension TodayViewController: NCWidgetProviding {
             preferredContentSize = maxSize
         case .expanded:
             preferredContentSize = CGSize(width: maxSize.width, height: expandedWidgetHeight)
+        @unknown default:
+            break
         }
         
         let showingPhoto = photoHeightConstraint.constant != 0

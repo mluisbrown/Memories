@@ -13,7 +13,6 @@ import AVFoundation
 import Cartography
 import DACircularProgress
 import ReactiveSwift
-import Result
 
 protocol ZoomingPhotoViewDelegate {
     func viewWasZoomedIn()

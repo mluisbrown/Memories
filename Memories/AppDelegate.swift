@@ -8,8 +8,8 @@
 
 import UIKit
 import AVFoundation
-import Fabric
-import Crashlytics
+//import Fabric
+//import Crashlytics
 import UserNotifications
 
 @UIApplicationMain
@@ -19,7 +19,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var notificationDelegate = NotificationCenterDelegate()
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]?) -> Bool {
-        Fabric.with([Crashlytics.self])
+//        Fabric.with([Crashlytics.self])
 
         UserDefaults.standard.register(defaults: [NotificationsController.Key.notificationTime : 1000,
             NotificationsController.Key.hasPromptedForUserNotifications : false,

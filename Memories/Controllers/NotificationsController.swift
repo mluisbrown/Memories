@@ -12,7 +12,6 @@ import Photos
 import PHAssetHelper
 import UserNotifications
 import ReactiveSwift
-import Result
 
 struct NotificationsController {
     struct Key {
@@ -31,7 +30,7 @@ struct NotificationsController {
     }
     
     /// returns whether Notifications are allowed for this app at the System level
-    func notificationsAllowed() -> SignalProducer<Bool, NoError> {
+    func notificationsAllowed() -> SignalProducer<Bool, Never> {
         return SignalProducer { [notificationCenter] observer, _ in
             notificationCenter.getNotificationSettings() { settings in
                 switch settings.alertSetting {

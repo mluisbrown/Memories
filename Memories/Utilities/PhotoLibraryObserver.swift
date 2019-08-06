@@ -9,18 +9,17 @@
 import Foundation
 import Photos
 import ReactiveSwift
-import Result
 
 
 class PhotoLibraryObserver: NSObject, PHPhotoLibraryChangeObserver {
     
-    private let observer: Signal<PHChange, NoError>.Observer
+    private let observer: Signal<PHChange, Never>.Observer
     private let library: PHPhotoLibrary
     
-    let signal: Signal<PHChange, NoError>
+    let signal: Signal<PHChange, Never>
     
     init(library: PHPhotoLibrary) {
-        (signal, observer) = Signal<PHChange, NoError>.pipe()
+        (signal, observer) = Signal<PHChange, Never>.pipe()
         self.library = library
         super.init()
 

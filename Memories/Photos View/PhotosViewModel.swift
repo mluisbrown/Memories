@@ -9,7 +9,6 @@
 import Foundation
 import Photos
 import ReactiveSwift
-import Result
 
 struct PhotosViewModel {
     let imageManager = PHCachingImageManager()
@@ -21,11 +20,11 @@ struct PhotosViewModel {
     private let _photoViewModels = MutableProperty([PhotoViewModel]())
     let photoViewModels: Property<[PhotoViewModel]>
     
-    private let indexLoadedAndVisibleObserver: Signal<Int, NoError>.Observer
-    let indexLoadedAndVisible: Signal<Int, NoError>
+    private let indexLoadedAndVisibleObserver: Signal<Int, Never>.Observer
+    let indexLoadedAndVisible: Signal<Int, Never>
     
-    private let currentAssetChangedObserver: Signal<PHAsset, NoError>.Observer
-    let currentAssetChanged: Signal<PHAsset, NoError>
+    private let currentAssetChangedObserver: Signal<PHAsset, Never>.Observer
+    let currentAssetChanged: Signal<PHAsset, Never>
     
     private let libraryObserver: PhotoLibraryObserver
 
@@ -37,8 +36,8 @@ struct PhotosViewModel {
         self.libraryObserver = libraryObserver
         self.photoViewModels = Property(_photoViewModels)
         
-        (indexLoadedAndVisible, indexLoadedAndVisibleObserver) = Signal<Int, NoError>.pipe()
-        (currentAssetChanged, currentAssetChangedObserver) = Signal<PHAsset, NoError>.pipe()
+        (indexLoadedAndVisible, indexLoadedAndVisibleObserver) = Signal<Int, Never>.pipe()
+        (currentAssetChanged, currentAssetChangedObserver) = Signal<PHAsset, Never>.pipe()
         
         createBindings()
         
@@ -210,8 +209,8 @@ extension PhotosViewModel {
         }
     }
     
-    func loadAssetDataForSharing(for index: Int) -> SignalProducer<Any, NoError> {
-        return SignalProducer<Any, NoError> { observer, _ in
+    func loadAssetDataForSharing(for index: Int) -> SignalProducer<Any, Never> {
+        return SignalProducer<Any, Never> { observer, _ in
             let photoViewModel = self.photoViewModels.value[index]
             let asset = photoViewModel.asset.value
             

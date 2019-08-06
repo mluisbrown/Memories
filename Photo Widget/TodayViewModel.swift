@@ -10,7 +10,6 @@ import Foundation
 import Photos
 import PHAssetHelper
 import ReactiveSwift
-import Result
 
 struct TodayViewModel {
     private let cacheSize = CGSize(width: 256, height: 256)
@@ -78,16 +77,16 @@ struct TodayViewModel {
         }
     }
     
-    private func loadAssets(for date: Date) -> SignalProducer<[PHAsset], NoError> {
-        return SignalProducer<[PHAsset], NoError> { observer, _ in
+    private func loadAssets(for date: Date) -> SignalProducer<[PHAsset], Never> {
+        return SignalProducer<[PHAsset], Never> { observer, _ in
             observer.send(value: PHAssetHelper().allAssetsForAllYears(with: date))
             observer.sendCompleted()
             }
             .start(on: QueueScheduler(qos: .userInitiated))
     }
     
-    private func loadImageFor(asset: PHAsset) -> SignalProducer<UIImage, NoError> {
-        return SignalProducer<UIImage, NoError> { observer, _ in
+    private func loadImageFor(asset: PHAsset) -> SignalProducer<UIImage, Never> {
+        return SignalProducer<UIImage, Never> { observer, _ in
             self.imageManager.requestImage(for: asset,
                                            targetSize: self.cacheSize,
                                            contentMode: .aspectFill,
