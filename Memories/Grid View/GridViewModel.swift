@@ -254,20 +254,30 @@ extension GridViewModel {
 // MARK: - Image Mangaer
 
 extension GridViewModel {
-    func startCachingImages(for assets: [PHAsset]) {
-        imageManager?.startCachingImages(for: assets, targetSize: gridThumbnailSize, contentMode: .aspectFill, options: nil)
+    func startCachingImages(for indexPaths: [IndexPath]) {
+        imageManager?.startCachingImages(
+            for: indexPaths.compactMap(asset(at:)),
+            targetSize: gridThumbnailSize,
+            contentMode: .aspectFill,
+            options: nil
+        )
     }
     
-    func stopCachingImages(for assets: [PHAsset]) {
-        imageManager?.stopCachingImages(for: assets, targetSize: gridThumbnailSize, contentMode: .aspectFill, options: nil)
+    func stopCachingImages(for indexPaths: [IndexPath]) {
+        imageManager?.stopCachingImages(
+            for: indexPaths.compactMap(asset(at:)),
+            targetSize: gridThumbnailSize,
+            contentMode: .aspectFill,
+            options: nil
+        )
     }
 
     func stopCachingAllImages() {
         imageManager?.stopCachingImagesForAllAssets()
     }
-    
-    func loadCellData(for indexPath: IndexPath) -> SignalProducer<(UIImage?, String), Never> {
-        return SignalProducer<(UIImage?, String), Never> { observer, _ in
+
+    func loadCellData(for indexPath: IndexPath) -> SignalProducer<GridViewCellModel, Never> {
+        return SignalProducer<GridViewCellModel, Never> { observer, _ in
             
             if let asset = self.asset(at: indexPath) {
                 let durationText = asset.mediaType == .video ? " \(self.timeFormatter.videoDuration(from: asset.duration) ?? "") " : ""
@@ -278,7 +288,13 @@ extension GridViewModel {
                         return
                     }
                     
-                    observer.send(value: (image, durationText))
+                    observer.send(
+                        value: GridViewCellModel(
+                            assetID: asset.localIdentifier,
+                            image: image,
+                            durationText: durationText
+                        )
+                    )
                     
                     let isDegraded = ((info?[PHImageResultIsDegradedKey] as? NSNumber) as? Bool) ?? true
                     if !isDegraded {
@@ -287,7 +303,13 @@ extension GridViewModel {
                 }
             }
             else {
-                observer.send(value: (nil, ""))
+                observer.send(
+                    value: GridViewCellModel(
+                        assetID: nil,
+                        image: nil,
+                        durationText: ""
+                    )
+                )
                 observer.sendCompleted()
             }
         }

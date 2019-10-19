@@ -15,11 +15,11 @@ import ReactiveCocoa
 
 extension UICollectionView {
     func indexPathsForElements(in rect : CGRect) -> [IndexPath] {
-        if let allLayoutAttributes = self.collectionViewLayout.layoutAttributesForElements(in: rect) {
-            return allLayoutAttributes.map() {$0.indexPath}
+        guard let allLayoutAttributes = collectionViewLayout.layoutAttributesForElements(in: rect) else {
+            return []
         }
         
-        return [IndexPath]()
+        return allLayoutAttributes.map { $0.indexPath }
     }
 }
 
@@ -309,32 +309,43 @@ extension GridViewController {
         return model.numberOfItems(in: section)
     }
     
-    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CellIdentifier.photoCell, for: indexPath) as! GridViewCell
-        
-        // Increment the cell's tag
-        let currentTag = cell.tag + 1
-        cell.tag = currentTag
-        
+    override func collectionView(
+        _ collectionView: UICollectionView,
+        cellForItemAt indexPath: IndexPath
+    ) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: CellIdentifier.photoCell,
+            for: indexPath
+        ) as! GridViewCell
+
+        let assetID = model.asset(at: indexPath)?.localIdentifier
+        cell.assetID = assetID
         cell.imageView?.contentMode = thumbnailContentMode
         
         model.loadCellData(for: indexPath)
             .observe(on: UIScheduler())
-            .startWithValues {
-            if cell.tag == currentTag {
-                // Only update the thumbnail if the cell tag hasn't changed. Otherwise, the cell has been re-used.
-                cell.imageView?.image = $0.0
-                cell.durationLabel?.text = $0.1
+            .startWithValues { model in
+                // check to see the cell hasn't been re-used in the meantime
+                if cell.assetID == assetID {
+                    cell.update(with: model)
+                }
             }
-        }
         
         return cell
     }
     
-    override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: CellIdentifier.yearHeader, for: indexPath) as! GridHeaderView
+    override func collectionView(
+        _ collectionView: UICollectionView,
+        viewForSupplementaryElementOfKind kind: String,
+        at indexPath: IndexPath
+    ) -> UICollectionReusableView {
+        let headerView = collectionView.dequeueReusableSupplementaryView(
+            ofKind: kind,
+            withReuseIdentifier: CellIdentifier.yearHeader,
+            for: indexPath
+        ) as! GridHeaderView
+
         headerView.label.text = String(model.year(for: (indexPath as NSIndexPath).section))
-        
         return headerView
     }
 }
@@ -504,19 +515,18 @@ extension GridViewController {
             var addedIndexPaths = [IndexPath]()
             var removedIndexPaths = [IndexPath]()
             
-            computeDifferenceBetweenRects(previousPreheatRect, preheatRect,
-                                          removedHandler: {
-                                            removedIndexPaths += collectionView.indexPathsForElements(in: $0)
-            },
-                                          addedHandler: {
-                                            addedIndexPaths += collectionView.indexPathsForElements(in: $0)
-            })
+            computeDifferenceBetweenRects(
+                previousPreheatRect, preheatRect,
+                removedHandler: {
+                    removedIndexPaths += collectionView.indexPathsForElements(in: $0)
+                },
+                addedHandler: {
+                    addedIndexPaths += collectionView.indexPathsForElements(in: $0)
+                }
+            )
             
-            let assetsToStartCaching = assets(at: addedIndexPaths)
-            let assetsToStopCaching = assets(at: removedIndexPaths)
-            
-            model.startCachingImages(for: assetsToStartCaching)
-            model.stopCachingImages(for: assetsToStopCaching)
+            model.startCachingImages(for: addedIndexPaths)
+            model.stopCachingImages(for: removedIndexPaths)
             
             previousPreheatRect = preheatRect
         }
@@ -549,12 +559,6 @@ extension GridViewController {
             addedHandler(newRect);
             removedHandler(oldRect);
         }
-    }
-    
-    private func assets(at indexPaths : [IndexPath]) -> [PHAsset] {
-        return indexPaths.compactMap() {
-            self.model.asset(at: $0)
-        }        
     }
 }
 
