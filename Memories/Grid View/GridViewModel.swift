@@ -29,7 +29,7 @@ struct SectionChanges {
     }
 }
 
-struct GridViewModel {
+class GridViewModel {
     enum Status: String {
         case none = ""
         case noAccess = "No access to Photo Library :("
@@ -52,32 +52,43 @@ struct GridViewModel {
     private let sectionChangesObserver: Signal<SectionChanges, Never>.Observer
     let sectionChanged: Signal<SectionChanges, Never>
 
-    let libraryObserver: PhotoLibraryObserver?
-    let imageManager: PHCachingImageManager?
-    let photosAllowed: Bool
-    let date = MutableProperty(Date())
-    let resultsDate = MutableProperty(Date())
-    let title = MutableProperty("Memories")
-    private let status = MutableProperty<Status>(.noAccess)
-    var statusText: Property<String> {
-        return Property(status.map { return $0.rawValue } )
-    }
-    
-    var sectionCount : Int {
-        get {
-            return assetFetchResults.value.count
+    private var libraryObserver: PhotoLibraryObserver? = nil {
+        didSet {
+            guard let observer = libraryObserver else { return }
+            observer.signal.observeValues(self.handleChange(_:))
         }
     }
-    
-    init(photosAllowed: Bool = false, libraryObserver: PhotoLibraryObserver? = nil, imageManager: PHCachingImageManager? = nil) {
-        self.photosAllowed = photosAllowed
-        self.libraryObserver = libraryObserver
-        self.imageManager = imageManager
+    private var imageManager: PHCachingImageManager? = nil
+    private(set) var photosAllowed = false {
+        didSet {
+            if photosAllowed {
+                registerObservers()
+            }
+        }
+    }
 
+    let date = MutableProperty(Date())
+
+    private let resultsDateObserver: Signal<Date, Never>.Observer
+    let resultsDate: Signal<Date, Never>
+
+    private let title = MutableProperty("Memories")
+    private let status = MutableProperty<Status>(.noAccess)
+    let statusText: Property<String>
+    let titleText: Property<String>
+
+    var sectionCount : Int {
+        return assetFetchResults.value.count
+    }
+
+    init() {
         (sectionChanged, sectionChangesObserver) = Signal<SectionChanges, Never>.pipe()
+        (resultsDate, resultsDateObserver) = Signal<Date, Never>.pipe()
+        statusText = Property(status.map { $0.rawValue } )
+        titleText = Property(capturing: title)
         createBindings()
     }
-    
+
     private func registerObservers() {
         NotificationCenter.default.reactive
             .notifications(forName: NSNotification.Name(PHAssetHelper.sourceTypesChangedNotification))
@@ -85,7 +96,7 @@ struct GridViewModel {
             .observeValues { _ in
                 // make a non-significant change to the date to force a reload of fetch results
                 self.date.value = self.date.value.addingTimeInterval(60)
-        }
+            }
         
         NotificationCenter.default.reactive
             .notifications(forName: UIApplication.didBecomeActiveNotification)
@@ -95,21 +106,10 @@ struct GridViewModel {
                     self.date.value = date
                 }
                 self.promptForReview()
-        }
+            }
     }
     
     private func createBindings() {
-        if photosAllowed {
-            registerObservers()
-        }
-
-        if let libraryObserver = libraryObserver {
-            libraryObserver.signal
-                .observeValues {
-                    self.handleChange($0)
-            }
-        }
-        
         date.signal.observeValues { date in
             self.assetFetchResults <~ self.updateFetchResults(for: date)
             self.status.value = .loading
@@ -118,7 +118,7 @@ struct GridViewModel {
 
         assetFetchResults.signal.observeValues { fetchResults in
             self.status.value = fetchResults.count > 0 ? .none : .noPhotos
-            self.resultsDate.value = self.date.value
+            self.resultsDateObserver.send(value: self.date.value)
         }
     }
     
@@ -146,13 +146,18 @@ struct GridViewModel {
                 
                 let sectionChanges: SectionChanges
                 if !changes.hasIncrementalChanges || changes.hasMoves {
-                    sectionChanges = SectionChanges(section: section, newItemCount: newFetchResult.count)
+                    sectionChanges = SectionChanges(
+                        section: section,
+                        newItemCount: newFetchResult.count
+                    )
                 } else {
-                    sectionChanges = SectionChanges(section: section,
-                                                    removed: changes.removedIndexes?.indexPathsFromIndexes(in: section) ?? [],
-                                                    inserted: changes.insertedIndexes?.indexPathsFromIndexes(in: section) ?? [],
-                                                    changed: changes.changedIndexes?.indexPathsFromIndexes(in: section) ?? [],
-                                                    newItemCount: newFetchResult.count)
+                    sectionChanges = SectionChanges(
+                        section: section,
+                        removed: changes.removedIndexes?.indexPathsFromIndexes(in: section) ?? [],
+                        inserted: changes.insertedIndexes?.indexPathsFromIndexes(in: section) ?? [],
+                        changed: changes.changedIndexes?.indexPathsFromIndexes(in: section) ?? [],
+                        newItemCount: newFetchResult.count
+                    )
                 }
                 
                 sectionChangesObserver.send(value: sectionChanges)
@@ -166,6 +171,29 @@ struct GridViewModel {
     }
     
     // MARK: - API
+    func initialisePhotoLibrary() {
+        PhotoLibraryAuthorization.checkPhotosPermission().observe(on: UIScheduler())
+            .startWithValues { [weak self] status in
+                switch status {
+                case .authorized:
+                    self?.photosAllowed = true
+                    self?.libraryObserver = PhotoLibraryObserver(library: PHPhotoLibrary.shared())
+                    self?.imageManager = PHCachingImageManager()
+
+                    if let date = Current.notificationsController.launchDate() {
+                        self?.date.value = date
+                    } else {
+                        self?.date.value = Date()
+                    }
+
+                case .denied, .restricted, .notDetermined:
+                    break
+                @unknown default:
+                    break;
+                }
+            }
+    }
+
     func goToNextDay() {
         date.value = date.value.nextDay()
     }

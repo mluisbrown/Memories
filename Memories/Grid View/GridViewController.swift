@@ -33,15 +33,10 @@ class GridViewController: UICollectionViewController
     // If the size is too large then PhotoKit doesn't return an optimal image size
     // see rdar://25181601 (https://openradar.appspot.com/radar?id=6158824289337344)
     let gridThumbnailSize = CGSize(width: 256, height: 256)
-    
-    var model : GridViewModel! {
-        didSet {
-            bindToModel()
-        }
-    }
+
+    let model = GridViewModel()
 
     var statusBarVisible = true
-    
     var previousPreheatRect : CGRect = .zero
     var cellSize : CGSize = .zero
     
@@ -69,13 +64,13 @@ class GridViewController: UICollectionViewController
     let RELEASE_THRESHOLD : CGFloat = 100.0
     
     private func bindToModel() {
-        model.resultsDate.signal.observe(on: UIScheduler())
+        model.resultsDate.observe(on: UIScheduler())
             .skipRepeats(==)
             .observeValues { [weak self] date in
                 self?.refreshData(for: date)
         }
         
-        model.title.producer.observe(on: UIScheduler())
+        model.titleText.producer.observe(on: UIScheduler())
             .startWithValues { [weak self] title in
                 self?.titleView.text = title
                 self?.titleView.sizeToFit()
@@ -89,30 +84,6 @@ class GridViewController: UICollectionViewController
         model.statusText.producer.observe(on: UIScheduler())
             .startWithValues { [weak self] status in
                 self?.showHideStatusLabel(status)
-        }
-    }
-    
-    private func loadPhotos() {
-        PhotoLibraryAuthorization.checkPhotosPermission().observe(on: UIScheduler())
-            .startWithValues { [weak self] status in
-                switch status {
-                case .authorized:
-                    self?.model = GridViewModel(photosAllowed: true,
-                                                libraryObserver: PhotoLibraryObserver(library: PHPhotoLibrary.shared()),
-                                                imageManager: PHCachingImageManager())
-            
-                    let startDate = Date()
-                    if let date = Current.notificationsController.launchDate() {
-                        self?.model.date.value = date
-                    } else {
-                        self?.model.date.value = startDate
-                    }
-                    
-                case .denied, .restricted, .notDetermined:
-                    break
-                @unknown default:
-                    break;
-                }
         }
     }
     
@@ -137,9 +108,9 @@ class GridViewController: UICollectionViewController
         
         configureFlowLayout()
         configureTitleView()
-        
-        model = GridViewModel()
-        loadPhotos()
+
+        bindToModel()
+        model.initialisePhotoLibrary()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -256,7 +227,6 @@ extension GridViewController: StatusBarViewController {
         }
     }
 }
-
 
 // MARK: - UIPopoverPresentationControllerDelegate
 extension GridViewController: UIPopoverPresentationControllerDelegate {
