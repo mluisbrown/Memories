@@ -32,10 +32,17 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
     
     private func initUI() {
         notificationsSwitch.isOn = viewModel.notificationsEnabled.value
-        timePicker.date = timePicker.calendar.date(from: DateComponents(era: 1, year: 1970, month: 1, day: 1,
-                                                                        hour: viewModel.notificationTime.value.hour,
-                                                                        minute: viewModel.notificationTime.value.minute,
-                                                                        second: 0, nanosecond: 0))!
+        timePicker.date = timePicker.calendar.date(
+            from: DateComponents(
+                era: 1,
+                year: 1970,
+                month: 1,
+                day: 1,
+                hour: viewModel.notificationTime.value.hour,
+                minute: viewModel.notificationTime.value.minute,
+                second: 0, nanosecond: 0
+            )
+        )!
         
         sourceIncludeCurrentYearSwitch.isOn = viewModel.sourceIncludeCurrentYear.value
         sourcePhotoLibrarySwitch.isOn = viewModel.sourcePhotoLibrary.value
@@ -82,12 +89,11 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
-    
-    // this is called when the settings view is dismissed via the Done button
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        viewModel.commit()
+
+    override func viewWillDisappear(_ animated: Bool) {
+        viewModel.persist()
     }
-    
+
     // MARK: UITableViewDelegate
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

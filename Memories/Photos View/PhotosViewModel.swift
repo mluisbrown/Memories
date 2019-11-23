@@ -75,18 +75,19 @@ extension PhotosViewModel {
     func loadPreviewImageFor(index: Int) {
         let photoViewModel = photoViewModels.value[index]
         
-        self.imageManager.requestImage(for: photoViewModel.asset.value, 
-                                                                               targetSize: self.cacheSize,
-                                                                               contentMode: .aspectFill, 
-                                                                               options: nil, 
-                                                                               resultHandler: { result, userInfo in
-            if let image = result {
-                photoViewModel.previewImage.value = image
-                
-                if index == self.currentIndex.value {
-                    self.indexBecameVisible(index)
+        self.imageManager.requestImage(
+            for: photoViewModel.asset.value,
+            targetSize: self.cacheSize,
+            contentMode: .aspectFill,
+            options: nil,
+            resultHandler: { result, userInfo in
+                if let image = result {
+                    photoViewModel.previewImage.value = image
+
+                    if index == self.currentIndex.value {
+                        self.indexBecameVisible(index)
+                    }
                 }
-            }
         })
     }
     

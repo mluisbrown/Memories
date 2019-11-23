@@ -33,12 +33,12 @@ class DatePickerViewController: UIViewController, UIPickerViewDataSource, UIPick
         super.viewDidLoad()
 
         goButton.layer.borderWidth = 1
-        goButton.layer.borderColor = UIColor.white.cgColor
         goButton.layer.cornerRadius = 4
         todayButton.layer.borderWidth = 1
-        todayButton.layer.borderColor = UIColor.white.cgColor
         todayButton.layer.cornerRadius = 4
-        
+
+        adjustButtonBorderColor()
+
         progressView.trackTintColor = UIColor.clear
         progressView.thicknessRatio = 0.1
         view.addSubview(progressView)
@@ -56,6 +56,22 @@ class DatePickerViewController: UIViewController, UIPickerViewDataSource, UIPick
         progressView.indeterminate = 1
 
         createBindings()
+    }
+
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        adjustButtonBorderColor()
+    }
+
+    private func adjustButtonBorderColor() {
+        let btnBorderColor: CGColor
+        if #available(iOS 13.0, *) {
+            btnBorderColor = UIColor.label.cgColor
+        } else {
+            btnBorderColor = UIColor.white.cgColor
+        }
+
+        goButton.layer.borderColor = btnBorderColor
+        todayButton.layer.borderColor = btnBorderColor
     }
 
     private func createBindings() {

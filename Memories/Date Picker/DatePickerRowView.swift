@@ -13,11 +13,19 @@ class DatePickerRowView: UIView {
 
     let dateLabel = UILabel().with {
         $0.translatesAutoresizingMaskIntoConstraints = false
-        $0.textColor = UIColor.white
+        if #available(iOS 13.0, *) {
+            $0.textColor = UIColor.label
+        } else {
+            $0.textColor = UIColor.white
+        }
     }
     let countLabel = UILabel().with {
         $0.translatesAutoresizingMaskIntoConstraints = false
-        $0.textColor = UIColor.white
+        if #available(iOS 13.0, *) {
+            $0.textColor = UIColor.label
+        } else {
+            $0.textColor = UIColor.white
+        }
     }
     let dateFormatter = DateFormatter().with {
         $0.dateFormat = "MMMM dd"

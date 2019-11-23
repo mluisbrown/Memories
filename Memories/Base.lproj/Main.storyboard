@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14868" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Qt4-xf-ejy">
-    <device id="retina4_7" orientation="portrait" appearance="dark"/>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Qt4-xf-ejy">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14824"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15509"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -302,7 +302,7 @@
                                         <rect key="frame" x="0.0" y="588.5" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="yvT-6j-Jyy" id="Tsv-Ux-wbP">
-                                            <rect key="frame" x="0.0" y="0.0" width="568.5" height="44"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="569" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Send Feedback" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NmE-Ji-i4v">
@@ -322,7 +322,7 @@
                                         <rect key="frame" x="0.0" y="632.5" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="WGm-1S-QSZ" id="aW0-iK-r0Z">
-                                            <rect key="frame" x="0.0" y="0.0" width="568.5" height="44"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="569" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Please Rate Memories" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Mp6-xA-Lvf">
@@ -539,13 +539,14 @@
         <scene sceneID="bco-3c-kfM">
             <objects>
                 <viewController storyboardIdentifier="datePicker" title="Date Picker" useStoryboardIdentifierAsRestorationIdentifier="YES" id="664-5B-kap" customClass="DatePickerViewController" customModule="Memories" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="6qd-La-U2L">
+                    <view key="view" alpha="0.80000000000000004" contentMode="scaleToFill" id="6qd-La-U2L">
                         <rect key="frame" x="0.0" y="0.0" width="200" height="240"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hz8-q5-lvH">
+                            <pickerView alpha="0.80000000000000004" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hz8-q5-lvH">
                                 <rect key="frame" x="0.0" y="29" width="200" height="171"/>
-                                <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
+                                <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                                <color key="tintColor" systemColor="labelColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <connections>
                                     <outlet property="dataSource" destination="664-5B-kap" id="DBO-e7-bNQ"/>
                                     <outlet property="delegate" destination="664-5B-kap" id="kPr-yq-zG5"/>
@@ -557,7 +558,6 @@
                                     <constraint firstAttribute="height" constant="21" id="uYA-YH-FUL"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Photos" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="y0y-n9-5wK">
@@ -566,7 +566,7 @@
                                     <constraint firstAttribute="height" constant="21" id="Etf-sE-eQw"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XkC-rE-OSo">
@@ -576,7 +576,7 @@
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="50" id="O0l-cV-8X3"/>
                                 </constraints>
                                 <state key="normal" title="Go">
-                                    <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <color key="titleColor" systemColor="labelColor" cocoaTouchSystemColor="darkTextColor"/>
                                 </state>
                                 <connections>
                                     <action selector="selectDateAndClose:" destination="664-5B-kap" eventType="touchUpInside" id="Kfd-Rn-XOk"/>
@@ -589,14 +589,14 @@
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="50" id="4zr-qJ-Dfc"/>
                                 </constraints>
                                 <state key="normal" title="Today">
-                                    <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <color key="titleColor" systemColor="labelColor" cocoaTouchSystemColor="darkTextColor"/>
                                 </state>
                                 <connections>
                                     <action selector="gotoToday:" destination="664-5B-kap" eventType="touchUpInside" id="laJ-W9-fb0"/>
                                 </connections>
                             </button>
                         </subviews>
-                        <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="y0y-n9-5wK" firstAttribute="trailing" secondItem="6qd-La-U2L" secondAttribute="trailingMargin" id="2mH-ts-DX5"/>
                             <constraint firstItem="vzH-ie-ifV" firstAttribute="bottom" secondItem="qga-5q-Fjx" secondAttribute="bottom" constant="8" id="8SC-aI-bYl"/>

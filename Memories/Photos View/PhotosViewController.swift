@@ -23,7 +23,7 @@ class PhotosViewController: UIViewController,
     UIGestureRecognizerDelegate,
     ZoomingPhotoViewDelegate
 {
-    @IBOutlet var scrollView: UIScrollView!
+    @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var shareButton: UIButton!
     @IBOutlet weak var deleteButton: UIButton!
     @IBOutlet weak var closeButton: UIButton!
@@ -311,9 +311,9 @@ class PhotosViewController: UIViewController,
     }
     
     private func didLoad(pageView: ZoomingPhotoView, for asset: PHAsset, hiRes: Bool) {
-        shareButton.isEnabled = hiRes
-        deleteButton.isEnabled = asset.canPerform(.delete) && hiRes
-        heartButton.isEnabled = asset.canPerform(.properties) && hiRes
+        shareButton.isEnabled = true
+        deleteButton.isEnabled = asset.canPerform(.delete)
+        heartButton.isEnabled = asset.canPerform(.properties)
         
         pageView.didBecomeVisible()
     }

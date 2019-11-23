@@ -209,7 +209,7 @@ class GridViewController: UICollectionViewController
                 popoverPresentationController.sourceView = sourceView
                 popoverPresentationController.sourceRect = CGRect(x: 0, y: 0, width: sourceView.frame.size.width, height: sourceView.frame.size.height)
                 popoverPresentationController.delegate = self
-                popoverPresentationController.backgroundColor = UIColor.black.withAlphaComponent(0.2)
+                popoverPresentationController.backgroundColor = UIColor.groupTableViewBackground.withAlphaComponent(0.2)
             }
             
             datePickerVC.initialDate = model.date.value
