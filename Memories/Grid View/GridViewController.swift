@@ -39,11 +39,11 @@ class GridViewController: UICollectionViewController
     var statusBarVisible = true
     var previousPreheatRect : CGRect = .zero
     var cellSize : CGSize = .zero
-    
+
     let titleView = UILabel().with {
         $0.backgroundColor = UIColor.clear
         $0.font = UIFont.systemFont(ofSize: 16)
-        $0.textColor = UIColor.white
+        $0.textColor = Current.textColor
         $0.isUserInteractionEnabled = true
         $0.textAlignment = .center
     }
@@ -51,7 +51,7 @@ class GridViewController: UICollectionViewController
     let statusLabel = UILabel().with {
         $0.backgroundColor = UIColor.clear
         $0.font = UIFont.systemFont(ofSize: 16)
-        $0.textColor = UIColor.white
+        $0.textColor = Current.textColor
     }
     let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
     

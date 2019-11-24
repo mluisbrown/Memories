@@ -63,12 +63,7 @@ class DatePickerViewController: UIViewController, UIPickerViewDataSource, UIPick
     }
 
     private func adjustButtonBorderColor() {
-        let btnBorderColor: CGColor
-        if #available(iOS 13.0, *) {
-            btnBorderColor = UIColor.label.cgColor
-        } else {
-            btnBorderColor = UIColor.white.cgColor
-        }
+        let btnBorderColor = Current.textColor.cgColor
 
         goButton.layer.borderColor = btnBorderColor
         todayButton.layer.borderColor = btnBorderColor

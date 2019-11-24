@@ -77,7 +77,7 @@ class ZoomingPhotoView: UIView, UIScrollViewDelegate {
     
     private let scrubberView = ScrubberView().with {
         $0.translatesAutoresizingMaskIntoConstraints = false
-        $0.backgroundColor = UIColor.black.withAlphaComponent(0.5)
+        $0.backgroundColor = Current.backgroundColor.withAlphaComponent(0.5)
         $0.layer.cornerRadius = 5
     }
     
