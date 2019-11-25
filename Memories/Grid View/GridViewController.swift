@@ -43,7 +43,7 @@ class GridViewController: UICollectionViewController
     let titleView = UILabel().with {
         $0.backgroundColor = UIColor.clear
         $0.font = UIFont.systemFont(ofSize: 16)
-        $0.textColor = Current.textColor
+        $0.textColor = Current.colors.label
         $0.isUserInteractionEnabled = true
         $0.textAlignment = .center
     }
@@ -51,7 +51,7 @@ class GridViewController: UICollectionViewController
     let statusLabel = UILabel().with {
         $0.backgroundColor = UIColor.clear
         $0.font = UIFont.systemFont(ofSize: 16)
-        $0.textColor = Current.textColor
+        $0.textColor = Current.colors.label
     }
     let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
     
@@ -209,7 +209,7 @@ class GridViewController: UICollectionViewController
                 popoverPresentationController.sourceView = sourceView
                 popoverPresentationController.sourceRect = CGRect(x: 0, y: 0, width: sourceView.frame.size.width, height: sourceView.frame.size.height)
                 popoverPresentationController.delegate = self
-                popoverPresentationController.backgroundColor = UIColor.groupTableViewBackground.withAlphaComponent(0.2)
+                popoverPresentationController.backgroundColor = Current.colors.systemGroupedBackground.withAlphaComponent(0.2)
             }
             
             datePickerVC.initialDate = model.date.value

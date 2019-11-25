@@ -55,7 +55,7 @@ class PhotosViewPresentTransition: NSObject, UIViewControllerAnimatedTransitioni
             
             UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.75) {
                 fromViewController.setNeedsStatusBarAppearanceUpdate()
-                transitionView.backgroundColor = Current.backgroundColor
+                transitionView.backgroundColor = Current.colors.systemBackground
                 imageView.bounds = CGRect(origin: CGPoint.zero, size: newImageViewSize)
                 imageView.center = transitionView.center
             }

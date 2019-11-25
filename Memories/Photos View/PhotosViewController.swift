@@ -104,8 +104,8 @@ class PhotosViewController: UIViewController,
 
     private func setControls(alpha: CGFloat) {
         [shareButton, deleteButton, closeButton, heartButton, yearLabel].forEach {
-            $0?.backgroundColor = Current.backgroundColor.withAlphaComponent(0.5)
-            $0?.tintColor = Current.textColor
+            $0?.backgroundColor = Current.colors.systemBackground.withAlphaComponent(0.5)
+            $0?.tintColor = Current.colors.label
 
             $0?.alpha = alpha
         }
@@ -255,7 +255,7 @@ class PhotosViewController: UIViewController,
             panState.imageView?.center = CGPoint(x: panState.center.x + translation.x, y: panState.center.y + translation.y)
             panState.imageView?.transform = panState.transform.scaledBy(x: scale, y: scale)
             
-            view.backgroundColor = Current.backgroundColor.withAlphaComponent(alpha)
+            view.backgroundColor = Current.colors.systemBackground.withAlphaComponent(alpha)
             if !controlsHidden { setControls(alpha: alpha) }
 
         case .ended, .cancelled:
@@ -266,7 +266,7 @@ class PhotosViewController: UIViewController,
                 UIView.animate(withDuration: 0.25, animations: {
                     panState.imageView?.center = panState.center
                     panState.imageView?.transform = panState.transform
-                    self.view.backgroundColor = Current.backgroundColor
+                    self.view.backgroundColor = Current.colors.systemBackground
                     if !self.controlsHidden { self.setControls(alpha: 1) }
                 }) { finished in
                     panState.destImageView?.isHidden = false

@@ -16,7 +16,7 @@ class ScrubberView: UIView {
         $0.imageEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         $0.setImage(UIImage(named: "play")?.withRenderingMode(.alwaysTemplate), for: .normal)
         $0.setImage(UIImage(named: "pause")?.withRenderingMode(.alwaysTemplate), for: .selected)
-        $0.tintColor = Current.textColor
+        $0.tintColor = Current.colors.label
     }
     
     let scrubberSlider = UISlider().with {
@@ -25,14 +25,14 @@ class ScrubberView: UIView {
     
     let currentTimeLabel = UILabel().with {
         $0.font = UIFont.systemFont(ofSize: 12)
-        $0.textColor = Current.textColor
+        $0.textColor = Current.colors.label
         $0.text = "0:00"
     }
 
     let remainingTimeLabel = UILabel().with {
         let x = UILabel()
         $0.font = UIFont.systemFont(ofSize: 12)
-        $0.textColor = Current.textColor
+        $0.textColor = Current.colors.label
         $0.text = "0:00"
     }
 
@@ -80,12 +80,12 @@ class ScrubberView: UIView {
     }
 
     private static func configureScrubberSlider(slider: UISlider) {
-        slider.setThumbImage(CAShapeLayer.circle(fillColor: Current.textColor, diameter: 15).toImage(), for: .normal)
+        slider.setThumbImage(CAShapeLayer.circle(fillColor: Current.colors.label, diameter: 15).toImage(), for: .normal)
 
         let tileImageFrame = CGRect(origin: .zero, size: CGSize(width: 1, height: 2))
 
         let minTrackLayer = CALayer()
-        minTrackLayer.backgroundColor = Current.textColor.cgColor
+        minTrackLayer.backgroundColor = Current.colors.label.cgColor
         minTrackLayer.frame = tileImageFrame
 
         let maxTrackLayer = CALayer()

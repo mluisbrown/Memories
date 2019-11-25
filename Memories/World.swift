@@ -4,20 +4,31 @@ import UIKit
 struct World {
     var userDefaults = UserDefaults.standard
     var notificationsController = NotificationsController()
+    var colors = Colors()
+}
 
-    var textColor: UIColor {
+struct Colors {
+    var label: UIColor {
         if #available(iOS 13.0, *) {
-            return UIColor.label
+            return .label
         } else {
-            return UIColor.white
+            return .white
         }
     }
 
-    var backgroundColor: UIColor {
+    var systemBackground: UIColor {
         if #available(iOS 13.0, *) {
-            return UIColor.systemBackground
+            return .systemBackground
         } else {
-            return UIColor.black
+            return .black
+        }
+    }
+
+    var systemGroupedBackground: UIColor {
+        if #available(iOS 13.0, *) {
+            return .systemGroupedBackground
+        } else {
+            return .groupTableViewBackground
         }
     }
 }
