@@ -1,4 +1,4 @@
-github "ReactiveCocoa/ReactiveCocoa" "7bbb79edc36bdd6d15041a3980f939b26b64aab5"
+github "ReactiveCocoa/ReactiveCocoa" "419b9e927c323275029cfb848c3af27a3ae5bc57"
 github "ReactiveCocoa/ReactiveSwift" "6.1.0"
 github "mluisbrown/DACircularProgress" "b00da38778a4e0f7962df88e1c5ad7dd41eef862"
 github "robb/Cartography" "4.0.0"
