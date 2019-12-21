@@ -103,11 +103,12 @@ class PhotosViewController: UIViewController,
     }
 
     private func setControls(alpha: CGFloat) {
-        [shareButton, deleteButton, closeButton, heartButton, yearLabel].forEach {
-            $0?.backgroundColor = Current.colors.systemBackground.withAlphaComponent(0.5)
-            $0?.tintColor = Current.colors.label
-
-            $0?.alpha = alpha
+        UIView.animate(withDuration: 0.25) {
+            [self.shareButton, self.deleteButton, self.closeButton, self.heartButton, self.yearLabel].forEach { view in
+                view?.backgroundColor = Current.colors.systemBackground.withAlphaComponent(0.5)
+                view?.tintColor = Current.colors.label
+                view?.alpha = alpha
+            }
         }
     }
     
@@ -123,6 +124,7 @@ class PhotosViewController: UIViewController,
         bindToModel()
 
         initialPage = model.currentIndex.value
+        view.backgroundColor = Current.colors.systemBackground
         
         let panRecognizer = UIPanGestureRecognizer(target: self, action: #selector(PhotosViewController.viewDidPan)).with {
             $0.delegate = self

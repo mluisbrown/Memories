@@ -18,7 +18,16 @@ struct Colors {
 
     var systemBackground: UIColor {
         if #available(iOS 13.0, *) {
-            return .systemBackground
+            return UIColor { traits in
+                switch traits.userInterfaceStyle {
+                case .light, .unspecified:
+                    return .systemBackground
+                case .dark:
+                    return .black
+                @unknown default:
+                    return .systemBackground
+                }
+            }
         } else {
             return .black
         }

@@ -36,7 +36,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         } catch {
             NSLog("AVAudioSession setCategory failed!")
         }
-        
+
+        window = UIWindow(frame: UIScreen.main.bounds)
+//        if #available(iOS 13.0, *) {
+//            window?.overrideUserInterfaceStyle = .dark
+//        }
+
+        self.window?.rootViewController = UIStoryboard(name: "Main", bundle: nil)
+            .instantiateViewController(withIdentifier: "initial")
+        self.window?.makeKeyAndVisible()
+
         return true
     }
 
