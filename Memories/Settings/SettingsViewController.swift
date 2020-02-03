@@ -13,6 +13,13 @@ import ReactiveSwift
 
 class SettingsViewController: UITableViewController, MFMailComposeViewControllerDelegate {
 
+    enum Section: Int {
+        case notifications
+        case imageSources
+        case appearance
+        case feedback
+    }
+
     @IBOutlet weak var notificationsSwitch: UISwitch!
     @IBOutlet weak var timePicker: UIDatePicker!
     @IBOutlet weak var feedbackCell: UITableViewCell!
@@ -94,6 +101,14 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
         viewModel.persist()
     }
 
+    private func shouldHideSection(index: Int) -> Bool {
+        if #available(iOS 13.0, *) {
+            return false
+        }
+
+        return Section(rawValue: index) == .some(.appearance)
+    }
+
     // MARK: UITableViewDelegate
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -119,6 +134,18 @@ class SettingsViewController: UITableViewController, MFMailComposeViewController
         }
         
         return height
+    }
+
+    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return shouldHideSection(index: section) ? 0.1 : super.tableView(tableView, heightForHeaderInSection: section)
+    }
+
+    override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return shouldHideSection(index: section) ? 0.1 : super.tableView(tableView, heightForFooterInSection: section)
+    }
+
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return shouldHideSection(index: section) ? 0 : super.tableView(tableView, numberOfRowsInSection: section)
     }
 
     private func sendFeedback() {

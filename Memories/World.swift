@@ -5,6 +5,7 @@ struct World {
     var userDefaults = UserDefaults.standard
     var notificationsController = NotificationsController()
     var colors = Colors()
+    var updateAppearance: (Appearance) -> Void = { _ in }
 }
 
 struct Colors {

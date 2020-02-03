@@ -21,10 +21,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]?) -> Bool {
 //        Fabric.with([Crashlytics.self])
 
-        UserDefaults.standard.register(defaults: [NotificationsController.Key.notificationTime : 1000,
-            NotificationsController.Key.hasPromptedForUserNotifications : false,
-            NotificationsController.Key.notificationsEnabled: false,
-            ReviewHelper.appLaunchCountMod3Key: 0])
+        UserDefaults.standard.register(
+            defaults: [
+                NotificationsController.Key.notificationTime : 1000,
+                NotificationsController.Key.hasPromptedForUserNotifications : false,
+                NotificationsController.Key.notificationsEnabled: false,
+                ReviewHelper.appLaunchCountMod3Key: 0,
+                AppearanceViewModel.appearanceKey: "dark"
+            ]
+        )
 
         UNUserNotificationCenter.current().delegate = notificationDelegate
 
@@ -38,9 +43,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         window = UIWindow(frame: UIScreen.main.bounds)
-//        if #available(iOS 13.0, *) {
-//            window?.overrideUserInterfaceStyle = .dark
-//        }
+        if #available(iOS 13.0, *) {
+            Current.updateAppearance = self.udpateAppearance
+
+            if let appearanceSetting = Current.userDefaults.string(forKey: AppearanceViewModel.appearanceKey),
+                let appearance = Appearance(rawValue: appearanceSetting) {
+                udpateAppearance(appearance)
+            }
+        }
 
         self.window?.rootViewController = UIStoryboard(name: "Main", bundle: nil)
             .instantiateViewController(withIdentifier: "initial")
@@ -51,5 +61,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationDidBecomeActive(_ application: UIApplication) {
         ReviewHelper.registerAppLaunch()        
+    }
+
+    @available(iOS 13.0, *)
+    func udpateAppearance(_ appearance: Appearance) {
+        switch appearance {
+        case .dark:
+            window?.overrideUserInterfaceStyle = .dark
+        case .light:
+            window?.overrideUserInterfaceStyle = .light
+        case .system:
+            window?.overrideUserInterfaceStyle = .unspecified
+        }
     }
 }

@@ -69,6 +69,7 @@
 		4CF574801C06749B00D12ADB /* DatePickerRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF5747F1C06749B00D12ADB /* DatePickerRowView.swift */; };
 		4CF5FEEF1B58212700F8517D /* GridViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF5FEEE1B58212700F8517D /* GridViewModel.swift */; };
 		4CFD0DE71E68676500C12C87 /* PhotoLibraryObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CFD0DE61E68676500C12C87 /* PhotoLibraryObserver.swift */; };
+		741AF37323CFCDBB00FAE6DF /* AppearanceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 741AF37223CFCDBB00FAE6DF /* AppearanceViewController.swift */; };
 		744059C521769914002DDA93 /* World.swift in Sources */ = {isa = PBXBuildFile; fileRef = 744059C421769914002DDA93 /* World.swift */; };
 /* End PBXBuildFile section */
 
@@ -196,6 +197,7 @@
 		4CF5747F1C06749B00D12ADB /* DatePickerRowView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatePickerRowView.swift; sourceTree = "<group>"; };
 		4CF5FEEE1B58212700F8517D /* GridViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridViewModel.swift; sourceTree = "<group>"; };
 		4CFD0DE61E68676500C12C87 /* PhotoLibraryObserver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoLibraryObserver.swift; sourceTree = "<group>"; };
+		741AF37223CFCDBB00FAE6DF /* AppearanceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceViewController.swift; sourceTree = "<group>"; };
 		744059C421769914002DDA93 /* World.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = World.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -292,6 +294,7 @@
 			children = (
 				4CB674B41BA1EBC7001F401A /* SettingsViewController.swift */,
 				4C989BE01BA780BB00D4C13F /* SettingsViewModel.swift */,
+				741AF37223CFCDBB00FAE6DF /* AppearanceViewController.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -629,6 +632,7 @@
 				4C748EB11DE09D94005F44DD /* ScrubberView.swift in Sources */,
 				4C921FD21C1A038800F0411D /* PhotosViewPresentTransition.swift in Sources */,
 				4CFD0DE71E68676500C12C87 /* PhotoLibraryObserver.swift in Sources */,
+				741AF37323CFCDBB00FAE6DF /* AppearanceViewController.swift in Sources */,
 				4C65B5B01E36137900DF2465 /* IndexSet.swift in Sources */,
 				4CEAA8EE1B3340C600774FE8 /* AppDelegate.swift in Sources */,
 				4C3334551B659DAA00D907C8 /* ZoomingPhotoView.swift in Sources */,
