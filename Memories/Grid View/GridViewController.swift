@@ -105,7 +105,14 @@ class GridViewController: UICollectionViewController
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
+        if let navBar = navigationController?.navigationBar {
+            navBar.barTintColor = Current.colors.systemBackground
+            navBar.tintColor = Current.colors.label
+        }
+        navigationItem.leftBarButtonItem?.tintColor = Current.colors.label
+        collectionView.backgroundColor = Current.colors.systemBackground
+
         configureFlowLayout()
         configureTitleView()
 
@@ -316,6 +323,8 @@ extension GridViewController {
         ) as! GridHeaderView
 
         headerView.label.text = String(model.year(for: (indexPath as NSIndexPath).section))
+        headerView.label.textColor = Current.colors.label
+        headerView.backgroundColor = Current.colors.opaqueSeparator
         return headerView
     }
 }

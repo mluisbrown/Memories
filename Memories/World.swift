@@ -38,7 +38,15 @@ struct Colors {
         if #available(iOS 13.0, *) {
             return .systemGroupedBackground
         } else {
-            return .groupTableViewBackground
+            return .init(red: 0.1, green: 0.1, blue: 0.1, alpha: 1)
+        }
+    }
+
+    var opaqueSeparator: UIColor {
+        if #available(iOS 13.0, *) {
+            return .opaqueSeparator
+        } else {
+            return .init(red: 0.2, green: 0.2, blue: 0.2, alpha: 1)
         }
     }
 }

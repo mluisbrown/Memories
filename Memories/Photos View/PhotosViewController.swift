@@ -109,6 +109,7 @@ class PhotosViewController: UIViewController,
                 view?.tintColor = Current.colors.label
                 view?.alpha = alpha
             }
+            self.yearLabel.textColor = Current.colors.label
         }
     }
     

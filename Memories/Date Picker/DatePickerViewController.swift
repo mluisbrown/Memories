@@ -18,6 +18,8 @@ class DatePickerViewController: UIViewController, UIPickerViewDataSource, UIPick
     @IBOutlet weak var datePicker: UIPickerView!
     @IBOutlet weak var goButton: UIButton!
     @IBOutlet weak var todayButton: UIButton!
+    @IBOutlet weak var dateLabel: UILabel!
+    @IBOutlet weak var photosLabel: UILabel!
 
     private let gregorian = Date.gregorianCalendar
     
@@ -31,6 +33,13 @@ class DatePickerViewController: UIViewController, UIPickerViewDataSource, UIPick
     
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        view.backgroundColor = Current.colors.systemGroupedBackground.withAlphaComponent(0.8)
+        datePicker.backgroundColor = Current.colors.systemGroupedBackground.withAlphaComponent(0.8)
+        goButton.setTitleColor(Current.colors.label, for: .normal)
+        todayButton.setTitleColor(Current.colors.label, for: .normal)
+        dateLabel.textColor = Current.colors.label
+        photosLabel.textColor = Current.colors.label
 
         goButton.layer.borderWidth = 1
         goButton.layer.cornerRadius = 4
