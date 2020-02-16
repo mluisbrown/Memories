@@ -143,7 +143,6 @@
 		4C3747A61D46BFCA0070734D /* StatusBarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatusBarViewController.swift; sourceTree = "<group>"; };
 		4C3EA9D41E1F058D000D78EA /* ReactiveCocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ReactiveCocoa.framework; path = Carthage/Build/iOS/ReactiveCocoa.framework; sourceTree = "<group>"; };
 		4C3EA9D51E1F058D000D78EA /* ReactiveSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ReactiveSwift.framework; path = Carthage/Build/iOS/ReactiveSwift.framework; sourceTree = "<group>"; };
-		4C3EA9D61E1F058D000D78EA /* Result.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Result.framework; path = Carthage/Build/iOS/Result.framework; sourceTree = "<group>"; };
 		4C58C3191E731D2800D8FA14 /* PhotoLibraryAuthorization.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoLibraryAuthorization.swift; sourceTree = "<group>"; };
 		4C5B90271B5D9C590014A87C /* GridHeaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridHeaderView.swift; sourceTree = "<group>"; };
 		4C6299AC1B4CB0AD00B8795E /* PhotosViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotosViewController.swift; sourceTree = "<group>"; };
@@ -174,11 +173,8 @@
 		4CBA89661BBC926100913336 /* ReviewHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReviewHelper.swift; sourceTree = "<group>"; };
 		4CBA89681BBC9BF300913336 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		4CD790171DD60DE000EEE452 /* With.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = With.swift; sourceTree = "<group>"; };
-		4CE6FB261EAFF6DF00CC5D01 /* SwiftyStoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftyStoreKit.framework; path = Carthage/Build/iOS/SwiftyStoreKit.framework; sourceTree = "<group>"; };
 		4CE6FB301EAFF85000CC5D01 /* ReactiveCocoa.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = ReactiveCocoa.framework.dSYM; path = Carthage/Build/iOS/ReactiveCocoa.framework.dSYM; sourceTree = "<group>"; };
 		4CE6FB311EAFF85000CC5D01 /* ReactiveSwift.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = ReactiveSwift.framework.dSYM; path = Carthage/Build/iOS/ReactiveSwift.framework.dSYM; sourceTree = "<group>"; };
-		4CE6FB321EAFF85000CC5D01 /* Result.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = Result.framework.dSYM; path = Carthage/Build/iOS/Result.framework.dSYM; sourceTree = "<group>"; };
-		4CE6FB331EAFF85000CC5D01 /* SwiftyStoreKit.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = SwiftyStoreKit.framework.dSYM; path = Carthage/Build/iOS/SwiftyStoreKit.framework.dSYM; sourceTree = "<group>"; };
 		4CE8BD961C03BBE500207BE1 /* DatePickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatePickerViewController.swift; sourceTree = "<group>"; };
 		4CEAA8E81B3340C600774FE8 /* Memories.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Memories.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4CEAA8EC1B3340C600774FE8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -335,14 +331,10 @@
 			children = (
 				4CE6FB301EAFF85000CC5D01 /* ReactiveCocoa.framework.dSYM */,
 				4CE6FB311EAFF85000CC5D01 /* ReactiveSwift.framework.dSYM */,
-				4CE6FB321EAFF85000CC5D01 /* Result.framework.dSYM */,
-				4CE6FB331EAFF85000CC5D01 /* SwiftyStoreKit.framework.dSYM */,
 				4C8594D21BB33E2F005CCFAC /* DACircularProgress.framework.dSYM */,
 				4C8594D01BB33E27005CCFAC /* Cartography.framework.dSYM */,
-				4CE6FB261EAFF6DF00CC5D01 /* SwiftyStoreKit.framework */,
 				4C3EA9D41E1F058D000D78EA /* ReactiveCocoa.framework */,
 				4C3EA9D51E1F058D000D78EA /* ReactiveSwift.framework */,
-				4C3EA9D61E1F058D000D78EA /* Result.framework */,
 				4CBA89681BBC9BF300913336 /* Security.framework */,
 				4C8594C91BB33D02005CCFAC /* DACircularProgress.framework */,
 				4C8594C51BB33CF5005CCFAC /* Cartography.framework */,
