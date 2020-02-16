@@ -131,8 +131,6 @@
 /* Begin PBXFileReference section */
 		4C00A4F41C1B7ED30078A43F /* PhotosViewDismissTransition.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotosViewDismissTransition.swift; sourceTree = "<group>"; };
 		4C0410E51BC8787200BBB76C /* UIDevice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIDevice.swift; sourceTree = "<group>"; };
-		4C09B82D1C53F65700C7D40F /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = "<group>"; };
-		4C09B82E1C53F65700C7D40F /* Fabric.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Fabric.framework; sourceTree = "<group>"; };
 		4C211F481C3DB8270082F4DF /* Photo Widget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Photo Widget.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C211F491C3DB8270082F4DF /* NotificationCenter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NotificationCenter.framework; path = System/Library/Frameworks/NotificationCenter.framework; sourceTree = SDKROOT; };
 		4C211F4C1C3DB8270082F4DF /* TodayViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayViewController.swift; sourceTree = "<group>"; };
@@ -345,8 +343,6 @@
 				4C3EA9D41E1F058D000D78EA /* ReactiveCocoa.framework */,
 				4C3EA9D51E1F058D000D78EA /* ReactiveSwift.framework */,
 				4C3EA9D61E1F058D000D78EA /* Result.framework */,
-				4C09B82D1C53F65700C7D40F /* Crashlytics.framework */,
-				4C09B82E1C53F65700C7D40F /* Fabric.framework */,
 				4CBA89681BBC9BF300913336 /* Security.framework */,
 				4C8594C91BB33D02005CCFAC /* DACircularProgress.framework */,
 				4C8594C51BB33CF5005CCFAC /* Cartography.framework */,
@@ -455,7 +451,6 @@
 				4CEAA8E61B3340C600774FE8 /* Resources */,
 				4C8594CE1BB33D7F005CCFAC /* ShellScript */,
 				4C8594CF1BB33E01005CCFAC /* CopyFiles */,
-				4C09B8321C53F75600C7D40F /* ShellScript */,
 				4C211F581C3DB8270082F4DF /* Embed App Extensions */,
 				4CF410571C4BB099002FD49A /* Embed Frameworks */,
 			);
@@ -581,20 +576,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		4C09B8321C53F75600C7D40F /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)",
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "./configure-fabric.sh\n";
-		};
 		4C8594CE1BB33D7F005CCFAC /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
