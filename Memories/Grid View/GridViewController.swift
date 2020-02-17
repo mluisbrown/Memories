@@ -12,15 +12,14 @@ import Cartography
 import PHAssetHelper
 import ReactiveSwift
 import ReactiveCocoa
-import Result
 
 extension UICollectionView {
     func indexPathsForElements(in rect : CGRect) -> [IndexPath] {
-        if let allLayoutAttributes = self.collectionViewLayout.layoutAttributesForElements(in: rect) {
-            return allLayoutAttributes.map() {$0.indexPath}
+        guard let allLayoutAttributes = collectionViewLayout.layoutAttributesForElements(in: rect) else {
+            return []
         }
         
-        return [IndexPath]()
+        return allLayoutAttributes.map { $0.indexPath }
     }
 }
 
@@ -34,22 +33,17 @@ class GridViewController: UICollectionViewController
     // If the size is too large then PhotoKit doesn't return an optimal image size
     // see rdar://25181601 (https://openradar.appspot.com/radar?id=6158824289337344)
     let gridThumbnailSize = CGSize(width: 256, height: 256)
-    
-    var model : GridViewModel! {
-        didSet {
-            bindToModel()
-        }
-    }
+
+    let model = GridViewModel()
 
     var statusBarVisible = true
-    
     var previousPreheatRect : CGRect = .zero
     var cellSize : CGSize = .zero
-    
+
     let titleView = UILabel().with {
         $0.backgroundColor = UIColor.clear
         $0.font = UIFont.systemFont(ofSize: 16)
-        $0.textColor = UIColor.white
+        $0.textColor = Current.colors.label
         $0.isUserInteractionEnabled = true
         $0.textAlignment = .center
     }
@@ -57,7 +51,7 @@ class GridViewController: UICollectionViewController
     let statusLabel = UILabel().with {
         $0.backgroundColor = UIColor.clear
         $0.font = UIFont.systemFont(ofSize: 16)
-        $0.textColor = UIColor.white
+        $0.textColor = Current.colors.label
     }
     let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
     
@@ -70,13 +64,13 @@ class GridViewController: UICollectionViewController
     let RELEASE_THRESHOLD : CGFloat = 100.0
     
     private func bindToModel() {
-        model.resultsDate.signal.observe(on: UIScheduler())
+        model.resultsDate.observe(on: UIScheduler())
             .skipRepeats(==)
             .observeValues { [weak self] date in
                 self?.refreshData(for: date)
         }
         
-        model.title.producer.observe(on: UIScheduler())
+        model.titleText.producer.observe(on: UIScheduler())
             .startWithValues { [weak self] title in
                 self?.titleView.text = title
                 self?.titleView.sizeToFit()
@@ -90,28 +84,6 @@ class GridViewController: UICollectionViewController
         model.statusText.producer.observe(on: UIScheduler())
             .startWithValues { [weak self] status in
                 self?.showHideStatusLabel(status)
-        }
-    }
-    
-    private func loadPhotos() {
-        PhotoLibraryAuthorization.checkPhotosPermission().observe(on: UIScheduler())
-            .startWithValues { [weak self] status in
-                switch status {
-                case .authorized:
-                    self?.model = GridViewModel(photosAllowed: true,
-                                                libraryObserver: PhotoLibraryObserver(library: PHPhotoLibrary.shared()),
-                                                imageManager: PHCachingImageManager())
-            
-                    let startDate = Date()
-                    if let date = Current.notificationsController.launchDate() {
-                        self?.model.date.value = date
-                    } else {
-                        self?.model.date.value = startDate
-                    }
-                    
-                case .denied, .restricted, .notDetermined:
-                    break
-                }
         }
     }
     
@@ -133,12 +105,19 @@ class GridViewController: UICollectionViewController
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
+        if let navBar = navigationController?.navigationBar {
+            navBar.barTintColor = Current.colors.systemBackground
+            navBar.tintColor = Current.colors.label
+        }
+        navigationItem.leftBarButtonItem?.tintColor = Current.colors.label
+        collectionView.backgroundColor = Current.colors.systemBackground
+
         configureFlowLayout()
         configureTitleView()
-        
-        model = GridViewModel()
-        loadPhotos()
+
+        bindToModel()
+        model.initialisePhotoLibrary()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -237,7 +216,7 @@ class GridViewController: UICollectionViewController
                 popoverPresentationController.sourceView = sourceView
                 popoverPresentationController.sourceRect = CGRect(x: 0, y: 0, width: sourceView.frame.size.width, height: sourceView.frame.size.height)
                 popoverPresentationController.delegate = self
-                popoverPresentationController.backgroundColor = UIColor.black.withAlphaComponent(0.2)
+                popoverPresentationController.backgroundColor = Current.colors.systemGroupedBackground.withAlphaComponent(0.2)
             }
             
             datePickerVC.initialDate = model.date.value
@@ -255,7 +234,6 @@ extension GridViewController: StatusBarViewController {
         }
     }
 }
-
 
 // MARK: - UIPopoverPresentationControllerDelegate
 extension GridViewController: UIPopoverPresentationControllerDelegate {
@@ -308,32 +286,45 @@ extension GridViewController {
         return model.numberOfItems(in: section)
     }
     
-    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CellIdentifier.photoCell, for: indexPath) as! GridViewCell
-        
-        // Increment the cell's tag
-        let currentTag = cell.tag + 1
-        cell.tag = currentTag
-        
+    override func collectionView(
+        _ collectionView: UICollectionView,
+        cellForItemAt indexPath: IndexPath
+    ) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: CellIdentifier.photoCell,
+            for: indexPath
+        ) as! GridViewCell
+
+        let assetID = model.asset(at: indexPath)?.localIdentifier
+        cell.assetID = assetID
         cell.imageView?.contentMode = thumbnailContentMode
         
         model.loadCellData(for: indexPath)
             .observe(on: UIScheduler())
-            .startWithValues {
-            if cell.tag == currentTag {
-                // Only update the thumbnail if the cell tag hasn't changed. Otherwise, the cell has been re-used.
-                cell.imageView?.image = $0.0
-                cell.durationLabel?.text = $0.1
+            .startWithValues { model in
+                // check to see the cell hasn't been re-used in the meantime
+                if cell.assetID == assetID {
+                    cell.update(with: model)
+                }
             }
-        }
         
         return cell
     }
     
-    override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: CellIdentifier.yearHeader, for: indexPath) as! GridHeaderView
+    override func collectionView(
+        _ collectionView: UICollectionView,
+        viewForSupplementaryElementOfKind kind: String,
+        at indexPath: IndexPath
+    ) -> UICollectionReusableView {
+        let headerView = collectionView.dequeueReusableSupplementaryView(
+            ofKind: kind,
+            withReuseIdentifier: CellIdentifier.yearHeader,
+            for: indexPath
+        ) as! GridHeaderView
+
         headerView.label.text = String(model.year(for: (indexPath as NSIndexPath).section))
-        
+        headerView.label.textColor = Current.colors.label
+        headerView.backgroundColor = Current.colors.opaqueSeparator
         return headerView
     }
 }
@@ -503,19 +494,18 @@ extension GridViewController {
             var addedIndexPaths = [IndexPath]()
             var removedIndexPaths = [IndexPath]()
             
-            computeDifferenceBetweenRects(previousPreheatRect, preheatRect,
-                                          removedHandler: {
-                                            removedIndexPaths += collectionView.indexPathsForElements(in: $0)
-            },
-                                          addedHandler: {
-                                            addedIndexPaths += collectionView.indexPathsForElements(in: $0)
-            })
+            computeDifferenceBetweenRects(
+                previousPreheatRect, preheatRect,
+                removedHandler: {
+                    removedIndexPaths += collectionView.indexPathsForElements(in: $0)
+                },
+                addedHandler: {
+                    addedIndexPaths += collectionView.indexPathsForElements(in: $0)
+                }
+            )
             
-            let assetsToStartCaching = assets(at: addedIndexPaths)
-            let assetsToStopCaching = assets(at: removedIndexPaths)
-            
-            model.startCachingImages(for: assetsToStartCaching)
-            model.stopCachingImages(for: assetsToStopCaching)
+            model.startCachingImages(for: addedIndexPaths)
+            model.stopCachingImages(for: removedIndexPaths)
             
             previousPreheatRect = preheatRect
         }
@@ -548,12 +538,6 @@ extension GridViewController {
             addedHandler(newRect);
             removedHandler(oldRect);
         }
-    }
-    
-    private func assets(at indexPaths : [IndexPath]) -> [PHAsset] {
-        return indexPaths.compactMap() {
-            self.model.asset(at: $0)
-        }        
     }
 }
 

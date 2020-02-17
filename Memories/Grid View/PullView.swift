@@ -30,13 +30,13 @@ class PullView: UIView {
         super.init(frame: frame)
         dateFormatter.dateFormat = "MMMM dd"
 
-        backgroundColor = UIColor.white.withAlphaComponent(0.08)
+        backgroundColor = Current.colors.systemBackground
         alpha = 0
         clipsToBounds = true
         
         label = UILabel()
         label.font = UIFont.systemFont(ofSize: 16)
-        label.textColor = UIColor.white
+        label.textColor = Current.colors.label
         
         // center the label in the pull view
         addSubview(label)

@@ -12,13 +12,14 @@ import DACircularProgress
 import Cartography
 import PHAssetHelper
 import ReactiveSwift
-import Result
 
 class DatePickerViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
 
     @IBOutlet weak var datePicker: UIPickerView!
     @IBOutlet weak var goButton: UIButton!
     @IBOutlet weak var todayButton: UIButton!
+    @IBOutlet weak var dateLabel: UILabel!
+    @IBOutlet weak var photosLabel: UILabel!
 
     private let gregorian = Date.gregorianCalendar
     
@@ -33,13 +34,20 @@ class DatePickerViewController: UIViewController, UIPickerViewDataSource, UIPick
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        view.backgroundColor = Current.colors.systemGroupedBackground.withAlphaComponent(0.8)
+        datePicker.backgroundColor = Current.colors.systemGroupedBackground.withAlphaComponent(0.8)
+        goButton.setTitleColor(Current.colors.label, for: .normal)
+        todayButton.setTitleColor(Current.colors.label, for: .normal)
+        dateLabel.textColor = Current.colors.label
+        photosLabel.textColor = Current.colors.label
+
         goButton.layer.borderWidth = 1
-        goButton.layer.borderColor = UIColor.white.cgColor
         goButton.layer.cornerRadius = 4
         todayButton.layer.borderWidth = 1
-        todayButton.layer.borderColor = UIColor.white.cgColor
         todayButton.layer.cornerRadius = 4
-        
+
+        adjustButtonBorderColor()
+
         progressView.trackTintColor = UIColor.clear
         progressView.thicknessRatio = 0.1
         view.addSubview(progressView)
@@ -57,6 +65,17 @@ class DatePickerViewController: UIViewController, UIPickerViewDataSource, UIPick
         progressView.indeterminate = 1
 
         createBindings()
+    }
+
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        adjustButtonBorderColor()
+    }
+
+    private func adjustButtonBorderColor() {
+        let btnBorderColor = Current.colors.label.cgColor
+
+        goButton.layer.borderColor = btnBorderColor
+        todayButton.layer.borderColor = btnBorderColor
     }
 
     private func createBindings() {
@@ -126,13 +145,13 @@ class DatePickerViewController: UIViewController, UIPickerViewDataSource, UIPick
         return zip(diffs, diffs.indices).min { $0.0 < $1.0 }.map { $0.1 }
     }
     
-    private func buildDatesWithCount() -> SignalProducer<[(date: Date, count: Int)], NoError> {
+    private func buildDatesWithCount() -> SignalProducer<[(date: Date, count: Int)], Never> {
         // don't want to trigger a "Allow Photos?"
         guard PHPhotoLibrary.authorizationStatus() == .authorized else {
-            return SignalProducer<[(date: Date, count: Int)], NoError>(value: [])
+            return SignalProducer<[(date: Date, count: Int)], Never>(value: [])
         }
         
-        return SignalProducer<[(date: Date, count: Int)], NoError> { observer, _ in
+        return SignalProducer<[(date: Date, count: Int)], Never> { observer, _ in
             observer.send(value: self.assetHelper.datesMap()
                 .map { (date: $0.0, count: $0.1) }
                 .sorted { $0.date.compare($1.date) == .orderedAscending })

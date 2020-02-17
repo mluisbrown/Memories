@@ -16,36 +16,23 @@ class ScrubberView: UIView {
         $0.imageEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         $0.setImage(UIImage(named: "play")?.withRenderingMode(.alwaysTemplate), for: .normal)
         $0.setImage(UIImage(named: "pause")?.withRenderingMode(.alwaysTemplate), for: .selected)
-        $0.tintColor = .white
+        $0.tintColor = Current.colors.label
     }
     
     let scrubberSlider = UISlider().with {
-        $0.setThumbImage(CAShapeLayer.circle(fillColor: .white, diameter: 15).toImage(), for: .normal)
-        
-        let tileImageFrame = CGRect(origin: .zero, size: CGSize(width: 1, height: 2))
-        
-        let minTrackLayer = CALayer()
-        minTrackLayer.backgroundColor = UIColor.white.cgColor
-        minTrackLayer.frame = tileImageFrame
-        
-        let maxTrackLayer = CALayer()
-        maxTrackLayer.backgroundColor = UIColor.darkGray.cgColor
-        maxTrackLayer.frame = tileImageFrame
-        
-        $0.setMinimumTrackImage(minTrackLayer.toImage(), for: .normal)
-        $0.setMaximumTrackImage(maxTrackLayer.toImage(), for: .normal)
+        configureScrubberSlider(slider: $0)
     }
     
     let currentTimeLabel = UILabel().with {
         $0.font = UIFont.systemFont(ofSize: 12)
-        $0.textColor = .white
+        $0.textColor = Current.colors.label
         $0.text = "0:00"
     }
 
     let remainingTimeLabel = UILabel().with {
         let x = UILabel()
         $0.font = UIFont.systemFont(ofSize: 12)
-        $0.textColor = .white
+        $0.textColor = Current.colors.label
         $0.text = "0:00"
     }
 
@@ -86,5 +73,30 @@ class ScrubberView: UIView {
     @available(*, unavailable)
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) is not available")
+    }
+
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        Self.configureScrubberSlider(slider: scrubberSlider)
+    }
+
+    private static func configureScrubberSlider(slider: UISlider) {
+        slider.setThumbImage(CAShapeLayer.circle(fillColor: Current.colors.label, diameter: 15).toImage(), for: .normal)
+
+        let tileImageFrame = CGRect(origin: .zero, size: CGSize(width: 1, height: 2))
+
+        let minTrackLayer = CALayer()
+        minTrackLayer.backgroundColor = Current.colors.label.cgColor
+        minTrackLayer.frame = tileImageFrame
+
+        let maxTrackLayer = CALayer()
+        if #available(iOS 13.0, *) {
+            maxTrackLayer.backgroundColor = UIColor.opaqueSeparator.cgColor
+        } else {
+            maxTrackLayer.backgroundColor = UIColor.darkGray.cgColor
+        }
+        maxTrackLayer.frame = tileImageFrame
+
+        slider.setMinimumTrackImage(minTrackLayer.toImage(), for: .normal)
+        slider.setMaximumTrackImage(maxTrackLayer.toImage(), for: .normal)
     }
 }

@@ -8,7 +8,6 @@
 
 import Foundation
 import ReactiveSwift
-import Result
 import PHAssetHelper
 import Photos
 
@@ -37,7 +36,7 @@ struct SettingsViewModel {
             }
     }
 
-    func commit() {
+    func persist() {
         // schedule or disable notifications
         if notificationsEnabled.value {
             Current.notificationsController.setNotificationTime(notificationTime.value.hour, notificationTime.value.minute)

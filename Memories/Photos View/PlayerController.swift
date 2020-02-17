@@ -155,6 +155,8 @@ class PlayerController: NSObject {
             actuallySeekToTime()
         case .unknown, .failed:
             break;
+        @unknown default:
+            break;
         }
     }
     
@@ -213,6 +215,8 @@ class PlayerController: NSObject {
             case .readyToPlay:
                 loadingSpinner?.show(loading: false)
             case .unknown, .failed:
+                loadingSpinner?.show(loading: true)
+            @unknown default:
                 loadingSpinner?.show(loading: true)
             }
         }

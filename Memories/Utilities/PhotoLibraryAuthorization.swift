@@ -10,13 +10,12 @@ import Foundation
 import UIKit
 import Photos
 import ReactiveSwift
-import Result
 
 struct PhotoLibraryAuthorization {
-    static func checkPhotosPermission() -> SignalProducer<PHAuthorizationStatus, NoError> {
+    static func checkPhotosPermission() -> SignalProducer<PHAuthorizationStatus, Never> {
         let authStatus = PHPhotoLibrary.authorizationStatus();
         
-        return SignalProducer<PHAuthorizationStatus, NoError> { observer, _ in
+        return SignalProducer<PHAuthorizationStatus, Never> { observer, _ in
             observer.send(value: authStatus)
             
             var alert: UIAlertController?
@@ -46,6 +45,10 @@ struct PhotoLibraryAuthorization {
                 alert?.addAction(nothanks)
                 alert?.addAction(settings)
             case .restricted:
+                alert = UIAlertController(title: NSLocalizedString("No Access to Photos", comment: ""), message: NSLocalizedString("Access to Photos has been restricted on this device. Unfortunately this means Memories will not work until this is changed.", comment: ""), preferredStyle: .alert)
+                let ok = UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default)  { _ in  observer.sendCompleted() }
+                alert?.addAction(ok)
+            @unknown default:
                 alert = UIAlertController(title: NSLocalizedString("No Access to Photos", comment: ""), message: NSLocalizedString("Access to Photos has been restricted on this device. Unfortunately this means Memories will not work until this is changed.", comment: ""), preferredStyle: .alert)
                 let ok = UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default)  { _ in  observer.sendCompleted() }
                 alert?.addAction(ok)

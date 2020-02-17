@@ -23,7 +23,7 @@ class PhotosViewController: UIViewController,
     UIGestureRecognizerDelegate,
     ZoomingPhotoViewDelegate
 {
-    @IBOutlet var scrollView: UIScrollView!
+    @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var shareButton: UIButton!
     @IBOutlet weak var deleteButton: UIButton!
     @IBOutlet weak var closeButton: UIButton!
@@ -103,8 +103,13 @@ class PhotosViewController: UIViewController,
     }
 
     private func setControls(alpha: CGFloat) {
-        [shareButton, deleteButton, closeButton, heartButton, yearLabel].forEach {
-            $0.alpha = alpha
+        UIView.animate(withDuration: 0.25) {
+            [self.shareButton, self.deleteButton, self.closeButton, self.heartButton, self.yearLabel].forEach { view in
+                view?.backgroundColor = Current.colors.systemBackground.withAlphaComponent(0.5)
+                view?.tintColor = Current.colors.label
+                view?.alpha = alpha
+            }
+            self.yearLabel.textColor = Current.colors.label
         }
     }
     
@@ -120,6 +125,7 @@ class PhotosViewController: UIViewController,
         bindToModel()
 
         initialPage = model.currentIndex.value
+        view.backgroundColor = Current.colors.systemBackground
         
         let panRecognizer = UIPanGestureRecognizer(target: self, action: #selector(PhotosViewController.viewDidPan)).with {
             $0.delegate = self
@@ -140,6 +146,8 @@ class PhotosViewController: UIViewController,
             shareProgressView.leading == view.safeAreaLayoutGuide.leading + 10
             shareProgressView.bottom == view.safeAreaLayoutGuide.bottom - 10
         }
+
+        setControls(alpha: 1)
     }
 
     override func viewDidLayoutSubviews() {
@@ -250,7 +258,7 @@ class PhotosViewController: UIViewController,
             panState.imageView?.center = CGPoint(x: panState.center.x + translation.x, y: panState.center.y + translation.y)
             panState.imageView?.transform = panState.transform.scaledBy(x: scale, y: scale)
             
-            view.backgroundColor = UIColor.black.withAlphaComponent(alpha)
+            view.backgroundColor = Current.colors.systemBackground.withAlphaComponent(alpha)
             if !controlsHidden { setControls(alpha: alpha) }
 
         case .ended, .cancelled:
@@ -261,7 +269,7 @@ class PhotosViewController: UIViewController,
                 UIView.animate(withDuration: 0.25, animations: {
                     panState.imageView?.center = panState.center
                     panState.imageView?.transform = panState.transform
-                    self.view.backgroundColor = UIColor.black
+                    self.view.backgroundColor = Current.colors.systemBackground
                     if !self.controlsHidden { self.setControls(alpha: 1) }
                 }) { finished in
                     panState.destImageView?.isHidden = false
@@ -311,9 +319,9 @@ class PhotosViewController: UIViewController,
     }
     
     private func didLoad(pageView: ZoomingPhotoView, for asset: PHAsset, hiRes: Bool) {
-        shareButton.isEnabled = hiRes
-        deleteButton.isEnabled = asset.canPerform(.delete) && hiRes
-        heartButton.isEnabled = asset.canPerform(.properties) && hiRes
+        shareButton.isEnabled = true
+        deleteButton.isEnabled = asset.canPerform(.delete)
+        heartButton.isEnabled = asset.canPerform(.properties)
         
         pageView.didBecomeVisible()
     }
