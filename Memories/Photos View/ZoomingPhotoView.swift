@@ -1,17 +1,9 @@
-//
-//  ZoomingPhotoView.swift
-//  Memories
-//
-//  Created by Michael Brown on 26/07/2015.
-//  Copyright © 2015 Michael Brown. All rights reserved.
-//
-
 import UIKit
 import Photos
 import PhotosUI
 import AVFoundation
 import Cartography
-import DACircularProgress
+import Core
 import ReactiveSwift
 
 protocol ZoomingPhotoViewDelegate {
@@ -19,14 +11,14 @@ protocol ZoomingPhotoViewDelegate {
     func viewWasTapped()
 }
 
-extension DACircularProgressView: LoadingSpinner {
+extension RPCircularProgress: LoadingSpinner {
     func show(loading: Bool) {
         if loading {
             isHidden = false
-            indeterminate = 1
+            enableIndeterminate()
         } else {
             isHidden = true
-            indeterminate = 0
+            enableIndeterminate(false)
         }
     }
 }
@@ -43,8 +35,8 @@ class ZoomingPhotoView: UIView, UIScrollViewDelegate {
         $0.bounces = false
     }
     
-    private let progressView = DACircularProgressView().with {
-        $0.roundedCorners = Int(truncating: false)
+    private let progressView = RPCircularProgress().with {
+        $0.roundedCorners = true
         $0.thicknessRatio = 1
         $0.trackTintColor = UIColor.clear
         $0.layer.borderColor = UIColor.white.cgColor
@@ -62,13 +54,13 @@ class ZoomingPhotoView: UIView, UIScrollViewDelegate {
         $0.isHidden = true
     }
     
-    private let videoLoadingSpinner = DACircularProgressView().with {
+    private let videoLoadingSpinner = RPCircularProgress().with {
         $0.trackTintColor = UIColor.white.withAlphaComponent(0.3)
         $0.thicknessRatio = 0.1
         $0.indeterminateDuration = 1
-        $0.indeterminate = 0
+        $0.enableIndeterminate(false)
         $0.isHidden = true
-        $0.setProgress(0.33, animated: false)
+        $0.updateProgress(0.33, animated: false)
     }
     
     private let videoPlayButton = UIButton.circlePlayButton(diameter: 70).with {
@@ -151,9 +143,9 @@ class ZoomingPhotoView: UIView, UIScrollViewDelegate {
         model.assetResource.signal
             .take(during: self.reactive.lifetime)
             .skipNil()
-            .on() { [weak self] _ in
+            .on(value: { [weak self] _ in
                 self?.model.imageIsPreview.value = false
-            }
+            })
             .observe(on: UIScheduler())
             .observeValues { [weak self] in
                 self?.progressView.isHidden = true
@@ -203,7 +195,7 @@ class ZoomingPhotoView: UIView, UIScrollViewDelegate {
             .observeValues { [weak self] _ in
                 self?.errorIndicator.isHidden = false
                 self?.progressView.isHidden = false
-                self?.progressView.setProgress(0.0, animated: false)
+                self?.progressView.updateProgress(0.0, animated: false)
         }
     }
     
@@ -274,15 +266,15 @@ class ZoomingPhotoView: UIView, UIScrollViewDelegate {
     
     private func updateProgress(_ progress: Double = 0.33, indeterminate: Bool = false) {
         if indeterminate {
-            progressView.setProgress(CGFloat(progress), animated: false)
+            progressView.updateProgress(CGFloat(progress), animated: false)
             progressView.isHidden = false
             progressView.indeterminateDuration = 1
-            progressView.indeterminate = 1
+            progressView.enableIndeterminate()
         }
         else {
-            progressView.indeterminate = 0
+            progressView.enableIndeterminate(false)
             progressView.isHidden = progress >= 1.0
-            progressView.setProgress(CGFloat(progress), animated: true)
+            progressView.updateProgress(CGFloat(progress), animated: true)
         }
     }
     

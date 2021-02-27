@@ -1,17 +1,9 @@
-//
-//  CAShapeLayer.swift
-//  Memories
-//
-//  Created by Michael Brown on 11/11/2016.
-//  Copyright © 2016 Michael Brown. All rights reserved.
-//
-
 import UIKit
 import QuartzCore
 
 extension CAShapeLayer {
     
-    static func circlePlayShape(fillColor: UIColor, diameter: CGFloat) -> CAShapeLayer {
+    public static func circlePlayShape(fillColor: UIColor, diameter: CGFloat) -> CAShapeLayer {
         let frame = CGRect(origin: .zero, size: CGSize(width: diameter, height: diameter))
         let circle = CAShapeLayer()
         circle.frame = frame
@@ -26,7 +18,7 @@ extension CAShapeLayer {
         return circle
     }
 
-    static func circle(fillColor: UIColor, diameter: CGFloat) -> CAShapeLayer {
+    public static func circle(fillColor: UIColor, diameter: CGFloat) -> CAShapeLayer {
         let circle = CAShapeLayer()
         let frame = CGRect(origin: .zero, size: CGSize(width: diameter, height: diameter))
         circle.frame = frame

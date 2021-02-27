@@ -1,14 +1,6 @@
-//
-//  PhotoViewController.swift
-//  Memories
-//
-//  Created by Michael Brown on 08/07/2015.
-//  Copyright © 2015 Michael Brown. All rights reserved.
-//
-
 import UIKit
 import Photos
-import DACircularProgress
+import Core
 import Cartography
 import ReactiveSwift
 
@@ -29,7 +21,7 @@ class PhotosViewController: UIViewController,
     @IBOutlet weak var closeButton: UIButton!
     @IBOutlet weak var heartButton: UIButton!
     @IBOutlet weak var yearLabel: UILabel!
-    let shareProgressView = DACircularProgressView().with {
+    let shareProgressView = RPCircularProgress().with {
         $0.isHidden = true
     }
 
@@ -136,8 +128,8 @@ class PhotosViewController: UIViewController,
             $0.trackTintColor = UIColor.clear
             $0.thicknessRatio = 0.1
             $0.indeterminateDuration = 1
-            $0.indeterminate = 0
-            $0.setProgress(0.33, animated: false)
+            $0.enableIndeterminate(false)
+            $0.updateProgress(0.33, animated: false)
         }
         view.addSubview(shareProgressView)
         constrain(view, shareProgressView) { view, shareProgressView in

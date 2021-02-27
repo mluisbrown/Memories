@@ -1,18 +1,10 @@
-//
-//  PhotoLibraryAuthorization.swift
-//  Memories
-//
-//  Created by Michael Brown on 10/03/2017.
-//  Copyright © 2017 Michael Brown. All rights reserved.
-//
-
 import Foundation
 import UIKit
 import Photos
 import ReactiveSwift
 
-struct PhotoLibraryAuthorization {
-    static func checkPhotosPermission() -> SignalProducer<PHAuthorizationStatus, Never> {
+public struct PhotoLibraryAuthorization {
+    public static func checkPhotosPermission() -> SignalProducer<PHAuthorizationStatus, Never> {
         let authStatus = PHPhotoLibrary.authorizationStatus();
         
         return SignalProducer<PHAuthorizationStatus, Never> { observer, _ in
@@ -21,7 +13,8 @@ struct PhotoLibraryAuthorization {
             var alert: UIAlertController?
             
             switch authStatus {
-            case .authorized:
+            case .authorized,
+                 .limited:
                 observer.sendCompleted()
             case .notDetermined:
                 alert = UIAlertController(title: NSLocalizedString("Let Memories access Photos?", comment: ""), message: NSLocalizedString("Memories can only work if it has access to your photos. If you tap 'Allow' iOS will ask your permission.", comment: ""), preferredStyle: .alert)
@@ -55,7 +48,7 @@ struct PhotoLibraryAuthorization {
             }
             
             if let alert = alert {
-                UIApplication.shared.keyWindow?.rootViewController?.present(alert, animated: true)
+                UIApplication.shared.windows.filter(\.isKeyWindow).first?.rootViewController?.present(alert, animated: true)
             }
         }
     }

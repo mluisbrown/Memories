@@ -1,12 +1,5 @@
-//
-//  PullView.swift
-//  Memories
-//
-//  Created by Michael Brown on 17/08/2015.
-//  Copyright © 2015 Michael Brown. All rights reserved.
-//
-
 import UIKit
+import Core
 import Cartography
 
 class PullView: UIView {

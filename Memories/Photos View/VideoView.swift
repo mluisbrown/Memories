@@ -1,13 +1,6 @@
-//
-//  VideoView.swift
-//  Memories
-//
-//  Created by Michael Brown on 04/11/2016.
-//  Copyright © 2016 Michael Brown. All rights reserved.
-//
-
 import UIKit
 import AVFoundation
+import Core
 import Cartography
 
 class VideoView: UIView {

@@ -66,7 +66,7 @@ struct TodayViewModel {
             .map { self.assets.value[$0] }
         
         currentAsset.signal
-            .filterMap { $0.creationDate }
+            .compactMap { $0.creationDate }
             .observeValues {
                 self._yearText.value = self.dateFormatter.string(from: $0)
         }

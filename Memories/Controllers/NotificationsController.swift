@@ -1,13 +1,6 @@
-//
-//  NotificationManager.swift
-//  Memories
-//
-//  Created by Michael Brown on 07/09/2015.
-//  Copyright © 2015 Michael Brown. All rights reserved.
-//
-
 import Foundation
 import UIKit
+import Core
 import Photos
 import PHAssetHelper
 import UserNotifications
@@ -115,7 +108,7 @@ struct NotificationsController {
                 alert.addAction(nothanks)
                 alert.addAction(settings)
 
-                UIApplication.shared.keyWindow?.rootViewController?.present(alert, animated: true, completion: nil)
+                UIApplication.shared.windows.filter(\.isKeyWindow).first?.rootViewController?.present(alert, animated: true, completion: nil)
             }
     }
     
