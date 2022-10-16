@@ -1,34 +1,32 @@
 {
-  "object": {
-    "pins": [
-      {
-        "package": "Cartography",
-        "repositoryURL": "https://github.com/robb/Cartography",
-        "state": {
-          "branch": null,
-          "revision": "b75197ea134f42b5feafb04b526b37eb1a41034b",
-          "version": "4.0.0"
-        }
-      },
-      {
-        "package": "ReactiveCocoa",
-        "repositoryURL": "https://github.com/ReactiveCocoa/ReactiveCocoa",
-        "state": {
-          "branch": null,
-          "revision": "cca8bdc26d10a889b8bec3cc2167544df730953e",
-          "version": "11.1.0"
-        }
-      },
-      {
-        "package": "ReactiveSwift",
-        "repositoryURL": "https://github.com/ReactiveCocoa/ReactiveSwift",
-        "state": {
-          "branch": null,
-          "revision": "e03cda84105ba707de039b757e2b2de868c65a3e",
-          "version": "6.5.0"
-        }
+  "pins" : [
+    {
+      "identity" : "cartography",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/robb/Cartography",
+      "state" : {
+        "revision" : "b75197ea134f42b5feafb04b526b37eb1a41034b",
+        "version" : "4.0.0"
       }
-    ]
-  },
-  "version": 1
+    },
+    {
+      "identity" : "reactivecocoa",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ReactiveCocoa/ReactiveCocoa",
+      "state" : {
+        "revision" : "579364393ad587352bcce133b7b3f73392cb585b",
+        "version" : "11.2.2"
+      }
+    },
+    {
+      "identity" : "reactiveswift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ReactiveCocoa/ReactiveSwift",
+      "state" : {
+        "revision" : "c43bae3dac73fdd3cb906bd5a1914686ca71ed3c",
+        "version" : "6.7.0"
+      }
+    }
+  ],
+  "version" : 2
 }
