@@ -1,12 +1,5 @@
-//
-//  ScrubberView.swift
-//  Memories
-//
-//  Created by Michael Brown on 19/11/2016.
-//  Copyright © 2016 Michael Brown. All rights reserved.
-//
-
 import UIKit
+import Core
 import Cartography
 
 class ScrubberView: UIView {

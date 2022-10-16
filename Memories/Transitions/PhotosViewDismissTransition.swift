@@ -1,11 +1,3 @@
-//
-//  PhotoViewDismissTransition.swift
-//  Memories
-//
-//  Created by Michael Brown on 11/12/2015.
-//  Copyright © 2015 Michael Brown. All rights reserved.
-//
-
 import UIKit
 
 class PhotosViewDismissTransition: NSObject, UIViewControllerAnimatedTransitioning {

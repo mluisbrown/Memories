@@ -1,13 +1,6 @@
-//
-//  GridViewController.swift
-//  Memories
-//
-//  Created by Michael Brown on 18/06/2015.
-//  Copyright (c) 2015 Michael Brown. All rights reserved.
-//
-
 import UIKit
 import Photos
+import Core
 import Cartography
 import PHAssetHelper
 import ReactiveSwift
@@ -544,8 +537,8 @@ extension GridViewController {
 // MARK: - Helpers
 extension GridViewController {
     private func showHideBlur(_ show: Bool) {
-        if show {
-            let window = UIApplication.shared.keyWindow!
+        if show,
+           let window = UIApplication.shared.windows.filter(\.isKeyWindow).first {
             var frame = window.frame
             frame.origin.y += view.safeAreaInsets.top
             

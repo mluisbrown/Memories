@@ -1,11 +1,4 @@
-//
-//  PlayerController.swift
-//  Memories
-//
-//  Created by Michael Brown on 11/11/2016.
-//  Copyright © 2016 Michael Brown. All rights reserved.
-//
-
+import Core
 import UIKit
 import AVFoundation
 

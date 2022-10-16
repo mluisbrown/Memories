@@ -1,13 +1,5 @@
-//
-//  SettingsViewController.swift
-//  Memories
-//
-//  Created by Michael Brown on 10/09/2015.
-//  Copyright © 2015 Michael Brown. All rights reserved.
-//
-
-import UIKit
 import MessageUI
+import Core
 import ReactiveCocoa
 import ReactiveSwift
 

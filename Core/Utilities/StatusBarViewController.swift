@@ -1,20 +1,11 @@
-//
-//  StatusBarViewController.swift
-//  Memories
-//
-//  Created by Michael Brown on 25/07/2016.
-//  Copyright © 2016 Michael Brown. All rights reserved.
-//
-
 import UIKit
 
-protocol StatusBarViewController {
+public protocol StatusBarViewController {
     func hideStatusBar(_ hide: Bool)
 }
 
 extension UIViewController {
-    
-    func statusBarContoller() -> StatusBarViewController? {
+    public func statusBarContoller() -> StatusBarViewController? {
         let vcStatusBar : StatusBarViewController?
         if let navController = self as? UINavigationController {
             vcStatusBar = navController.topViewController as? StatusBarViewController

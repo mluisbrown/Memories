@@ -1,12 +1,5 @@
-//
-//  Settingsswift
-//  Memories
-//
-//  Created by Michael Brown on 14/09/2015.
-//  Copyright © 2015 Michael Brown. All rights reserved.
-//
-
 import Foundation
+import Core
 import ReactiveSwift
 import PHAssetHelper
 import Photos

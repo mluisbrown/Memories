@@ -1,13 +1,6 @@
-//
-//  PhotoView.swift
-//  Memories
-//
-//  Created by Michael Brown on 02/11/2016.
-//  Copyright © 2016 Michael Brown. All rights reserved.
-//
-
 import UIKit
 import PhotosUI
+import Core
 import Cartography
 import AVFoundation
 

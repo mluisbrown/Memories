@@ -1,14 +1,6 @@
-//
-//  DatePickerViewController.swift
-//  Memories
-//
-//  Created by Michael Brown on 23/11/2015.
-//  Copyright © 2015 Michael Brown. All rights reserved.
-//
-
 import UIKit
 import Photos
-import DACircularProgress
+import Core
 import Cartography
 import PHAssetHelper
 import ReactiveSwift
@@ -28,7 +20,7 @@ class DatePickerViewController: UIViewController, UIPickerViewDataSource, UIPick
 
     private let datesWithCount = MutableProperty([(date: Date, count: Int)]())
     
-    private let progressView = DACircularProgressView()
+    private let progressView = RPCircularProgress()
     private let assetHelper = PHAssetHelper()
     
     override func viewDidLoad() {
@@ -60,9 +52,9 @@ class DatePickerViewController: UIViewController, UIPickerViewDataSource, UIPick
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        progressView.setProgress(0.33, animated: false)
+        progressView.updateProgress(0.33, animated: false)
         progressView.indeterminateDuration = 1
-        progressView.indeterminate = 1
+        progressView.enableIndeterminate()
 
         createBindings()
     }
@@ -80,7 +72,7 @@ class DatePickerViewController: UIViewController, UIPickerViewDataSource, UIPick
 
     private func createBindings() {
         datesWithCount.signal.observeValues { [weak self] _ in
-            self?.progressView.indeterminate = 0
+            self?.progressView.enableIndeterminate(false)
             self?.progressView.isHidden = true
             self?.datePicker.reloadAllComponents()
             

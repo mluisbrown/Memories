@@ -1,12 +1,5 @@
-//
-//  DatePickerRowView.swift
-//  Memories
-//
-//  Created by Michael Brown on 25/11/2015.
-//  Copyright © 2015 Michael Brown. All rights reserved.
-//
-
 import UIKit
+import Core
 import Cartography
 
 class DatePickerRowView: UIView {

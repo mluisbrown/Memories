@@ -1,15 +1,8 @@
-//
-//  PhotoViewModel.swift
-//  Memories
-//
-//  Created by Michael Brown on 11/02/2017.
-//  Copyright © 2017 Michael Brown. All rights reserved.
-//
-
 import Foundation
 import UIKit
 import Photos
 import AVFoundation
+import Core
 import ReactiveSwift
 
 enum AssetResource {

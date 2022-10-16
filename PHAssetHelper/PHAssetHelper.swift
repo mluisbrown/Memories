@@ -1,13 +1,6 @@
-//
-//  PHAssetHelper.swift
-//  Memories
-//
-//  Created by Michael Brown on 17/01/2016.
-//  Copyright © 2016 Michael Brown. All rights reserved.
-//
-
 import Foundation
 import Photos
+import Core
 
 public class PHAssetHelper {
     

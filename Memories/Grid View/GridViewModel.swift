@@ -1,12 +1,5 @@
-//
-//  GridViewModel.swift
-//  Memories
-//
-//  Created by Michael Brown on 16/07/2015.
-//  Copyright © 2015 Michael Brown. All rights reserved.
-//
-
 import Foundation
+import Core
 import Photos
 import PHAssetHelper
 import ReactiveSwift
@@ -175,7 +168,7 @@ class GridViewModel {
         PhotoLibraryAuthorization.checkPhotosPermission().observe(on: UIScheduler())
             .startWithValues { [weak self] status in
                 switch status {
-                case .authorized:
+                case .authorized, .limited:
                     self?.photosAllowed = true
                     self?.libraryObserver = PhotoLibraryObserver(library: PHPhotoLibrary.shared())
                     self?.imageManager = PHCachingImageManager()

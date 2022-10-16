@@ -1,17 +1,9 @@
-//
-//  UIDevice.swift
-//  Memories
-//
-//  Created by Michael Brown on 09/10/2015.
-//  Copyright © 2015 Michael Brown. All rights reserved.
-//
-
 import Foundation
 import UIKit
 
-public extension UIDevice {
+extension UIDevice {
     
-    var modelName: String {
+    public var modelName: String {
         var systemInfo = utsname()
         uname(&systemInfo)
         let machineMirror = Mirror(reflecting: systemInfo.machine)
@@ -50,5 +42,4 @@ public extension UIDevice {
         default:                                        return identifier
         }
     }
-    
 }
