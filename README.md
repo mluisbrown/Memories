@@ -8,9 +8,7 @@ Memories uses icon images from the [Essence](http://iconsandcoffee.com/essence/)
 # Downloading the code
 Clone the repo: `git clone https://github.com/mluisbrown/Memories.git`
 
-You will need [Xcode 11](https://developer.apple.com/xcode/download/) to build the app as it is entirely written in [Swift 5](https://swift.org). The project uses [Carthage](https://github.com/Carthage/Carthage) as a dependency manager, so you will need that too.
-
-One you have installed Carthage run `carthage update` in the project root (where the `Cartfile` is). This will download and build the dependencies into the `Carthage` directory.
+You will need [Xcode 14](https://developer.apple.com/xcode/download/) to build the app as it is entirely written in [Swift 5](https://swift.org).
 
 # Getting started
 Open `Memories.xcodeproj` in Xcode. Build and run! The iOS simulator only has a handful of photos pre-installed. If you want to test with more photos from different dates you can add photos the the simulator's photo library by just dragging and dropping them into the simulator window.
