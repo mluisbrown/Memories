@@ -4,7 +4,7 @@ import Core
 import Cartography
 import ReactiveSwift
 
-protocol PhotosViewControllerDelegate: class {
+protocol PhotosViewControllerDelegate: AnyObject {
     func setCurrent(index: Int)
     func imageView(atIndex: Int) -> UIImageView?
 }

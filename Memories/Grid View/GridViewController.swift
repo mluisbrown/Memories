@@ -234,7 +234,7 @@ extension GridViewController: UIPopoverPresentationControllerDelegate {
         return true
     }
     
-    func popoverPresentationControllerDidDismissPopover(_ popoverPresentationController: UIPopoverPresentationController) {
+    func presentationControllerDidDismiss(_ popoverPresentationController: UIPresentationController) {
         let datePickerVC = popoverPresentationController.presentedViewController as! DatePickerViewController
         
         if let selectedDate = datePickerVC.selectedDate, (selectedDate != model.date.value) {

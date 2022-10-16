@@ -14,8 +14,13 @@ struct ReviewHelper {
     
     static func maybePromptForReview() {
         let count = userDefaults.integer(forKey: appLaunchCountMod3Key)
-        if count == 0 {
-            SKStoreReviewController.requestReview()
+
+        if count == 0,
+           let scene = UIApplication.shared.connectedScenes
+            .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
+            DispatchQueue.main.async {
+                SKStoreReviewController.requestReview(in: scene)
+            }
         }
     }
 }

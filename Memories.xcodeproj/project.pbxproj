@@ -11,7 +11,7 @@
 		4C211F4A1C3DB8270082F4DF /* NotificationCenter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C211F491C3DB8270082F4DF /* NotificationCenter.framework */; };
 		4C211F4D1C3DB8270082F4DF /* TodayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C211F4C1C3DB8270082F4DF /* TodayViewController.swift */; };
 		4C211F501C3DB8270082F4DF /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4C211F4E1C3DB8270082F4DF /* MainInterface.storyboard */; };
-		4C211F541C3DB8270082F4DF /* Photo Widget.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 4C211F481C3DB8270082F4DF /* Photo Widget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		4C211F541C3DB8270082F4DF /* Photo Widget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 4C211F481C3DB8270082F4DF /* Photo Widget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		4C2DFCAA1B9E21BC00AD6E16 /* NotificationsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C2DFCA91B9E21BC00AD6E16 /* NotificationsController.swift */; };
 		4C315DF21C4A617C008003E1 /* TodayViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C315DF11C4A617C008003E1 /* TodayViewModel.swift */; };
 		4C315DF31C4A8326008003E1 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4CEAA8F41B3340C600774FE8 /* Images.xcassets */; };
@@ -21,6 +21,7 @@
 		4C5B90281B5D9C590014A87C /* GridHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C5B90271B5D9C590014A87C /* GridHeaderView.swift */; };
 		4C6299AD1B4CB0AD00B8795E /* PhotosViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6299AC1B4CB0AD00B8795E /* PhotosViewController.swift */; };
 		4C69E63A1DCA73F1004D6F5C /* MediaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C69E6391DCA73F1004D6F5C /* MediaView.swift */; };
+		4C6F8FCC28FC5F69005EE783 /* PhotoLibraryAuthorization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C58C3191E731D2800D8FA14 /* PhotoLibraryAuthorization.swift */; };
 		4C748EB11DE09D94005F44DD /* ScrubberView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C748EB01DE09D94005F44DD /* ScrubberView.swift */; };
 		4C7496BF25EA9E3300A810C2 /* Core.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C7496BD25EA9E3300A810C2 /* Core.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4C7496C225EA9E3300A810C2 /* Core.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C7496BB25EA9E3300A810C2 /* Core.framework */; };
@@ -36,7 +37,6 @@
 		4C7496F325EAA00800A810C2 /* PhotoLibraryObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CFD0DE61E68676500C12C87 /* PhotoLibraryObserver.swift */; };
 		4C7496F425EAA00800A810C2 /* UIBezierPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C758BB41DD676FC00AE9D9F /* UIBezierPath.swift */; };
 		4C7496F525EAA00800A810C2 /* CALayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C758BB61DD67A0400AE9D9F /* CALayer.swift */; };
-		4C7496F625EAA00800A810C2 /* PhotoLibraryAuthorization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C58C3191E731D2800D8FA14 /* PhotoLibraryAuthorization.swift */; };
 		4C7496F725EAA00800A810C2 /* StatusBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3747A61D46BFCA0070734D /* StatusBarViewController.swift */; };
 		4C7496F825EAA00800A810C2 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF4105B1C4BB732002FD49A /* Date.swift */; };
 		4C7496FE25EAA03900A810C2 /* ReactiveSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 4C7496FD25EAA03900A810C2 /* ReactiveSwift */; };
@@ -110,15 +110,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		4C211F581C3DB8270082F4DF /* Embed App Extensions */ = {
+		4C211F581C3DB8270082F4DF /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				4C211F541C3DB8270082F4DF /* Photo Widget.appex in Embed App Extensions */,
+				4C211F541C3DB8270082F4DF /* Photo Widget.appex in Embed Foundation Extensions */,
 			);
-			name = "Embed App Extensions";
+			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		4C8594CF1BB33E01005CCFAC /* CopyFiles */ = {
@@ -261,6 +261,14 @@
 			path = "Photo Widget";
 			sourceTree = "<group>";
 		};
+		4C27C84C28FC5F19002A48F3 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				4C58C3191E731D2800D8FA14 /* PhotoLibraryAuthorization.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
 		4C641B8B1C3DB274004B15D7 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
@@ -352,7 +360,6 @@
 				4CA5E1821DEA42950019CA26 /* DateComponentsFormatter.swift */,
 				4C65B5AF1E36137900DF2465 /* IndexSet.swift */,
 				4CFD0DE61E68676500C12C87 /* PhotoLibraryObserver.swift */,
-				4C58C3191E731D2800D8FA14 /* PhotoLibraryAuthorization.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -400,6 +407,7 @@
 		4CEAA8EA1B3340C600774FE8 /* Memories */ = {
 			isa = PBXGroup;
 			children = (
+				4C27C84C28FC5F19002A48F3 /* Utilities */,
 				4C641B8E1C3DB2D6004B15D7 /* Date Picker */,
 				4C641B8C1C3DB2A5004B15D7 /* Grid View */,
 				4C641B8B1C3DB274004B15D7 /* Controllers */,
@@ -506,7 +514,7 @@
 				4CEAA8E51B3340C600774FE8 /* Frameworks */,
 				4CEAA8E61B3340C600774FE8 /* Resources */,
 				4C8594CF1BB33E01005CCFAC /* CopyFiles */,
-				4C211F581C3DB8270082F4DF /* Embed App Extensions */,
+				4C211F581C3DB8270082F4DF /* Embed Foundation Extensions */,
 				4CF410571C4BB099002FD49A /* Embed Frameworks */,
 			);
 			buildRules = (
@@ -547,7 +555,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0730;
-				LastUpgradeCheck = 1230;
+				LastUpgradeCheck = 1400;
 				ORGANIZATIONNAME = "Michael Brown";
 				TargetAttributes = {
 					4C211F471C3DB8270082F4DF = {
@@ -664,7 +672,6 @@
 			files = (
 				4C7496EF25EAA00800A810C2 /* UIButton.swift in Sources */,
 				4C7496EC25EAA00800A810C2 /* DateComponentsFormatter.swift in Sources */,
-				4C7496F625EAA00800A810C2 /* PhotoLibraryAuthorization.swift in Sources */,
 				4C7496F025EAA00800A810C2 /* UITraitEnvironment.swift in Sources */,
 				4C7496F425EAA00800A810C2 /* UIBezierPath.swift in Sources */,
 				4C7496ED25EAA00800A810C2 /* UIDevice.swift in Sources */,
@@ -689,6 +696,7 @@
 				741AF37323CFCDBB00FAE6DF /* AppearanceViewController.swift in Sources */,
 				4CEAA8EE1B3340C600774FE8 /* AppDelegate.swift in Sources */,
 				4C3334551B659DAA00D907C8 /* ZoomingPhotoView.swift in Sources */,
+				4C6F8FCC28FC5F69005EE783 /* PhotoLibraryAuthorization.swift in Sources */,
 				4C5B90281B5D9C590014A87C /* GridHeaderView.swift in Sources */,
 				4C3334531B65712D00D907C8 /* PhotosViewModel.swift in Sources */,
 				744059C521769914002DDA93 /* World.swift in Sources */,
@@ -774,11 +782,11 @@
 		4C211F551C3DB8270082F4DF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				APPLICATION_EXTENSION_API_ONLY = NO;
+				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_ENTITLEMENTS = "Photo Widget/Photo Widget.entitlements";
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 41;
+				CURRENT_PROJECT_VERSION = 42;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 4KZP2U7889;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -789,7 +797,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.3.0;
+				MARKETING_VERSION = 1.4.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.luacheia.memories.Photo-Widget";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "76ced91b-bb55-4d76-a61a-8b27bb46edbb";
@@ -802,11 +810,11 @@
 		4C211F561C3DB8270082F4DF /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				APPLICATION_EXTENSION_API_ONLY = NO;
+				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_ENTITLEMENTS = "Photo Widget/Photo Widget.entitlements";
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
-				CURRENT_PROJECT_VERSION = 41;
+				CURRENT_PROJECT_VERSION = 42;
 				DEVELOPMENT_TEAM = 4KZP2U7889;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				HEADERMAP_USES_VFS = YES;
@@ -816,7 +824,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.3.0;
+				MARKETING_VERSION = 1.4.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.luacheia.memories.Photo-Widget";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "3b8f33f6-0d9a-4d37-9c76-6a9bc519c9dc";
@@ -831,6 +839,7 @@
 		4C7496C525EA9E3300A810C2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -873,6 +882,7 @@
 		4C7496C625EA9E3300A810C2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -962,7 +972,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.1;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PROVISIONING_PROFILE = "";
@@ -1014,7 +1024,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
@@ -1031,7 +1041,7 @@
 				CODE_SIGN_ENTITLEMENTS = Memories/Memories.entitlements;
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 41;
+				CURRENT_PROJECT_VERSION = 42;
 				DEVELOPMENT_TEAM = 4KZP2U7889;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1044,7 +1054,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.3.0;
+				MARKETING_VERSION = 1.4.0;
 				"OTHER_SWIFT_FLAGS[arch=*]" = "-DDEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = com.luacheia.memories;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1063,7 +1073,7 @@
 				CODE_SIGN_ENTITLEMENTS = Memories/Memories.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
-				CURRENT_PROJECT_VERSION = 41;
+				CURRENT_PROJECT_VERSION = 42;
 				DEVELOPMENT_TEAM = 4KZP2U7889;
 				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1076,7 +1086,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.3.0;
+				MARKETING_VERSION = 1.4.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.luacheia.memories;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "71f761bf-0992-4233-9ff1-90317c073a8b";
@@ -1091,7 +1101,7 @@
 		4CF410541C4BB099002FD49A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				APPLICATION_EXTENSION_API_ONLY = NO;
+				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_ENABLE_MODULES = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				CURRENT_PROJECT_VERSION = 1;
@@ -1123,7 +1133,7 @@
 		4CF410551C4BB099002FD49A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				APPLICATION_EXTENSION_API_ONLY = NO;
+				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_ENABLE_MODULES = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				CURRENT_PROJECT_VERSION = 1;
@@ -1207,8 +1217,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/ReactiveCocoa/ReactiveSwift";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 6.5.0;
+				branch = master;
+				kind = branch;
 			};
 		};
 		4C74970225EAA08800A810C2 /* XCRemoteSwiftPackageReference "ReactiveCocoa" */ = {

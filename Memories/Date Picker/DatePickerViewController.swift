@@ -111,7 +111,7 @@ class DatePickerViewController: UIViewController, UIPickerViewDataSource, UIPick
         if let ppc = self.popoverPresentationController {
             presentingViewController?.dismiss(animated: true) {
                 if let ppcDelegate = ppc.delegate {
-                    ppcDelegate.popoverPresentationControllerDidDismissPopover?(ppc)
+                    ppcDelegate.presentationControllerDidDismiss?(ppc)
                 }
             }
         }
