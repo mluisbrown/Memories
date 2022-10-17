@@ -789,6 +789,7 @@
 				CURRENT_PROJECT_VERSION = 42;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 4KZP2U7889;
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 4KZP2U7889;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				HEADERMAP_USES_VFS = YES;
 				INFOPLIST_FILE = "Photo Widget/Info.plist";
@@ -802,6 +803,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "76ced91b-bb55-4d76-a61a-8b27bb46edbb";
 				PROVISIONING_PROFILE_SPECIFIER = "Memories Widget Development";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Memories TodayWidget Development";
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
 			};
@@ -816,6 +818,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CURRENT_PROJECT_VERSION = 42;
 				DEVELOPMENT_TEAM = 4KZP2U7889;
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 4KZP2U7889;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				HEADERMAP_USES_VFS = YES;
 				INFOPLIST_FILE = "Photo Widget/Info.plist";
@@ -829,6 +832,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "3b8f33f6-0d9a-4d37-9c76-6a9bc519c9dc";
 				PROVISIONING_PROFILE_SPECIFIER = "Memories Widget (Distribution)";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Memories TodayWidget Distribution";
 				SKIP_INSTALL = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
@@ -1075,6 +1079,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CURRENT_PROJECT_VERSION = 42;
 				DEVELOPMENT_TEAM = 4KZP2U7889;
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 4KZP2U7889;
 				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1091,6 +1096,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "71f761bf-0992-4233-9ff1-90317c073a8b";
 				PROVISIONING_PROFILE_SPECIFIER = "Memories (Distribution)";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Memories Distribution";
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
