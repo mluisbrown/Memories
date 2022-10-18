@@ -10,44 +10,28 @@ struct World {
 
 struct Colors {
     var label: UIColor {
-        if #available(iOS 13.0, *) {
-            return .label
-        } else {
-            return .white
-        }
+        .label
     }
 
     var systemBackground: UIColor {
-        if #available(iOS 13.0, *) {
-            return UIColor { traits in
-                switch traits.userInterfaceStyle {
-                case .light, .unspecified:
-                    return .systemBackground
-                case .dark:
-                    return .black
-                @unknown default:
-                    return .systemBackground
-                }
+        return UIColor { traits in
+            switch traits.userInterfaceStyle {
+            case .light, .unspecified:
+                return .systemBackground
+            case .dark:
+                return .black
+            @unknown default:
+                return .systemBackground
             }
-        } else {
-            return .black
         }
     }
 
     var systemGroupedBackground: UIColor {
-        if #available(iOS 13.0, *) {
-            return .systemGroupedBackground
-        } else {
-            return .init(red: 0.1, green: 0.1, blue: 0.1, alpha: 1)
-        }
+        .systemGroupedBackground
     }
 
     var opaqueSeparator: UIColor {
-        if #available(iOS 13.0, *) {
-            return .opaqueSeparator
-        } else {
-            return .init(red: 0.2, green: 0.2, blue: 0.2, alpha: 1)
-        }
+        .opaqueSeparator
     }
 }
 

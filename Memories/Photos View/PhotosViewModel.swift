@@ -219,7 +219,7 @@ extension PhotosViewModel {
                 let options = PHImageRequestOptions()
                 options.version = .current
                 options.isNetworkAccessAllowed = true
-                self.imageManager.requestImageData(for: asset, options: options) { imageData, dataUTI, orientation, info in
+                self.imageManager.requestImageDataAndOrientation(for: asset, options: options) { imageData, dataUTI, orientation, info in
                     if let imageData = imageData {
                         observer.send(value: imageData)
                         observer.sendCompleted()

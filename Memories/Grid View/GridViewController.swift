@@ -81,8 +81,10 @@ class GridViewController: UICollectionViewController
     }
     
     private func configureTitleView() {
+        // setting `title` to nil fixes `titleView` layout issues on iOS 16
+        navigationItem.title = nil
         navigationItem.titleView = titleView
-        
+
         let tgr = UITapGestureRecognizer(target: self, action: #selector(GridViewController.titleTapped(_:)))
         titleView.addGestureRecognizer(tgr)
     }
@@ -234,7 +236,7 @@ extension GridViewController: UIPopoverPresentationControllerDelegate {
         return true
     }
     
-    func popoverPresentationControllerDidDismissPopover(_ popoverPresentationController: UIPopoverPresentationController) {
+    func presentationControllerDidDismiss(_ popoverPresentationController: UIPresentationController) {
         let datePickerVC = popoverPresentationController.presentedViewController as! DatePickerViewController
         
         if let selectedDate = datePickerVC.selectedDate, (selectedDate != model.date.value) {

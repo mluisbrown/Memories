@@ -38,8 +38,8 @@ class PlayerController: NSObject {
     var timeObserver: Any?
     
     private let observedKeyPaths = [
-        #keyPath(PlayerController.playerItem.playbackLikelyToKeepUp),
-        #keyPath(PlayerController.playerItem.playbackBufferEmpty),
+        #keyPath(PlayerController.playerItem.isPlaybackLikelyToKeepUp),
+        #keyPath(PlayerController.playerItem.isPlaybackBufferEmpty),
         #keyPath(PlayerController.playerItem.loadedTimeRanges),
         #keyPath(PlayerController.playerItem.status),
         #keyPath(PlayerController.player.rate)
@@ -187,10 +187,10 @@ class PlayerController: NSObject {
         }
        
 #if DEBUG
-        if keyPath == #keyPath(PlayerController.playerItem.playbackLikelyToKeepUp) {
+        if keyPath == #keyPath(PlayerController.playerItem.isPlaybackLikelyToKeepUp) {
             NSLog("isPlaybackLikelyToKeepUp: \(playerItem.isPlaybackLikelyToKeepUp)")
         }
-        else if keyPath == #keyPath(PlayerController.playerItem.playbackBufferEmpty) {
+        else if keyPath == #keyPath(PlayerController.playerItem.isPlaybackBufferEmpty) {
             NSLog("isPlaybackBufferEmpty: \(playerItem.isPlaybackBufferEmpty)")
         }
         else if keyPath == #keyPath(PlayerController.playerItem.loadedTimeRanges) {

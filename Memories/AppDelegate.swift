@@ -39,13 +39,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         window = UIWindow(frame: UIScreen.main.bounds)
-        if #available(iOS 13.0, *) {
-            Current.updateAppearance = self.udpateAppearance
+        Current.updateAppearance = self.udpateAppearance
 
-            if let appearanceSetting = Current.userDefaults.string(forKey: AppearanceViewModel.appearanceKey),
-                let appearance = Appearance(rawValue: appearanceSetting) {
-                udpateAppearance(appearance)
-            }
+        if let appearanceSetting = Current.userDefaults.string(forKey: AppearanceViewModel.appearanceKey),
+            let appearance = Appearance(rawValue: appearanceSetting) {
+            udpateAppearance(appearance)
         }
 
         self.window?.rootViewController = UIStoryboard(name: "Main", bundle: nil)
@@ -59,7 +57,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         ReviewHelper.registerAppLaunch()        
     }
 
-    @available(iOS 13.0, *)
     func udpateAppearance(_ appearance: Appearance) {
         switch appearance {
         case .dark:
