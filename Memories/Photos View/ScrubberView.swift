@@ -82,11 +82,7 @@ class ScrubberView: UIView {
         minTrackLayer.frame = tileImageFrame
 
         let maxTrackLayer = CALayer()
-        if #available(iOS 13.0, *) {
-            maxTrackLayer.backgroundColor = UIColor.opaqueSeparator.cgColor
-        } else {
-            maxTrackLayer.backgroundColor = UIColor.darkGray.cgColor
-        }
+        maxTrackLayer.backgroundColor = UIColor.opaqueSeparator.cgColor
         maxTrackLayer.frame = tileImageFrame
 
         slider.setMinimumTrackImage(minTrackLayer.toImage(), for: .normal)
