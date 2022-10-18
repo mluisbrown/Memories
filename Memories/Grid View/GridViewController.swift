@@ -81,8 +81,10 @@ class GridViewController: UICollectionViewController
     }
     
     private func configureTitleView() {
+        // setting `title` to nil fixes `titleView` layout issues on iOS 16
+        navigationItem.title = nil
         navigationItem.titleView = titleView
-        
+
         let tgr = UITapGestureRecognizer(target: self, action: #selector(GridViewController.titleTapped(_:)))
         titleView.addGestureRecognizer(tgr)
     }
