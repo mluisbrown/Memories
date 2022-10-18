@@ -24,6 +24,11 @@
 		4C6F8FCC28FC5F69005EE783 /* PhotoLibraryAuthorization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C58C3191E731D2800D8FA14 /* PhotoLibraryAuthorization.swift */; };
 		4C73A28B28FF40A300ECAC42 /* PHAssetHelper in Frameworks */ = {isa = PBXBuildFile; productRef = 4C73A28A28FF40A300ECAC42 /* PHAssetHelper */; };
 		4C73A28D28FF40AB00ECAC42 /* PHAssetHelper in Frameworks */ = {isa = PBXBuildFile; productRef = 4C73A28C28FF40AB00ECAC42 /* PHAssetHelper */; };
+		4C73A29428FF4F9D00ECAC42 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C73A29328FF4F9D00ECAC42 /* WidgetKit.framework */; };
+		4C73A29628FF4F9D00ECAC42 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C73A29528FF4F9D00ECAC42 /* SwiftUI.framework */; };
+		4C73A29928FF4F9D00ECAC42 /* MemoriesWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C73A29828FF4F9D00ECAC42 /* MemoriesWidget.swift */; };
+		4C73A29B28FF4F9E00ECAC42 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C73A29A28FF4F9E00ECAC42 /* Assets.xcassets */; };
+		4C73A29F28FF4F9E00ECAC42 /* MemoriesWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 4C73A29228FF4F9D00ECAC42 /* MemoriesWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		4C748EB11DE09D94005F44DD /* ScrubberView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C748EB01DE09D94005F44DD /* ScrubberView.swift */; };
 		4C758BBB1DD685E700AE9D9F /* PlayerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C758BBA1DD685E700AE9D9F /* PlayerController.swift */; };
 		4C7C12DF1E4F376A0061C9E5 /* PhotoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C7C12DE1E4F376A0061C9E5 /* PhotoViewModel.swift */; };
@@ -58,6 +63,13 @@
 			remoteGlobalIDString = 4C211F471C3DB8270082F4DF;
 			remoteInfo = "Photo Widget";
 		};
+		4C73A29D28FF4F9E00ECAC42 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4CEAA8E01B3340C600774FE8 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4C73A29128FF4F9D00ECAC42;
+			remoteInfo = MemoriesWidgetExtension;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -68,6 +80,7 @@
 			dstSubfolderSpec = 13;
 			files = (
 				4C211F541C3DB8270082F4DF /* Photo Widget.appex in Embed Foundation Extensions */,
+				4C73A29F28FF4F9E00ECAC42 /* MemoriesWidgetExtension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -110,6 +123,12 @@
 		4C69E6391DCA73F1004D6F5C /* MediaView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaView.swift; sourceTree = "<group>"; };
 		4C6FF0461CED11E9001994DC /* Memories.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = Memories.entitlements; path = ../Memories.entitlements; sourceTree = "<group>"; };
 		4C6FF0491CED12D5001994DC /* Photo Widget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Photo Widget.entitlements"; sourceTree = "<group>"; };
+		4C73A29228FF4F9D00ECAC42 /* MemoriesWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MemoriesWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		4C73A29328FF4F9D00ECAC42 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		4C73A29528FF4F9D00ECAC42 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		4C73A29828FF4F9D00ECAC42 /* MemoriesWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoriesWidget.swift; sourceTree = "<group>"; };
+		4C73A29A28FF4F9E00ECAC42 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		4C73A29C28FF4F9E00ECAC42 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4C748EB01DE09D94005F44DD /* ScrubberView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScrubberView.swift; sourceTree = "<group>"; };
 		4C758BBA1DD685E700AE9D9F /* PlayerController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlayerController.swift; sourceTree = "<group>"; };
 		4C7C12DE1E4F376A0061C9E5 /* PhotoViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoViewModel.swift; sourceTree = "<group>"; };
@@ -145,6 +164,15 @@
 				4C73A28D28FF40AB00ECAC42 /* PHAssetHelper in Frameworks */,
 				4CE8FEB428FF177E00D4CBC0 /* ReactiveCocoa in Frameworks */,
 				4C211F4A1C3DB8270082F4DF /* NotificationCenter.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4C73A28F28FF4F9D00ECAC42 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4C73A29628FF4F9D00ECAC42 /* SwiftUI.framework in Frameworks */,
+				4C73A29428FF4F9D00ECAC42 /* WidgetKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -247,11 +275,23 @@
 			path = Transitions;
 			sourceTree = "<group>";
 		};
+		4C73A29728FF4F9D00ECAC42 /* MemoriesWidget */ = {
+			isa = PBXGroup;
+			children = (
+				4C73A29828FF4F9D00ECAC42 /* MemoriesWidget.swift */,
+				4C73A29A28FF4F9E00ECAC42 /* Assets.xcassets */,
+				4C73A29C28FF4F9E00ECAC42 /* Info.plist */,
+			);
+			path = MemoriesWidget;
+			sourceTree = "<group>";
+		};
 		4C8594D41BB33E9C005CCFAC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 				4CBA89681BBC9BF300913336 /* Security.framework */,
 				4C211F491C3DB8270082F4DF /* NotificationCenter.framework */,
+				4C73A29328FF4F9D00ECAC42 /* WidgetKit.framework */,
+				4C73A29528FF4F9D00ECAC42 /* SwiftUI.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -263,6 +303,7 @@
 				4CE8FEB228FF162800D4CBC0 /* Core */,
 				4CEAA8EA1B3340C600774FE8 /* Memories */,
 				4C211F4B1C3DB8270082F4DF /* Photo Widget */,
+				4C73A29728FF4F9D00ECAC42 /* MemoriesWidget */,
 				4C8594D41BB33E9C005CCFAC /* Frameworks */,
 				4CEAA8E91B3340C600774FE8 /* Products */,
 			);
@@ -273,6 +314,7 @@
 			children = (
 				4CEAA8E81B3340C600774FE8 /* Memories.app */,
 				4C211F481C3DB8270082F4DF /* Photo Widget.appex */,
+				4C73A29228FF4F9D00ECAC42 /* MemoriesWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -330,6 +372,23 @@
 			productReference = 4C211F481C3DB8270082F4DF /* Photo Widget.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		4C73A29128FF4F9D00ECAC42 /* MemoriesWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4C73A2A028FF4F9E00ECAC42 /* Build configuration list for PBXNativeTarget "MemoriesWidgetExtension" */;
+			buildPhases = (
+				4C73A28E28FF4F9D00ECAC42 /* Sources */,
+				4C73A28F28FF4F9D00ECAC42 /* Frameworks */,
+				4C73A29028FF4F9D00ECAC42 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MemoriesWidgetExtension;
+			productName = MemoriesWidgetExtension;
+			productReference = 4C73A29228FF4F9D00ECAC42 /* MemoriesWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		4CEAA8E71B3340C600774FE8 /* Memories */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 4CEAA9071B3340C600774FE8 /* Build configuration list for PBXNativeTarget "Memories" */;
@@ -345,6 +404,7 @@
 			);
 			dependencies = (
 				4C211F531C3DB8270082F4DF /* PBXTargetDependency */,
+				4C73A29E28FF4F9E00ECAC42 /* PBXTargetDependency */,
 			);
 			name = Memories;
 			packageProductDependencies = (
@@ -363,7 +423,7 @@
 		4CEAA8E01B3340C600774FE8 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 0730;
+				LastSwiftUpdateCheck = 1400;
 				LastUpgradeCheck = 1400;
 				ORGANIZATIONNAME = "Michael Brown";
 				TargetAttributes = {
@@ -377,6 +437,9 @@
 								enabled = 1;
 							};
 						};
+					};
+					4C73A29128FF4F9D00ECAC42 = {
+						CreatedOnToolsVersion = 14.0.1;
 					};
 					4CEAA8E71B3340C600774FE8 = {
 						CreatedOnToolsVersion = 6.3.2;
@@ -414,6 +477,7 @@
 			targets = (
 				4CEAA8E71B3340C600774FE8 /* Memories */,
 				4C211F471C3DB8270082F4DF /* Photo Widget */,
+				4C73A29128FF4F9D00ECAC42 /* MemoriesWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -425,6 +489,14 @@
 			files = (
 				4C211F501C3DB8270082F4DF /* MainInterface.storyboard in Resources */,
 				4C315DF31C4A8326008003E1 /* Images.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4C73A29028FF4F9D00ECAC42 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4C73A29B28FF4F9E00ECAC42 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -447,6 +519,14 @@
 			files = (
 				4C315DF21C4A617C008003E1 /* TodayViewModel.swift in Sources */,
 				4C211F4D1C3DB8270082F4DF /* TodayViewController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4C73A28E28FF4F9D00ECAC42 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4C73A29928FF4F9D00ECAC42 /* MemoriesWidget.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -489,6 +569,11 @@
 			isa = PBXTargetDependency;
 			target = 4C211F471C3DB8270082F4DF /* Photo Widget */;
 			targetProxy = 4C211F521C3DB8270082F4DF /* PBXContainerItemProxy */;
+		};
+		4C73A29E28FF4F9E00ECAC42 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4C73A29128FF4F9D00ECAC42 /* MemoriesWidgetExtension */;
+			targetProxy = 4C73A29D28FF4F9E00ECAC42 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -572,6 +657,85 @@
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		4C73A2A128FF4F9E00ECAC42 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 4KZP2U7889;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MemoriesWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = MemoriesWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Michael Brown. All rights reserved.";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.luacheia.memories.MemoriesWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		4C73A2A228FF4F9E00ECAC42 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4KZP2U7889;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MemoriesWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = MemoriesWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Michael Brown. All rights reserved.";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.luacheia.memories.MemoriesWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -760,6 +924,15 @@
 			buildConfigurations = (
 				4C211F551C3DB8270082F4DF /* Debug */,
 				4C211F561C3DB8270082F4DF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4C73A2A028FF4F9E00ECAC42 /* Build configuration list for PBXNativeTarget "MemoriesWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4C73A2A128FF4F9E00ECAC42 /* Debug */,
+				4C73A2A228FF4F9E00ECAC42 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
