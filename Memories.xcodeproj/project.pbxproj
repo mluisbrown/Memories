@@ -8,22 +8,16 @@
 
 /* Begin PBXBuildFile section */
 		4C00A4F51C1B7ED30078A43F /* PhotosViewDismissTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C00A4F41C1B7ED30078A43F /* PhotosViewDismissTransition.swift */; };
-		4C211F4A1C3DB8270082F4DF /* NotificationCenter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C211F491C3DB8270082F4DF /* NotificationCenter.framework */; };
-		4C211F4D1C3DB8270082F4DF /* TodayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C211F4C1C3DB8270082F4DF /* TodayViewController.swift */; };
-		4C211F501C3DB8270082F4DF /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4C211F4E1C3DB8270082F4DF /* MainInterface.storyboard */; };
-		4C211F541C3DB8270082F4DF /* Photo Widget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 4C211F481C3DB8270082F4DF /* Photo Widget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		4C2DFCAA1B9E21BC00AD6E16 /* NotificationsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C2DFCA91B9E21BC00AD6E16 /* NotificationsController.swift */; };
-		4C315DF21C4A617C008003E1 /* TodayViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C315DF11C4A617C008003E1 /* TodayViewModel.swift */; };
-		4C315DF31C4A8326008003E1 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4CEAA8F41B3340C600774FE8 /* Images.xcassets */; };
 		4C315DF41C4A8337008003E1 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4CEAA8F41B3340C600774FE8 /* Images.xcassets */; };
 		4C3334531B65712D00D907C8 /* PhotosViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3334521B65712D00D907C8 /* PhotosViewModel.swift */; };
 		4C3334551B659DAA00D907C8 /* ZoomingPhotoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3334541B659DAA00D907C8 /* ZoomingPhotoView.swift */; };
+		4C37E31F28FF619A00CD4910 /* PHAssetHelper in Frameworks */ = {isa = PBXBuildFile; productRef = 4C37E31E28FF619A00CD4910 /* PHAssetHelper */; };
 		4C5B90281B5D9C590014A87C /* GridHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C5B90271B5D9C590014A87C /* GridHeaderView.swift */; };
 		4C6299AD1B4CB0AD00B8795E /* PhotosViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6299AC1B4CB0AD00B8795E /* PhotosViewController.swift */; };
 		4C69E63A1DCA73F1004D6F5C /* MediaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C69E6391DCA73F1004D6F5C /* MediaView.swift */; };
 		4C6F8FCC28FC5F69005EE783 /* PhotoLibraryAuthorization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C58C3191E731D2800D8FA14 /* PhotoLibraryAuthorization.swift */; };
 		4C73A28B28FF40A300ECAC42 /* PHAssetHelper in Frameworks */ = {isa = PBXBuildFile; productRef = 4C73A28A28FF40A300ECAC42 /* PHAssetHelper */; };
-		4C73A28D28FF40AB00ECAC42 /* PHAssetHelper in Frameworks */ = {isa = PBXBuildFile; productRef = 4C73A28C28FF40AB00ECAC42 /* PHAssetHelper */; };
 		4C73A29428FF4F9D00ECAC42 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C73A29328FF4F9D00ECAC42 /* WidgetKit.framework */; };
 		4C73A29628FF4F9D00ECAC42 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C73A29528FF4F9D00ECAC42 /* SwiftUI.framework */; };
 		4C73A29928FF4F9D00ECAC42 /* MemoriesWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C73A29828FF4F9D00ECAC42 /* MemoriesWidget.swift */; };
@@ -41,7 +35,6 @@
 		4CBA89671BBC926100913336 /* ReviewHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBA89661BBC926100913336 /* ReviewHelper.swift */; };
 		4CBA89691BBC9BF300913336 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CBA89681BBC9BF300913336 /* Security.framework */; };
 		4CE8BD971C03BBE500207BE1 /* DatePickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE8BD961C03BBE500207BE1 /* DatePickerViewController.swift */; };
-		4CE8FEB428FF177E00D4CBC0 /* ReactiveCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = 4CE8FEB328FF177E00D4CBC0 /* ReactiveCocoa */; };
 		4CE8FEB628FF17AB00D4CBC0 /* Core in Frameworks */ = {isa = PBXBuildFile; productRef = 4CE8FEB528FF17AB00D4CBC0 /* Core */; };
 		4CE8FEB828FF17B400D4CBC0 /* ReactiveCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = 4CE8FEB728FF17B400D4CBC0 /* ReactiveCocoa */; };
 		4CE8FEBA28FF17B800D4CBC0 /* Cartography in Frameworks */ = {isa = PBXBuildFile; productRef = 4CE8FEB928FF17B800D4CBC0 /* Cartography */; };
@@ -56,13 +49,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		4C211F521C3DB8270082F4DF /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4CEAA8E01B3340C600774FE8 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 4C211F471C3DB8270082F4DF;
-			remoteInfo = "Photo Widget";
-		};
 		4C73A29D28FF4F9E00ECAC42 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4CEAA8E01B3340C600774FE8 /* Project object */;
@@ -79,7 +65,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				4C211F541C3DB8270082F4DF /* Photo Widget.appex in Embed Foundation Extensions */,
 				4C73A29F28FF4F9E00ECAC42 /* MemoriesWidgetExtension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
@@ -108,13 +93,8 @@
 
 /* Begin PBXFileReference section */
 		4C00A4F41C1B7ED30078A43F /* PhotosViewDismissTransition.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotosViewDismissTransition.swift; sourceTree = "<group>"; };
-		4C211F481C3DB8270082F4DF /* Photo Widget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Photo Widget.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C211F491C3DB8270082F4DF /* NotificationCenter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NotificationCenter.framework; path = System/Library/Frameworks/NotificationCenter.framework; sourceTree = SDKROOT; };
-		4C211F4C1C3DB8270082F4DF /* TodayViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayViewController.swift; sourceTree = "<group>"; };
-		4C211F4F1C3DB8270082F4DF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
-		4C211F511C3DB8270082F4DF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4C2DFCA91B9E21BC00AD6E16 /* NotificationsController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationsController.swift; sourceTree = "<group>"; };
-		4C315DF11C4A617C008003E1 /* TodayViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TodayViewModel.swift; sourceTree = "<group>"; };
 		4C3334521B65712D00D907C8 /* PhotosViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotosViewModel.swift; sourceTree = "<group>"; };
 		4C3334541B659DAA00D907C8 /* ZoomingPhotoView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZoomingPhotoView.swift; sourceTree = "<group>"; };
 		4C58C3191E731D2800D8FA14 /* PhotoLibraryAuthorization.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoLibraryAuthorization.swift; sourceTree = "<group>"; };
@@ -122,7 +102,6 @@
 		4C6299AC1B4CB0AD00B8795E /* PhotosViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotosViewController.swift; sourceTree = "<group>"; };
 		4C69E6391DCA73F1004D6F5C /* MediaView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaView.swift; sourceTree = "<group>"; };
 		4C6FF0461CED11E9001994DC /* Memories.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = Memories.entitlements; path = ../Memories.entitlements; sourceTree = "<group>"; };
-		4C6FF0491CED12D5001994DC /* Photo Widget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Photo Widget.entitlements"; sourceTree = "<group>"; };
 		4C73A29228FF4F9D00ECAC42 /* MemoriesWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MemoriesWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C73A29328FF4F9D00ECAC42 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		4C73A29528FF4F9D00ECAC42 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
@@ -150,6 +129,7 @@
 		4CEAA8F41B3340C600774FE8 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		4CEAA90D1B3343F700774FE8 /* GridViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridViewController.swift; sourceTree = "<group>"; };
 		4CEAA90F1B33462600774FE8 /* GridViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridViewCell.swift; sourceTree = "<group>"; };
+		4CF006B1290310C5003D276F /* MemoriesWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MemoriesWidgetExtension.entitlements; sourceTree = "<group>"; };
 		4CF5747F1C06749B00D12ADB /* DatePickerRowView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatePickerRowView.swift; sourceTree = "<group>"; };
 		4CF5FEEE1B58212700F8517D /* GridViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridViewModel.swift; sourceTree = "<group>"; };
 		741AF37223CFCDBB00FAE6DF /* AppearanceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceViewController.swift; sourceTree = "<group>"; };
@@ -157,20 +137,11 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		4C211F451C3DB8270082F4DF /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				4C73A28D28FF40AB00ECAC42 /* PHAssetHelper in Frameworks */,
-				4CE8FEB428FF177E00D4CBC0 /* ReactiveCocoa in Frameworks */,
-				4C211F4A1C3DB8270082F4DF /* NotificationCenter.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		4C73A28F28FF4F9D00ECAC42 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4C37E31F28FF619A00CD4910 /* PHAssetHelper in Frameworks */,
 				4C73A29628FF4F9D00ECAC42 /* SwiftUI.framework in Frameworks */,
 				4C73A29428FF4F9D00ECAC42 /* WidgetKit.framework in Frameworks */,
 			);
@@ -191,18 +162,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		4C211F4B1C3DB8270082F4DF /* Photo Widget */ = {
-			isa = PBXGroup;
-			children = (
-				4C6FF0491CED12D5001994DC /* Photo Widget.entitlements */,
-				4C211F511C3DB8270082F4DF /* Info.plist */,
-				4C211F4E1C3DB8270082F4DF /* MainInterface.storyboard */,
-				4C211F4C1C3DB8270082F4DF /* TodayViewController.swift */,
-				4C315DF11C4A617C008003E1 /* TodayViewModel.swift */,
-			);
-			path = "Photo Widget";
-			sourceTree = "<group>";
-		};
 		4C27C84C28FC5F19002A48F3 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
@@ -278,6 +237,7 @@
 		4C73A29728FF4F9D00ECAC42 /* MemoriesWidget */ = {
 			isa = PBXGroup;
 			children = (
+				4CF006B1290310C5003D276F /* MemoriesWidgetExtension.entitlements */,
 				4C73A29828FF4F9D00ECAC42 /* MemoriesWidget.swift */,
 				4C73A29A28FF4F9E00ECAC42 /* Assets.xcassets */,
 				4C73A29C28FF4F9E00ECAC42 /* Info.plist */,
@@ -302,7 +262,6 @@
 				4CE8FEBD28FF3D2A00D4CBC0 /* PHAssetHelper */,
 				4CE8FEB228FF162800D4CBC0 /* Core */,
 				4CEAA8EA1B3340C600774FE8 /* Memories */,
-				4C211F4B1C3DB8270082F4DF /* Photo Widget */,
 				4C73A29728FF4F9D00ECAC42 /* MemoriesWidget */,
 				4C8594D41BB33E9C005CCFAC /* Frameworks */,
 				4CEAA8E91B3340C600774FE8 /* Products */,
@@ -313,7 +272,6 @@
 			isa = PBXGroup;
 			children = (
 				4CEAA8E81B3340C600774FE8 /* Memories.app */,
-				4C211F481C3DB8270082F4DF /* Photo Widget.appex */,
 				4C73A29228FF4F9D00ECAC42 /* MemoriesWidgetExtension.appex */,
 			);
 			name = Products;
@@ -351,27 +309,6 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		4C211F471C3DB8270082F4DF /* Photo Widget */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 4C211F571C3DB8270082F4DF /* Build configuration list for PBXNativeTarget "Photo Widget" */;
-			buildPhases = (
-				4C211F441C3DB8270082F4DF /* Sources */,
-				4C211F451C3DB8270082F4DF /* Frameworks */,
-				4C211F461C3DB8270082F4DF /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = "Photo Widget";
-			packageProductDependencies = (
-				4CE8FEB328FF177E00D4CBC0 /* ReactiveCocoa */,
-				4C73A28C28FF40AB00ECAC42 /* PHAssetHelper */,
-			);
-			productName = "Photo Widget";
-			productReference = 4C211F481C3DB8270082F4DF /* Photo Widget.appex */;
-			productType = "com.apple.product-type.app-extension";
-		};
 		4C73A29128FF4F9D00ECAC42 /* MemoriesWidgetExtension */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 4C73A2A028FF4F9E00ECAC42 /* Build configuration list for PBXNativeTarget "MemoriesWidgetExtension" */;
@@ -385,6 +322,9 @@
 			dependencies = (
 			);
 			name = MemoriesWidgetExtension;
+			packageProductDependencies = (
+				4C37E31E28FF619A00CD4910 /* PHAssetHelper */,
+			);
 			productName = MemoriesWidgetExtension;
 			productReference = 4C73A29228FF4F9D00ECAC42 /* MemoriesWidgetExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
@@ -403,7 +343,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				4C211F531C3DB8270082F4DF /* PBXTargetDependency */,
 				4C73A29E28FF4F9E00ECAC42 /* PBXTargetDependency */,
 			);
 			name = Memories;
@@ -427,17 +366,6 @@
 				LastUpgradeCheck = 1400;
 				ORGANIZATIONNAME = "Michael Brown";
 				TargetAttributes = {
-					4C211F471C3DB8270082F4DF = {
-						CreatedOnToolsVersion = 7.2;
-						DevelopmentTeam = 4KZP2U7889;
-						LastSwiftMigration = 1100;
-						ProvisioningStyle = Manual;
-						SystemCapabilities = {
-							com.apple.ApplicationGroups.iOS = {
-								enabled = 1;
-							};
-						};
-					};
 					4C73A29128FF4F9D00ECAC42 = {
 						CreatedOnToolsVersion = 14.0.1;
 					};
@@ -476,22 +404,12 @@
 			projectRoot = "";
 			targets = (
 				4CEAA8E71B3340C600774FE8 /* Memories */,
-				4C211F471C3DB8270082F4DF /* Photo Widget */,
 				4C73A29128FF4F9D00ECAC42 /* MemoriesWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		4C211F461C3DB8270082F4DF /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				4C211F501C3DB8270082F4DF /* MainInterface.storyboard in Resources */,
-				4C315DF31C4A8326008003E1 /* Images.xcassets in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		4C73A29028FF4F9D00ECAC42 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -513,15 +431,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		4C211F441C3DB8270082F4DF /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				4C315DF21C4A617C008003E1 /* TodayViewModel.swift in Sources */,
-				4C211F4D1C3DB8270082F4DF /* TodayViewController.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		4C73A28E28FF4F9D00ECAC42 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -565,11 +474,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		4C211F531C3DB8270082F4DF /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 4C211F471C3DB8270082F4DF /* Photo Widget */;
-			targetProxy = 4C211F521C3DB8270082F4DF /* PBXContainerItemProxy */;
-		};
 		4C73A29E28FF4F9E00ECAC42 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 4C73A29128FF4F9D00ECAC42 /* MemoriesWidgetExtension */;
@@ -578,15 +482,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		4C211F4E1C3DB8270082F4DF /* MainInterface.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				4C211F4F1C3DB8270082F4DF /* Base */,
-			);
-			name = MainInterface.storyboard;
-			path = .;
-			sourceTree = "<group>";
-		};
 		4CEAA8F11B3340C600774FE8 /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -599,67 +494,6 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		4C211F551C3DB8270082F4DF /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				APPLICATION_EXTENSION_API_ONLY = YES;
-				CODE_SIGN_ENTITLEMENTS = "Photo Widget/Photo Widget.entitlements";
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 42;
-				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = 4KZP2U7889;
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 4KZP2U7889;
-				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
-				HEADERMAP_USES_VFS = YES;
-				INFOPLIST_FILE = "Photo Widget/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
-				MARKETING_VERSION = 1.4.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.luacheia.memories.Photo-Widget";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "76ced91b-bb55-4d76-a61a-8b27bb46edbb";
-				PROVISIONING_PROFILE_SPECIFIER = "Memories Widget Development";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Memories TodayWidget Development";
-				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 5.0;
-			};
-			name = Debug;
-		};
-		4C211F561C3DB8270082F4DF /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				APPLICATION_EXTENSION_API_ONLY = YES;
-				CODE_SIGN_ENTITLEMENTS = "Photo Widget/Photo Widget.entitlements";
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
-				CURRENT_PROJECT_VERSION = 42;
-				DEVELOPMENT_TEAM = 4KZP2U7889;
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 4KZP2U7889;
-				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
-				HEADERMAP_USES_VFS = YES;
-				INFOPLIST_FILE = "Photo Widget/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
-				MARKETING_VERSION = 1.4.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.luacheia.memories.Photo-Widget";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "3b8f33f6-0d9a-4d37-9c76-6a9bc519c9dc";
-				PROVISIONING_PROFILE_SPECIFIER = "Memories Widget (Distribution)";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Memories TodayWidget Distribution";
-				SKIP_INSTALL = YES;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 5.0;
-			};
-			name = Release;
-		};
 		4C73A2A128FF4F9E00ECAC42 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -671,8 +505,10 @@
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = MemoriesWidget/MemoriesWidgetExtension.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 42;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 4KZP2U7889;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -686,11 +522,12 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.4.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.luacheia.memories.MemoriesWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -710,10 +547,10 @@
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_ENTITLEMENTS = MemoriesWidget/MemoriesWidgetExtension.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 42;
 				DEVELOPMENT_TEAM = 4KZP2U7889;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -726,10 +563,11 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.4.0;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.luacheia.memories.MemoriesWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -919,15 +757,6 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		4C211F571C3DB8270082F4DF /* Build configuration list for PBXNativeTarget "Photo Widget" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				4C211F551C3DB8270082F4DF /* Debug */,
-				4C211F561C3DB8270082F4DF /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		4C73A2A028FF4F9E00ECAC42 /* Build configuration list for PBXNativeTarget "MemoriesWidgetExtension" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -985,18 +814,13 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		4C37E31E28FF619A00CD4910 /* PHAssetHelper */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = PHAssetHelper;
+		};
 		4C73A28A28FF40A300ECAC42 /* PHAssetHelper */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = PHAssetHelper;
-		};
-		4C73A28C28FF40AB00ECAC42 /* PHAssetHelper */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = PHAssetHelper;
-		};
-		4CE8FEB328FF177E00D4CBC0 /* ReactiveCocoa */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 4C74970225EAA08800A810C2 /* XCRemoteSwiftPackageReference "ReactiveCocoa" */;
-			productName = ReactiveCocoa;
 		};
 		4CE8FEB528FF17AB00D4CBC0 /* Core */ = {
 			isa = XCSwiftPackageProductDependency;

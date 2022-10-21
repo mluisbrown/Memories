@@ -8,34 +8,104 @@
 
 import WidgetKit
 import SwiftUI
+import Photos
+import PHAssetHelper
 
 struct Provider: TimelineProvider {
-    func placeholder(in context: Context) -> SimpleEntry {
-        SimpleEntry(date: Date(), year: 2022)
+    private let cacheSize = CGSize(width: 256, height: 256)
+    private let requestOptions: PHImageRequestOptions = {
+        let options = PHImageRequestOptions()
+        options.isNetworkAccessAllowed = false
+        options.deliveryMode = .opportunistic
+        options.isSynchronous = false
+        return options
+    }()
+    private let imageManager = PHCachingImageManager()
+
+    func placeholder(in context: Context) -> ImageEntry {
+        ImageEntry(date: Date(), year: 2022)
     }
 
-    func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> ()) {
-        let entry = SimpleEntry(date: Date(), year: 2022)
-        completion(entry)
+    func getSnapshot(in context: Context, completion: @escaping (ImageEntry) -> ()) {
+        Task {
+            let entries = await getTimelineEntries()
+            guard let entry = entries.first else {
+                completion(ImageEntry(date: Date(), year: 2022))
+                return
+            }
+
+            completion(entry)
+        }
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
-        var entries: [SimpleEntry] = []
+        Task {
+            let entries = await getTimelineEntries()
+            completion(Timeline(entries: entries, policy: .atEnd))
+        }
+    }
 
-        // Generate a timeline consisting of five entries an hour apart, starting from the current date.
-        let currentDate = Date()
-        for hourOffset in 0 ..< 5 {
-            let entryDate = Calendar.current.date(byAdding: .hour, value: hourOffset, to: currentDate)!
-            let entry = SimpleEntry(date: entryDate, year: 2010 + hourOffset)
-            entries.append(entry)
+    func getTimelineEntries() async -> [ImageEntry] {
+#if targetEnvironment(simulator)
+        let date = Calendar(identifier: Calendar.Identifier.gregorian).date(from: DateComponents(era: 1, year: 2016, month: 8, day: 8, hour: 0, minute: 0, second: 0, nanosecond: 0))!
+#else
+        let date = Date()
+#endif
+
+        let assets = await withCheckedContinuation { continuation in
+            let assets = PHAssetHelper().allAssetsForAllYears(with: date)
+            continuation.resume(returning: assets)
+        }.shuffled()
+
+        let timelineAssets: [PHAsset]
+        let favAssets = assets.filter(\.isFavorite)
+
+        if favAssets.count < 5 {
+            let otherAssets = Array(
+                assets.filter { $0.isFavorite == false }
+                    .prefix(5 - favAssets.count)
+            )
+            timelineAssets = [favAssets, otherAssets].flatMap { $0 }
+        } else {
+            timelineAssets = favAssets
         }
 
-        let timeline = Timeline(entries: entries, policy: .atEnd)
-        completion(timeline)
+        var entries: [ImageEntry] = []
+        for (index, asset) in timelineAssets.enumerated() {
+            let image = await loadImage(for: asset)
+            let date = Calendar.current.date(byAdding: .hour, value: index, to: Date())!
+            entries.append(
+                ImageEntry(
+                    date: date,
+                    year: asset.creationDate?.year ?? Date().year,
+                    image: image
+                )
+            )
+        }
+
+        return entries
+    }
+
+    func loadImage(for asset: PHAsset) async -> UIImage {
+        await withCheckedContinuation { continuation in
+            imageManager.requestImage(
+                for: asset,
+                targetSize: cacheSize,
+                contentMode: .aspectFill,
+                options: requestOptions
+            ) { image, userInfo in
+                if let image {
+                    let isDegraded = ((userInfo?[PHImageResultIsDegradedKey] as? NSNumber) as? Bool) ?? true
+                    if !isDegraded {
+                        continuation.resume(returning: image)
+                    }
+                }
+            }
+        }
     }
 }
 
-struct SimpleEntry: TimelineEntry {
+struct ImageEntry: TimelineEntry {
     let date: Date
     let year: Int
     var image: UIImage?
@@ -45,18 +115,21 @@ struct MemoriesWidgetEntryView : View {
     var entry: Provider.Entry
 
     var body: some View {
-        ZStack {
-            Color(.black)
-            if let image = entry.image {
-                Image(uiImage: image)
-            } else {
-                Image(systemName: "exclamationmark.triangle")
-            }
-            VStack {
-                Spacer()
+        GeometryReader { geo in
+            ZStack {
+                Color(.black)
+                if let image = entry.image {
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: geo.size.width, height: geo.size.height)
+                } else {
+                    Image(systemName: "exclamationmark.triangle")
+                }
                 Text(String(entry.year))
                     .fontWeight(.bold)
                     .foregroundColor(.white)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
                     .offset(x: 0, y: -8)
             }
         }
@@ -76,13 +149,22 @@ struct MemoriesWidget: Widget {
     }
 }
 
+extension UIColor {
+    func image(_ size: CGSize = CGSize(width: 256, height: 256)) -> UIImage {
+        return UIGraphicsImageRenderer(size: size).image { rendererContext in
+            self.setFill()
+            rendererContext.fill(CGRect(origin: .zero, size: size))
+        }
+    }
+}
+
 struct MemoriesWidget_Previews: PreviewProvider {
     static var previews: some View {
-        MemoriesWidgetEntryView(entry: SimpleEntry(date: Date(), year: 2022))
+        MemoriesWidgetEntryView(entry: ImageEntry(date: Date(), year: 2022, image: UIColor.red.image()))
             .previewContext(WidgetPreviewContext(family: .systemSmall))
-        MemoriesWidgetEntryView(entry: SimpleEntry(date: Date(), year: 2022))
+        MemoriesWidgetEntryView(entry: ImageEntry(date: Date(), year: 2022, image: UIColor.red.image()))
             .previewContext(WidgetPreviewContext(family: .systemMedium))
-        MemoriesWidgetEntryView(entry: SimpleEntry(date: Date(), year: 2022))
+        MemoriesWidgetEntryView(entry: ImageEntry(date: Date(), year: 2022, image: UIColor.red.image()))
             .previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }
