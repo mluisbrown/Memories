@@ -112,7 +112,16 @@ struct ImageEntry: TimelineEntry {
 }
 
 struct MemoriesWidgetEntryView : View {
+
     var entry: Provider.Entry
+
+    var yearFont: UIFont {
+        if #available(iOS 16, *) {
+            return UIFont.systemFont(ofSize: 15, weight: .bold, width: .expanded)
+        } else {
+            return UIFont.systemFont(ofSize: 15, weight: .bold)
+        }
+    }
 
     var body: some View {
         GeometryReader { geo in
@@ -127,7 +136,7 @@ struct MemoriesWidgetEntryView : View {
                     Image(systemName: "exclamationmark.triangle")
                 }
                 Text(String(entry.year))
-                    .fontWeight(.bold)
+                    .font(Font(yearFont))
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
                     .offset(x: 0, y: -8)
