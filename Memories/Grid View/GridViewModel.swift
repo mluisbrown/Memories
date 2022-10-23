@@ -66,10 +66,10 @@ class GridViewModel {
     private let resultsDateObserver: Signal<Date, Never>.Observer
     let resultsDate: Signal<Date, Never>
 
-    private let title = MutableProperty("Memories")
+    private let title = MutableProperty(NSAttributedString(string: "Memories"))
     private let status = MutableProperty<Status>(.noAccess)
     let statusText: Property<String>
-    let titleText: Property<String>
+    let titleText: Property<NSAttributedString>
 
     var sectionCount : Int {
         return assetFetchResults.value.count
@@ -107,7 +107,16 @@ class GridViewModel {
         date.signal.observeValues { date in
             self.assetFetchResults <~ self.updateFetchResults(for: date)
             self.status.value = .loading
-            self.title.value = self.dateFormatter.string(from: date).uppercased() + " ▾" // ▼
+
+            let attachment = NSTextAttachment().with {
+                $0.image = UIImage(systemName: "arrowtriangle.down.fill")?
+                    .withTintColor(Current.colors.label)
+            }
+            let imageString = NSAttributedString(attachment: attachment)
+            let dateString = NSMutableAttributedString(string: "\(self.dateFormatter.string(from: date).uppercased()) ")
+            dateString.append(imageString)
+
+            self.title.value = dateString
         }
 
         assetFetchResults.signal.observeValues { fetchResults in
@@ -314,7 +323,8 @@ extension GridViewModel {
                         value: GridViewCellModel(
                             assetID: asset.localIdentifier,
                             image: image,
-                            durationText: durationText
+                            durationText: durationText,
+                            isFavourite: asset.isFavorite
                         )
                     )
                     
@@ -329,7 +339,8 @@ extension GridViewModel {
                     value: GridViewCellModel(
                         assetID: nil,
                         image: nil,
-                        durationText: ""
+                        durationText: "",
+                        isFavourite: false
                     )
                 )
                 observer.sendCompleted()

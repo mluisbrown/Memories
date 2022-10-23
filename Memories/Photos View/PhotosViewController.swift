@@ -27,9 +27,9 @@ class PhotosViewController: UIViewController,
 
     let padding = CGFloat(10);
     
-    let heartFullImg = #imageLiteral(resourceName: "heart-full").withRenderingMode(.alwaysTemplate)
-    let heartEmptyImg = #imageLiteral(resourceName: "heart-empty").withRenderingMode(.alwaysTemplate)
-    
+    let heartFullImg =  UIImage(systemName: "heart.fill")!.withRenderingMode(.alwaysTemplate)
+    let heartEmptyImg =  UIImage(systemName: "heart")!.withRenderingMode(.alwaysTemplate)
+
     var upgradePromptShown = false
     var initialOffsetSet = false
     var initialPage : Int!
