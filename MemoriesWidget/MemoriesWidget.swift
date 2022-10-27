@@ -11,6 +11,12 @@ import SwiftUI
 import Photos
 import PHAssetHelper
 
+extension Date {
+    var year: Int {
+        Calendar(identifier: .gregorian).dateComponents([.year], from: self).year!
+    }
+}
+
 struct Provider: TimelineProvider {
     private let previewOptions = PHImageRequestOptions().with {
         $0.isNetworkAccessAllowed = false
@@ -27,14 +33,14 @@ struct Provider: TimelineProvider {
     private let imageManager = PHImageManager.default()
 
     func placeholder(in context: Context) -> ImageEntry {
-        ImageEntry(date: Date(), year: 2022)
+        ImageEntry(date: Date(), year: Date().year, image: UIImage(named: "sample")!)
     }
 
     func getSnapshot(in context: Context, completion: @escaping (ImageEntry) -> ()) {
         Task {
             let entries = await getTimelineEntries(in: context)
             guard let entry = entries.first else {
-                completion(ImageEntry(date: Date(), year: 2022))
+                completion(ImageEntry(date: Date(), year: Date().year, image: UIImage(named: "sample")!))
                 return
             }
 
@@ -48,10 +54,13 @@ struct Provider: TimelineProvider {
             completion(Timeline(entries: entries, policy: .atEnd))
         }
     }
+}
 
+extension Provider {
     func getTimelineEntries(in context: Context) async -> [ImageEntry] {
 #if targetEnvironment(simulator)
-        let date = Calendar(identifier: Calendar.Identifier.gregorian).date(from: DateComponents(era: 1, year: 2016, month: 8, day: 8, hour: 0, minute: 0, second: 0, nanosecond: 0))!
+        let date = Calendar(identifier: Calendar.Identifier.gregorian)
+                .date(from: DateComponents(era: 1, year: 2016, month: 8, day: 8, hour: 0, minute: 0, second: 0, nanosecond: 0))!
 #else
         let date = Date()
 #endif
@@ -98,12 +107,16 @@ struct Provider: TimelineProvider {
     }
 
     func loadImage(for asset: PHAsset, isPreview: Bool) async -> UIImage {
-        let size = isPreview
-            ? CGSize(width: 256, height: 256)
-            : CGSize(width: 512, height: 512)
-        let options = isPreview
-            ? previewOptions
-            : highQualityOptions
+        let size: CGSize
+        let options: PHImageRequestOptions
+
+        if isPreview {
+            size = CGSize(width: 256, height: 256)
+            options = previewOptions
+        } else {
+            size = CGSize(width: 512, height: 512)
+            options = highQualityOptions
+        }
 
         return await withCheckedContinuation { continuation in
             imageManager.requestImage(
@@ -126,11 +139,10 @@ struct Provider: TimelineProvider {
 struct ImageEntry: TimelineEntry {
     let date: Date
     let year: Int
-    var image: UIImage?
+    let image: UIImage
 }
 
 struct MemoriesWidgetEntryView : View {
-
     var entry: Provider.Entry
 
     var yearFont: UIFont {
@@ -145,17 +157,17 @@ struct MemoriesWidgetEntryView : View {
         GeometryReader { geo in
             ZStack {
                 Color(.black)
-                if let image = entry.image {
-                    Image(uiImage: image)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: geo.size.width, height: geo.size.height)
-                } else {
-                    Image(systemName: "exclamationmark.triangle")
-                }
+
+                Image(uiImage: entry.image)
+                    .resizable()
+                    .scaledToFill()
+                    .unredacted()
+                    .frame(width: geo.size.width, height: geo.size.height)
+
                 Text(String(entry.year))
                     .font(Font(yearFont))
                     .foregroundColor(.white)
+                    .unredacted()
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
                     .offset(x: 0, y: -8)
             }
@@ -187,11 +199,11 @@ extension UIColor {
 
 struct MemoriesWidget_Previews: PreviewProvider {
     static var previews: some View {
-        MemoriesWidgetEntryView(entry: ImageEntry(date: Date(), year: 2022, image: UIColor.red.image()))
+        MemoriesWidgetEntryView(entry: ImageEntry(date: Date(), year: Date().year, image: UIImage(named: "sample")!))
             .previewContext(WidgetPreviewContext(family: .systemSmall))
-        MemoriesWidgetEntryView(entry: ImageEntry(date: Date(), year: 2022, image: UIColor.red.image()))
+        MemoriesWidgetEntryView(entry: ImageEntry(date: Date(), year: Date().year, image: UIImage(named: "sample")!))
             .previewContext(WidgetPreviewContext(family: .systemMedium))
-        MemoriesWidgetEntryView(entry: ImageEntry(date: Date(), year: 2022, image: UIColor.red.image()))
+        MemoriesWidgetEntryView(entry: ImageEntry(date: Date(), year: Date().year, image: UIImage(named: "sample")!))
             .previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }
