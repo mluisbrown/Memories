@@ -12,15 +12,19 @@ import Photos
 import PHAssetHelper
 
 struct Provider: TimelineProvider {
-    private let cacheSize = CGSize(width: 256, height: 256)
-    private let requestOptions: PHImageRequestOptions = {
-        let options = PHImageRequestOptions()
-        options.isNetworkAccessAllowed = false
-        options.deliveryMode = .opportunistic
-        options.isSynchronous = false
-        return options
-    }()
-    private let imageManager = PHCachingImageManager()
+    private let previewOptions = PHImageRequestOptions().with {
+        $0.isNetworkAccessAllowed = false
+        $0.deliveryMode = .opportunistic
+        $0.isSynchronous = false
+    }
+
+    private let highQualityOptions = PHImageRequestOptions().with {
+        $0.isNetworkAccessAllowed = true
+        $0.deliveryMode = .highQualityFormat
+        $0.isSynchronous = false
+    }
+
+    private let imageManager = PHImageManager.default()
 
     func placeholder(in context: Context) -> ImageEntry {
         ImageEntry(date: Date(), year: 2022)
@@ -28,7 +32,7 @@ struct Provider: TimelineProvider {
 
     func getSnapshot(in context: Context, completion: @escaping (ImageEntry) -> ()) {
         Task {
-            let entries = await getTimelineEntries()
+            let entries = await getTimelineEntries(in: context)
             guard let entry = entries.first else {
                 completion(ImageEntry(date: Date(), year: 2022))
                 return
@@ -40,12 +44,12 @@ struct Provider: TimelineProvider {
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
         Task {
-            let entries = await getTimelineEntries()
+            let entries = await getTimelineEntries(in: context)
             completion(Timeline(entries: entries, policy: .atEnd))
         }
     }
 
-    func getTimelineEntries() async -> [ImageEntry] {
+    func getTimelineEntries(in context: Context) async -> [ImageEntry] {
 #if targetEnvironment(simulator)
         let date = Calendar(identifier: Calendar.Identifier.gregorian).date(from: DateComponents(era: 1, year: 2016, month: 8, day: 8, hour: 0, minute: 0, second: 0, nanosecond: 0))!
 #else
@@ -64,6 +68,13 @@ struct Provider: TimelineProvider {
             let otherAssets = Array(
                 assets.filter { $0.isFavorite == false }
                     .prefix(5 - favAssets.count)
+                    .sorted {
+                        if #available(iOSApplicationExtension 15, *) {
+                            return $0.hasAdjustments && $1.hasAdjustments == false
+                        } else {
+                            return true
+                        }
+                    }
             )
             timelineAssets = [favAssets, otherAssets].flatMap { $0 }
         } else {
@@ -72,7 +83,7 @@ struct Provider: TimelineProvider {
 
         var entries: [ImageEntry] = []
         for (index, asset) in timelineAssets.enumerated() {
-            let image = await loadImage(for: asset)
+            let image = await loadImage(for: asset, isPreview: context.isPreview)
             let date = Calendar.current.date(byAdding: .hour, value: index, to: Date())!
             entries.append(
                 ImageEntry(
@@ -86,13 +97,20 @@ struct Provider: TimelineProvider {
         return entries
     }
 
-    func loadImage(for asset: PHAsset) async -> UIImage {
-        await withCheckedContinuation { continuation in
+    func loadImage(for asset: PHAsset, isPreview: Bool) async -> UIImage {
+        let size = isPreview
+            ? CGSize(width: 256, height: 256)
+            : CGSize(width: 512, height: 512)
+        let options = isPreview
+            ? previewOptions
+            : highQualityOptions
+
+        return await withCheckedContinuation { continuation in
             imageManager.requestImage(
                 for: asset,
-                targetSize: cacheSize,
+                targetSize: size,
                 contentMode: .aspectFill,
-                options: requestOptions
+                options: options
             ) { image, userInfo in
                 if let image {
                     let isDegraded = ((userInfo?[PHImageResultIsDegradedKey] as? NSNumber) as? Bool) ?? true
