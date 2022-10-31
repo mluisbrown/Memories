@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		4C00A4F51C1B7ED30078A43F /* PhotosViewDismissTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C00A4F41C1B7ED30078A43F /* PhotosViewDismissTransition.swift */; };
+		4C1BB0E0290BDD9C005D7075 /* ReactiveSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 4C1BB0DF290BDD9C005D7075 /* ReactiveSwift */; };
 		4C2DFCAA1B9E21BC00AD6E16 /* NotificationsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C2DFCA91B9E21BC00AD6E16 /* NotificationsController.swift */; };
 		4C315DF41C4A8337008003E1 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4CEAA8F41B3340C600774FE8 /* Images.xcassets */; };
 		4C3334531B65712D00D907C8 /* PhotosViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3334521B65712D00D907C8 /* PhotosViewModel.swift */; };
@@ -152,6 +153,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4CE8FEBA28FF17B800D4CBC0 /* Cartography in Frameworks */,
+				4C1BB0E0290BDD9C005D7075 /* ReactiveSwift in Frameworks */,
 				4CBA89691BBC9BF300913336 /* Security.framework in Frameworks */,
 				4CE8FEB828FF17B400D4CBC0 /* ReactiveCocoa in Frameworks */,
 				4C73A28B28FF40A300ECAC42 /* PHAssetHelper in Frameworks */,
@@ -351,6 +353,7 @@
 				4CE8FEB728FF17B400D4CBC0 /* ReactiveCocoa */,
 				4CE8FEB928FF17B800D4CBC0 /* Cartography */,
 				4C73A28A28FF40A300ECAC42 /* PHAssetHelper */,
+				4C1BB0DF290BDD9C005D7075 /* ReactiveSwift */,
 			);
 			productName = Memories;
 			productReference = 4CEAA8E81B3340C600774FE8 /* Memories.app */;
@@ -507,10 +510,12 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_ENTITLEMENTS = MemoriesWidget/MemoriesWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 42;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = 4KZP2U7889;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 4KZP2U7889;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MemoriesWidget/Info.plist;
@@ -528,6 +533,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.luacheia.memories.MemoriesWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Memories Widget Development";
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -549,9 +555,11 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_ENTITLEMENTS = MemoriesWidget/MemoriesWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 42;
-				DEVELOPMENT_TEAM = 4KZP2U7889;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 4KZP2U7889;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MemoriesWidget/Info.plist;
@@ -568,6 +576,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.luacheia.memories.MemoriesWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Memories Widget Distribution";
 				SKIP_INSTALL = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -704,6 +713,7 @@
 				);
 				HEADERMAP_USES_VFS = YES;
 				INFOPLIST_FILE = "Memories/Supporting Files/Info.plist";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.photography";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -730,13 +740,14 @@
 				CURRENT_PROJECT_VERSION = 42;
 				DEVELOPMENT_TEAM = 4KZP2U7889;
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 4KZP2U7889;
-				ENABLE_BITCODE = YES;
+				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 				);
 				HEADERMAP_USES_VFS = YES;
 				INFOPLIST_FILE = "Memories/Supporting Files/Info.plist";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.photography";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -814,6 +825,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		4C1BB0DF290BDD9C005D7075 /* ReactiveSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4C7496FC25EAA03900A810C2 /* XCRemoteSwiftPackageReference "ReactiveSwift" */;
+			productName = ReactiveSwift;
+		};
 		4C37E31E28FF619A00CD4910 /* PHAssetHelper */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = PHAssetHelper;

@@ -38,7 +38,7 @@ struct Provider: TimelineProvider {
 
     func getSnapshot(in context: Context, completion: @escaping (ImageEntry) -> ()) {
         Task {
-            let entries = await getTimelineEntries(in: context)
+            let entries = await getTimelineEntries(in: context, isSnapshot: true)
             guard let entry = entries.first else {
                 completion(ImageEntry(date: Date(), year: Date().year, image: UIImage(named: "sample")!))
                 return
@@ -57,7 +57,7 @@ struct Provider: TimelineProvider {
 }
 
 extension Provider {
-    func getTimelineEntries(in context: Context) async -> [ImageEntry] {
+    func getTimelineEntries(in context: Context, isSnapshot: Bool = false) async -> [ImageEntry] {
 #if targetEnvironment(simulator)
         let date = Calendar(identifier: Calendar.Identifier.gregorian)
                 .date(from: DateComponents(era: 1, year: 2016, month: 8, day: 8, hour: 0, minute: 0, second: 0, nanosecond: 0))!
@@ -70,7 +70,7 @@ extension Provider {
             continuation.resume(returning: assets)
         }.shuffled()
 
-        let timelineAssets: [PHAsset]
+        var timelineAssets: [PHAsset]
         let favAssets = assets.filter(\.isFavorite)
 
         if favAssets.count < 5 {
@@ -88,6 +88,10 @@ extension Provider {
             timelineAssets = [favAssets, otherAssets].flatMap { $0 }
         } else {
             timelineAssets = favAssets
+        }
+
+        if isSnapshot && context.isPreview {
+            timelineAssets = timelineAssets.first.map(Array.init) ?? []
         }
 
         var entries: [ImageEntry] = []
@@ -161,15 +165,15 @@ struct MemoriesWidgetEntryView : View {
                 Image(uiImage: entry.image)
                     .resizable()
                     .scaledToFill()
-                    .unredacted()
                     .frame(width: geo.size.width, height: geo.size.height)
+                    .unredacted()
 
                 Text(String(entry.year))
                     .font(Font(yearFont))
                     .foregroundColor(.white)
-                    .unredacted()
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
                     .offset(x: 0, y: -8)
+                    .unredacted()
             }
         }
     }
@@ -185,15 +189,6 @@ struct MemoriesWidget: Widget {
         }
         .configurationDisplayName("Photos from this day")
         .description("Photos from this day over the years")
-    }
-}
-
-extension UIColor {
-    func image(_ size: CGSize = CGSize(width: 256, height: 256)) -> UIImage {
-        return UIGraphicsImageRenderer(size: size).image { rendererContext in
-            self.setFill()
-            rendererContext.fill(CGRect(origin: .zero, size: size))
-        }
     }
 }
 
