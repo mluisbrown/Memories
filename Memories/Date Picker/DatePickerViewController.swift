@@ -106,6 +106,10 @@ class DatePickerViewController: UIViewController, UIPickerViewDataSource, UIPick
     
 // MARK: - Actions
     @IBAction func selectDateAndClose(_ sender: UIButton) {
+        guard datesWithCount.value.indices.contains(datePicker.selectedRow(inComponent: 0)) else {
+            return
+        }
+
         selectedDate = datesWithCount.value[datePicker.selectedRow(inComponent: 0)].date
 
         if let ppc = self.popoverPresentationController {

@@ -43,7 +43,11 @@ struct PhotosViewModel {
         }
     }
     
-    var currentAsset: PHAsset {
+    var currentAsset: PHAsset? {
+        guard photoViewModels.value.indices.contains(currentIndex.value) else {
+            return nil
+        }
+
         return photoViewModels.value[currentIndex.value].asset.value
     }
     
@@ -269,16 +273,20 @@ extension PhotosViewModel {
 
 extension PhotosViewModel {
     func deleteCurrentAsset() {
-        PHPhotoLibrary.shared().performChanges({
-            PHAssetChangeRequest.deleteAssets(NSArray(array: [self.currentAsset]))
-        })
+        PHPhotoLibrary.shared().performChanges {
+            guard let asset = self.currentAsset else { return }
+
+            PHAssetChangeRequest.deleteAssets(NSArray(array: [asset]))
+        }
     }
     
     func toggleFavoriteCurrentAsset() {
-        PHPhotoLibrary.shared().performChanges({
-            let request = PHAssetChangeRequest(for: self.currentAsset)
-            request.isFavorite = !self.currentAsset.isFavorite
-        })
+        PHPhotoLibrary.shared().performChanges {
+            guard let asset = self.currentAsset else { return }
+
+            let request = PHAssetChangeRequest(for: asset)
+            request.isFavorite = !asset.isFavorite
+        }
     }
 }
 
@@ -303,7 +311,10 @@ extension PhotosViewModel {
             newAssets.enumerated().forEach {
                 self.photoViewModels.value[$0.offset].asset.value = $0.element
             }
-            currentAssetChangedObserver.send(value: currentAsset)
+
+            if let asset = currentAsset {
+                currentAssetChangedObserver.send(value: asset)
+            }
         }
     }
 }
