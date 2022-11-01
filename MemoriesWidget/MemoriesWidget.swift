@@ -33,14 +33,14 @@ struct Provider: TimelineProvider {
     private let imageManager = PHImageManager.default()
 
     func placeholder(in context: Context) -> ImageEntry {
-        ImageEntry(date: Date(), year: Date().year, image: UIImage(named: "sample")!)
+        ImageEntry(date: Date(), imageDate: Date(), image: UIImage(named: "sample")!)
     }
 
     func getSnapshot(in context: Context, completion: @escaping (ImageEntry) -> ()) {
         Task {
             let entries = await getTimelineEntries(in: context, isSnapshot: true)
             guard let entry = entries.first else {
-                completion(ImageEntry(date: Date(), year: Date().year, image: UIImage(named: "sample")!))
+                completion(ImageEntry(date: Date(), imageDate: Date(), image: UIImage(named: "sample")!))
                 return
             }
 
@@ -101,7 +101,7 @@ extension Provider {
             entries.append(
                 ImageEntry(
                     date: date,
-                    year: asset.creationDate?.year ?? Date().year,
+                    imageDate: asset.creationDate ?? Date(),
                     image: image
                 )
             )
@@ -142,12 +142,22 @@ extension Provider {
 
 struct ImageEntry: TimelineEntry {
     let date: Date
-    let year: Int
+    let imageDate: Date
     let image: UIImage
 }
 
 struct MemoriesWidgetEntryView : View {
     var entry: Provider.Entry
+
+    var deepLinkURL: URL {
+        let dateFormatter = DateFormatter().with {
+            $0.dateFormat = "yyyyMMdd"
+            $0.timeZone = TimeZone(secondsFromGMT: 0)
+        }
+
+        let dateString = dateFormatter.string(from: entry.imageDate)
+        return URL(string: "memories://\(dateString)")!
+    }
 
     var yearFont: UIFont {
         if #available(iOS 16, *) {
@@ -168,7 +178,7 @@ struct MemoriesWidgetEntryView : View {
                     .frame(width: geo.size.width, height: geo.size.height)
                     .unredacted()
 
-                Text(String(entry.year))
+                Text(String(entry.imageDate.year))
                     .font(Font(yearFont))
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
@@ -176,6 +186,7 @@ struct MemoriesWidgetEntryView : View {
                     .unredacted()
             }
         }
+        .widgetURL(deepLinkURL)
     }
 }
 
@@ -194,11 +205,11 @@ struct MemoriesWidget: Widget {
 
 struct MemoriesWidget_Previews: PreviewProvider {
     static var previews: some View {
-        MemoriesWidgetEntryView(entry: ImageEntry(date: Date(), year: Date().year, image: UIImage(named: "sample")!))
+        MemoriesWidgetEntryView(entry: ImageEntry(date: Date(), imageDate: Date(), image: UIImage(named: "sample")!))
             .previewContext(WidgetPreviewContext(family: .systemSmall))
-        MemoriesWidgetEntryView(entry: ImageEntry(date: Date(), year: Date().year, image: UIImage(named: "sample")!))
+        MemoriesWidgetEntryView(entry: ImageEntry(date: Date(), imageDate: Date(), image: UIImage(named: "sample")!))
             .previewContext(WidgetPreviewContext(family: .systemMedium))
-        MemoriesWidgetEntryView(entry: ImageEntry(date: Date(), year: Date().year, image: UIImage(named: "sample")!))
+        MemoriesWidgetEntryView(entry: ImageEntry(date: Date(), imageDate: Date(), image: UIImage(named: "sample")!))
             .previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }

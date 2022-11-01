@@ -53,6 +53,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
 
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        let dateFormatter = DateFormatter().with {
+            $0.dateFormat = "yyyyMMdd"
+            $0.timeZone = TimeZone(secondsFromGMT: 0)
+        }
+
+        let urlHost: String?
+        if #available(iOS 16, *) {
+            urlHost = url.host()
+        } else {
+            urlHost = url.host
+        }
+
+        if let dateString = urlHost,
+           let date = dateFormatter.date(from: dateString) {
+            Current.notificationsController.setLaunchDate(date)
+        }
+
+        return true
+    }
+
     func applicationDidBecomeActive(_ application: UIApplication) {
         ReviewHelper.registerAppLaunch()        
     }
