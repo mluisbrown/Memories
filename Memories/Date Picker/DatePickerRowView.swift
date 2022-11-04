@@ -40,7 +40,7 @@ class DatePickerRowView: UIView {
     }
     
     func setData(date: Date, count: Int) {
-        dateLabel.text = dateFormatter.string(from: date).uppercased()
+        dateLabel.text = dateFormatter.string(from: date)
         countLabel.text = "\(count)"
     }
 }

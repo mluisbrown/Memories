@@ -151,12 +151,13 @@ struct MemoriesWidgetEntryView : View {
 
     var deepLinkURL: URL {
         let dateFormatter = DateFormatter().with {
-            $0.dateFormat = "yyyyMMdd"
+            $0.dateFormat = "MMdd"
             $0.timeZone = TimeZone(secondsFromGMT: 0)
         }
+        let currentYear = Date().year
 
-        let dateString = dateFormatter.string(from: entry.imageDate)
-        return URL(string: "memories://\(dateString)")!
+        let monthDayString = dateFormatter.string(from: entry.imageDate)
+        return URL(string: "memories://\(currentYear)\(monthDayString)")!
     }
 
     var yearFont: UIFont {
