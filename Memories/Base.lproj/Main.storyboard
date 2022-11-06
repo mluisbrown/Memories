@@ -120,7 +120,7 @@
                         </connections>
                     </collectionView>
                     <navigationItem key="navigationItem" title="Memories" id="087-HO-mPV">
-                        <barButtonItem key="leftBarButtonItem" image="settings" id="BFe-Hn-3uP">
+                        <barButtonItem key="leftBarButtonItem" image="gearshape" catalog="system" id="BFe-Hn-3uP">
                             <color key="tintColor" systemColor="labelColor"/>
                             <connections>
                                 <segue destination="5dC-Oh-Cmg" kind="presentation" modalPresentationStyle="formSheet" id="r7q-AV-GaJ"/>
@@ -520,7 +520,7 @@
                                     <constraint firstAttribute="width" constant="40" id="K0J-Zn-byo"/>
                                 </constraints>
                                 <color key="tintColor" systemColor="labelColor"/>
-                                <state key="normal" image="share"/>
+                                <state key="normal" image="square.and.arrow.up" catalog="system"/>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
                                         <integer key="value" value="20"/>
@@ -538,7 +538,7 @@
                                     <constraint firstAttribute="width" constant="40" id="qw5-C3-FJn"/>
                                 </constraints>
                                 <color key="tintColor" systemColor="labelColor"/>
-                                <state key="normal" image="heart-empty"/>
+                                <state key="normal" image="heart" catalog="system"/>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
                                         <integer key="value" value="20"/>
@@ -556,7 +556,7 @@
                                     <constraint firstAttribute="height" constant="40" id="wy0-l7-sE9"/>
                                 </constraints>
                                 <color key="tintColor" systemColor="labelColor"/>
-                                <state key="normal" image="delete"/>
+                                <state key="normal" image="trash" catalog="system"/>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
                                         <integer key="value" value="20"/>
@@ -574,7 +574,7 @@
                                     <constraint firstAttribute="height" constant="40" id="Bno-bc-fTa"/>
                                 </constraints>
                                 <color key="tintColor" systemColor="labelColor"/>
-                                <state key="normal" image="close"/>
+                                <state key="normal" image="chevron.left" catalog="system"/>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
                                         <integer key="value" value="20"/>
@@ -749,11 +749,11 @@
         </scene>
     </scenes>
     <resources>
-        <image name="close" width="25" height="25"/>
-        <image name="delete" width="25" height="25"/>
-        <image name="heart-empty" width="25" height="25"/>
-        <image name="settings" width="25" height="25"/>
-        <image name="share" width="25" height="25"/>
+        <image name="chevron.left" catalog="system" width="97" height="128"/>
+        <image name="gearshape" catalog="system" width="128" height="123"/>
+        <image name="heart" catalog="system" width="128" height="107"/>
+        <image name="square.and.arrow.up" catalog="system" width="115" height="128"/>
+        <image name="trash" catalog="system" width="117" height="128"/>
         <systemColor name="groupTableViewBackgroundColor">
             <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>

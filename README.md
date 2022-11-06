@@ -1,9 +1,7 @@
 # Memories
-An iOS app that displays photos from your photo library taken on a particular day in history. Memories is a fully featured app including a Today View extension, a way for the user to Rate the app or contact the developer from the settings screen, ~~and an In-App purchase to unlock certain features~~.
+An iOS app that displays photos from your photo library taken on a particular day in history. Memories is a fully featured app including a Home Screen Widget, a way for the user to Rate the app or contact the developer from the settings screen, ~~and an In-App purchase to unlock certain features~~.
 
 http://michael-brown.net/memories
-
-Memories uses icon images from the [Essence](http://iconsandcoffee.com/essence/) collection by [Icons & Coffee](http://iconsandcoffee.com), who hold the copyright to the images. They are provided in this repo with permission from Icons & Coffee.
 
 # Downloading the code
 Clone the repo: `git clone https://github.com/mluisbrown/Memories.git`
@@ -16,4 +14,4 @@ Open `Memories.xcodeproj` in Xcode. Build and run! The iOS simulator only has a 
 # Contributing
 This project is a fully featured app developed by myself (Michael Brown) and [available](https://itunes.apple.com/us/app/memories/id1037130497?mt=8) in the Apple iOS App Store, ~~and includes a freemium business model by the way of restricted features that are unlocked through an In-App purchase~~. As such I don't expect to receive a significant number of community contributions.
 
-However, don't hesitate to send me a pull request if there's something you think needs improving. 
+However, don't hesitate to send me a pull request if there's something you think needs improving.

@@ -65,7 +65,7 @@ class GridViewController: UICollectionViewController
         
         model.titleText.producer.observe(on: UIScheduler())
             .startWithValues { [weak self] title in
-                self?.titleView.text = title
+                self?.titleView.attributedText = title
                 self?.titleView.sizeToFit()
         }
         

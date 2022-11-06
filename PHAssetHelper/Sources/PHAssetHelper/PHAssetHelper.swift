@@ -89,7 +89,8 @@ public class PHAssetHelper {
         let gregorian = Date.gregorianCalendar
         
         fetchResult.enumerateObjects() { asset, index, stop in
-            let comps = gregorian.dateComponents([.month, .day, .year], from: asset.creationDate!)
+            guard let creationDate = asset.creationDate else { return }
+            let comps = gregorian.dateComponents([.month, .day, .year], from: creationDate)
             guard self.includeCurrentYear || comps.year! < currentYear else {
                 return
             }
