@@ -36,7 +36,7 @@ class ZoomingPhotoView: UIView, UIScrollViewDelegate {
     }
     
     private let progressView = RPCircularProgress().with {
-        $0.roundedCorners = true
+        $0.roundedCorners = false
         $0.thicknessRatio = 1
         $0.trackTintColor = UIColor.clear
         $0.layer.borderColor = UIColor.white.cgColor
