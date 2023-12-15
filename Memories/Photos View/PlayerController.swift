@@ -32,11 +32,11 @@ private extension Collection where Iterator.Element == NSValue {
 #endif
 
 class PlayerController: NSObject {
-    
+
     @objc let player: AVPlayer
     @objc let playerItem: AVPlayerItem
     var timeObserver: Any?
-    
+
     private let observedKeyPaths = [
         #keyPath(PlayerController.playerItem.isPlaybackLikelyToKeepUp),
         #keyPath(PlayerController.playerItem.isPlaybackBufferEmpty),
@@ -44,7 +44,7 @@ class PlayerController: NSObject {
         #keyPath(PlayerController.playerItem.status),
         #keyPath(PlayerController.player.rate)
     ]
-    
+
     private static var observerContext = 0
     private var playAfterScrub = false
     private var scrubEnded = false
@@ -54,13 +54,13 @@ class PlayerController: NSObject {
     private var isSeekInProgress = false
     private var chaseTime = CMTime.zero
     private var playerCurrentItemStatus = AVPlayerItem.Status.unknown
-    
+
     weak var startPlayButton: UIButton? {
         didSet {
             startPlayButton?.addTarget(self, action: #selector(playPause), for: .touchUpInside)
         }
     }
-    
+
     var loadingSpinner: LoadingSpinner?
     weak var playPauseButton: UIButton? {
         didSet {
@@ -72,16 +72,16 @@ class PlayerController: NSObject {
             slider?.addTarget(self, action: #selector(sliderValueChanged(sender:event:)), for: .valueChanged)
         }
     }
-    
+
     weak var currentTimeLabel: UILabel?
     weak var remainingTimeLabel: UILabel?
-    
+
     var startPlayButtonVisible: Bool {
         set {
             guard startPlayButton?.alpha != (newValue ? 1 : 0) else {
                 return
             }
-            
+
             UIView.animate(withDuration: 0.25) { [weak self] in
                 self?.startPlayButton?.alpha = newValue ? 1 : 0
             }
@@ -96,52 +96,52 @@ class PlayerController: NSObject {
             guard let timebase = playerItem.timebase else {
                 return nil
             }
-            
+
             return Float(CMTimebaseGetRate(timebase))
         }
     }
-    
+
     init(player: AVPlayer) {
         self.player = player
         self.player.actionAtItemEnd = .pause
         self.playerItem = player.currentItem!
         self.itemDuration = CMTimeGetSeconds(playerItem.asset.duration)
-        
+
         super.init()
 
         addTimeObserver()
         addObservers()
     }
-    
+
     deinit {
         removeTimeObserver()
         removeObservers()
     }
-    
+
     // MARK: Implementation
-    
+
     private func updatePlayer(thenPlay: Bool) {
         guard let slider = slider else {
             return
         }
-        
+
         let secondsDuration = CMTimeGetSeconds(playerItem.duration)
         let time = CMTimeMakeWithSeconds(secondsDuration * Float64(slider.value), preferredTimescale: Int32(NSEC_PER_SEC))
-        
+
         self.scrubEnded = thenPlay
         seekSmoothlyTo(time: time)
     }
-    
+
     private func seekSmoothlyTo(time newChaseTime: CMTime) {
         if CMTimeCompare(newChaseTime, chaseTime) != 0 {
             chaseTime = newChaseTime
-            
+
             if !isSeekInProgress {
                 tryToSeekToChaseTime()
             }
         }
     }
-    
+
     private func tryToSeekToChaseTime() {
         switch playerCurrentItemStatus {
         case .readyToPlay:
@@ -152,19 +152,19 @@ class PlayerController: NSObject {
             break;
         }
     }
-    
+
     private func actuallySeekToTime() {
         isSeekInProgress = true
         let seekTimeInProgress = chaseTime
-        
+
         player.seek(to: seekTimeInProgress, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero) { [weak self] _ in
             guard let sself = self else {
                 return
             }
-            
+
             if CMTimeCompare(seekTimeInProgress, sself.chaseTime) == 0 {
                 sself.isSeekInProgress = false
-                
+
                 if let slider = sself.slider,
                     slider.value < slider.maximumValue,
                     sself.scrubEnded,
@@ -177,15 +177,15 @@ class PlayerController: NSObject {
             }
         }
     }
-    
+
     // MARK: KVO
-    
+
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         guard context == &PlayerController.observerContext else {
             super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
             return
         }
-       
+
 #if DEBUG
         if keyPath == #keyPath(PlayerController.playerItem.isPlaybackLikelyToKeepUp) {
             NSLog("isPlaybackLikelyToKeepUp: \(playerItem.isPlaybackLikelyToKeepUp)")
@@ -203,7 +203,7 @@ class PlayerController: NSObject {
 
         if keyPath == #keyPath(PlayerController.playerItem.status) {
             playerCurrentItemStatus = playerItem.status
-            
+
             switch playerItem.status {
             case .readyToPlay:
                 loadingSpinner?.show(loading: false)
@@ -216,7 +216,7 @@ class PlayerController: NSObject {
         else if keyPath == #keyPath(PlayerController.player.rate) {
             playPauseButton?.isSelected = (player.rate != 0)
         }
-        
+
         if timebaseRate != player.rate && player.rate == 1.0 {
             loadingSpinner?.show(loading: true)
         }
@@ -224,65 +224,65 @@ class PlayerController: NSObject {
             loadingSpinner?.show(loading: false)
         }
     }
-    
+
     private func addObservers() {
         for keyPath in observedKeyPaths {
             addObserver(self, forKeyPath: keyPath, options: [.new, .initial], context: &PlayerController.observerContext)
         }
     }
-    
+
     private func addTimeObserver() {
         let frameRate = playerItem.asset.tracks(withMediaType: AVMediaType.video).first?.nominalFrameRate ?? 30
         let frameDuration = 1 / frameRate
-        
+
         timeObserver = player.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(Float64(frameDuration), preferredTimescale: Int32(NSEC_PER_SEC)), queue: nil) { [weak self] _ in
             self?.playerTimeChanged()
         }
     }
-    
+
     private func removeObservers() {
         for keyPath in observedKeyPaths {
             removeObserver(self, forKeyPath: keyPath, context: &PlayerController.observerContext)
         }
     }
-    
+
     private func removeTimeObserver() {
         if let timeObserver = timeObserver {
             player.removeTimeObserver(timeObserver)
             self.timeObserver = nil
         }
     }
-    
+
     private func playerTimeChanged() {
         let secondsElapsed = CMTimeGetSeconds(playerItem.currentTime())
         let ratio = itemDuration == 0 ? 0 : secondsElapsed / itemDuration
 
         currentTimeLabel?.text = timeFormatter.videoDuration(from: secondsElapsed)
         remainingTimeLabel?.text = timeFormatter.videoDuration(from: itemDuration - secondsElapsed)
-        
+
         slider?.value = Float(ratio)
     }
-    
+
     // MARK: API
-    
+
     func pause(andReset reset: Bool) {
         player.pause()
-        
+
         if reset {
             player.seek(to: CMTime.zero)
             startPlayButtonVisible = true
         }
     }
 
-    
+
     // MARK: Actions
-    
+
     @objc func playPause() {
         startPlayButtonVisible = false
-        
+
         if player.rate == 0 {
             if CMTimeCompare(player.currentTime(), playerItem.duration) == 0 {
-                player.seek(to: CMTime.zero) {_ in 
+                player.seek(to: CMTime.zero) {_ in
                     self.player.play()
                 }
             }
@@ -294,10 +294,10 @@ class PlayerController: NSObject {
             player.pause()
         }
     }
-    
+
     @objc func sliderValueChanged(sender: UISlider, event: UIEvent) {
         startPlayButtonVisible = false
-        
+
         if let touch = event.allTouches?.first {
             if touch.phase == .began {
                 playAfterScrub = player.rate > 0

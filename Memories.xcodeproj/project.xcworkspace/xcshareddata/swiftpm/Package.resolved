@@ -14,8 +14,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/ReactiveCocoa/ReactiveCocoa",
       "state" : {
-        "revision" : "579364393ad587352bcce133b7b3f73392cb585b",
-        "version" : "11.2.2"
+        "revision" : "8a5b07b18c6abb8e12fb845bf742675dc4914ed8",
+        "version" : "12.0.0"
       }
     },
     {
