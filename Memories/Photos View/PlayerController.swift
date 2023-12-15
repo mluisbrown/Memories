@@ -216,6 +216,13 @@ class PlayerController: NSObject {
         else if keyPath == #keyPath(PlayerController.player.rate) {
             playPauseButton?.isSelected = (player.rate != 0)
         }
+
+        if timebaseRate != player.rate && player.rate == 1.0 {
+            loadingSpinner?.show(loading: true)
+        }
+        else {
+            loadingSpinner?.show(loading: false)
+        }
     }
 
     private func addObservers() {

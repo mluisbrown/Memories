@@ -88,6 +88,7 @@ struct AppearanceViewModel {
 
         self.appearance.signal
             .observeValues { appearance in
+                Current.userDefaults.set(appearance.rawValue, forKey: AppearanceViewModel.appearanceKey)
                 updateWindowStyle(appearance)
             }
     }
