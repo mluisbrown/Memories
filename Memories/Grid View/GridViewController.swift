@@ -293,7 +293,7 @@ extension GridViewController {
         let assetID = model.asset(at: indexPath)?.localIdentifier
         cell.assetID = assetID
         cell.imageView?.contentMode = thumbnailContentMode
-        
+
         model.loadCellData(for: indexPath)
             .observe(on: UIScheduler())
             .startWithValues { model in
