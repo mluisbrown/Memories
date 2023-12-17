@@ -108,7 +108,11 @@ struct NotificationsController {
                 alert.addAction(nothanks)
                 alert.addAction(settings)
 
-                UIApplication.shared.windows.filter(\.isKeyWindow).first?.rootViewController?.present(alert, animated: true, completion: nil)
+                UIApplication
+                    .shared
+                    .connectedScenes
+                    .compactMap { ($0 as? UIWindowScene)?.keyWindow }
+                    .last?.rootViewController?.present(alert, animated: true, completion: nil)
             }
     }
     

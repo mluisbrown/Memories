@@ -48,7 +48,11 @@ public struct PhotoLibraryAuthorization {
             }
             
             if let alert = alert {
-                UIApplication.shared.windows.filter(\.isKeyWindow).first?.rootViewController?.present(alert, animated: true)
+                UIApplication
+                    .shared
+                    .connectedScenes
+                    .compactMap { ($0 as? UIWindowScene)?.keyWindow }
+                    .last?.rootViewController?.present(alert, animated: true)
             }
         }
     }

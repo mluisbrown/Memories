@@ -539,8 +539,13 @@ extension GridViewController {
 // MARK: - Helpers
 extension GridViewController {
     private func showHideBlur(_ show: Bool) {
-        if show,
-           let window = UIApplication.shared.windows.filter(\.isKeyWindow).first {
+        let window = UIApplication
+            .shared
+            .connectedScenes
+            .compactMap { ($0 as? UIWindowScene)?.keyWindow }
+            .last
+
+        if show, let window {
             var frame = window.frame
             frame.origin.y += view.safeAreaInsets.top
             
