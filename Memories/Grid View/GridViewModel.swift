@@ -309,28 +309,31 @@ extension GridViewModel {
 
     func loadCellData(for indexPath: IndexPath) -> SignalProducer<GridViewCellModel, Never> {
         return SignalProducer<GridViewCellModel, Never> { observer, _ in
-            
+            let options = PHImageRequestOptions().with {
+                $0.isNetworkAccessAllowed = true
+                $0.deliveryMode = .opportunistic
+                $0.isSynchronous = false
+            }
+
             if let asset = self.asset(at: indexPath) {
                 let durationText = asset.mediaType == .video ? " \(self.timeFormatter.videoDuration(from: asset.duration) ?? "") " : ""
-                self.imageManager?.requestImage(for: asset, targetSize: self.gridThumbnailSize, contentMode: .aspectFill, options: nil) {
-                    result, info in
+                self.imageManager?.requestImage(for: asset, targetSize: self.gridThumbnailSize, contentMode: .aspectFill, options: options) {
+                    image, info in
 
-                    guard let image = result else {
-                        return
-                    }
-                    
-                    observer.send(
-                        value: GridViewCellModel(
-                            assetID: asset.localIdentifier,
-                            image: image,
-                            durationText: durationText,
-                            isFavourite: asset.isFavorite
+                    if let image {
+                        observer.send(
+                            value: GridViewCellModel(
+                                assetID: asset.localIdentifier,
+                                image: image,
+                                durationText: durationText,
+                                isFavourite: asset.isFavorite
+                            )
                         )
-                    )
-                    
-                    let isDegraded = ((info?[PHImageResultIsDegradedKey] as? NSNumber) as? Bool) ?? true
-                    if !isDegraded {
-                        observer.sendCompleted()
+
+                        let isDegraded = ((info?[PHImageResultIsDegradedKey] as? NSNumber) as? Bool) ?? true
+                        if !isDegraded {
+                            observer.sendCompleted()
+                        }
                     }
                 }
             }
